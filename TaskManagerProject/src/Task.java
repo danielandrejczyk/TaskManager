@@ -2,8 +2,7 @@
 public class Task {
 
 	// Daniel Andrejczyk
-	// Tom
-	// Test
+	// Tom Teper
 	
 	// Justin Wilson
 }
