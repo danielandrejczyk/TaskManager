@@ -2,6 +2,6 @@
 public class Task {
 
 	// Daniel Andrejczyk
-	// Thomas Teper
+	// Tom Teper (21:46)
 	
 }
