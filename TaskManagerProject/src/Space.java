@@ -40,7 +40,7 @@ public class Space {
 	 * Getter method for retrieving Space name
 	 * @return String name of space
 	 */
-	public String GetName() {
+	public String ToString() {
 		return name;
 	}
 	
