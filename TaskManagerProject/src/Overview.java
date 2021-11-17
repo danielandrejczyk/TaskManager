@@ -11,6 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
  
 public class Overview extends Application {
@@ -57,6 +58,7 @@ public class Overview extends Application {
         
         topSection.getChildren().addAll(editSpace, deleteSpace, spaceFilter, editTask, deleteTask);
         
+        /*
         Button btn = new Button();
         btn.setText("Say 'Hello World'");
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -66,11 +68,29 @@ public class Overview extends Application {
                 System.out.println("Hello World!");
             }
         });
+        */
         
-        StackPane root = new StackPane();
-        root.getChildren().add(topSection);
+        // Left side overview-switch buttons
+        VBox leftSection = new VBox();
         
-        primaryStage.setScene(new Scene(root, 300, 250));
+        Button homeToggle = new Button("Home");
+        editSpace.setPrefSize(40, 40);
+        
+        Button dailyToggle = new Button("Daily");
+        deleteSpace.setPrefSize(40, 40);
+        
+        Button weeklyToggle = new Button("Weekly");
+        deleteSpace.setPrefSize(40, 40);
+        
+        Button monthlyToggle = new Button("Monthly");
+        deleteSpace.setPrefSize(40, 40);
+        
+        leftSection.getChildren().addAll(homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
+        
+        border.setTop(topSection);
+        border.setLeft(leftSection);
+        
+        primaryStage.setScene(new Scene(border));
         // Show the scene
         primaryStage.show();
     }
