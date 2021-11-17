@@ -117,6 +117,8 @@ public class Overview extends Application {
         
         
         primaryStage.setScene(new Scene(border));
+        primaryStage.setMinHeight(800);
+        primaryStage.setMinWidth(1000);
         // Show the scene
         primaryStage.show();
     }
