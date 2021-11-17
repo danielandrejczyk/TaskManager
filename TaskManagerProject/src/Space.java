@@ -40,7 +40,8 @@ public class Space {
 	 * Getter method for retrieving Space name
 	 * @return String name of space
 	 */
-	public String ToString() {
+	@Override
+	public String toString() {
 		return name;
 	}
 	
