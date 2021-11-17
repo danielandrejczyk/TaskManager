@@ -111,7 +111,7 @@ public class Overview extends Application {
         border.setLeft(leftSection);
         
         
-        primaryStage.setScene(new Scene(root, 1000, 800));
+        primaryStage.setScene(new Scene(border));
         // Show the scene
         primaryStage.show();
     }
