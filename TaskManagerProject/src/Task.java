@@ -23,7 +23,7 @@ public class Task {
 	 public void SetName(String n){
 		 
 	 }
-	 public String GetName(){
+	 public String toString() {
 		 return name;
 	 }
 	 public void SetDate(Date d){

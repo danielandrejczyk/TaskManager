@@ -1,6 +1,7 @@
 // Author: Daniel Andrejczyk
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -8,12 +9,17 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.ArrayList; 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.swing.*;
 
 public class Overview extends Application {
@@ -114,6 +120,7 @@ public class Overview extends Application {
         	@Override
         	public void handle(ActionEvent event) {
         		tm_spaceManager.AddSpace(tm_spaceManager.GetSpaceList().get(0), "Another Space");
+        		// Probably not the most efficient method. Re-visit this piece
         		spaceFilter.getItems().clear();
         		spaceFilter.getItems().addAll(spaceList);
         	}
@@ -131,6 +138,9 @@ public class Overview extends Application {
         
         leftSection.getChildren().addAll(homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
+        // Home view
+        toggleHome(border);
+        
         // Set sections to borderpane
         border.setTop(topSection);
         border.setLeft(leftSection);
@@ -141,5 +151,25 @@ public class Overview extends Application {
         primaryStage.setMinWidth(1000);
         // Show the scene
         primaryStage.show();
+    }
+    
+    /**
+     * Sets up the home task overview and sets it to the center
+     * of the border pane that is passed in.
+     * 
+     * @param	b	The borderpane to anchor the home overview to
+     */
+    private void toggleHome(BorderPane b)
+    {
+    	
+    	Calendar newCalendar = Calendar.getInstance();
+    	Date today = newCalendar.getTime();
+    	
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(new Task("Physics Chapter 1", today), new Task("Calculus Chapter 1", today));
+    	
+    	ListView<Task> listView = new ListView<Task>(tasks);
+    	
+    	b.setCenter(listView);
+    	
     }
 }
