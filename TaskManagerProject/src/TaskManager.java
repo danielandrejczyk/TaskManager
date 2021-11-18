@@ -20,8 +20,8 @@ public class TaskManager {
 	}
 	
 	/**
-	 * Method to add a task to a space
-	 * @param aParent the space that will contain the task
+	 * Method to add a task to the task list
+	 * @param aTask the task that will be added
 	 */
 	public void AddTask(Task aTask) {
 		taskList.add(aTask);
@@ -31,11 +31,16 @@ public class TaskManager {
 	 * Method to edit a task
 	 * @param aTask the task that will be edited
 	 */
-	public void EditTask(Task aTask, Task eTask) {
-		aTask.SetName(eTask.GetName());
+	public void EditTask(Task aTask, Task eTask, Space aSpace) {
+		aTask.SetName(eTask.toString());
 		aTask.SetDate(eTask.GetDate());
 		aTask.SetPriority(eTask.GetPriority());
-		aTask.MoveTo(eTask.GetParentName());
+		if (aSpace.toString() == aTask.GetParentName()) {
+			// do nothing
+		}
+		else {
+			aTask.MoveTo(aSpace);
+		}
 	}
 	
 	/**
