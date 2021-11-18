@@ -26,9 +26,13 @@ public class SpaceManager {
 		spaceList.add(new Space(n));
 	}
 	
-	public void EditSpace(Space aSpace) {
-		
+	public void EditSpace(Space aSpace, String n) {
+		aSpace.SetName(n);
 	}
+	
+//	public void MoveSpace(Space aSpace, Space aParent) {
+//		aSpace.MoveTo(aParent);
+//	}
 	
 	public void DeleteSpace(Space aSpace) {
 		
@@ -43,7 +47,7 @@ public class SpaceManager {
 	 * @return ArrayList, a copy of the spaces in the task application
 	 */
 	public ArrayList<Space> GetSpaceList() {
-//		return (ArrayList<Space>)spaceList.clone();
+		//return (ArrayList<Space>)spaceList.clone();
 		return spaceList;
 	}
 }

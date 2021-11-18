@@ -58,6 +58,6 @@ public class Space {
 	 * @return String name of parent space
 	 */
 	public String GetParentName() {
-		return parentSpace.GetName();
+		return parentSpace.toString();
 	}
 }
