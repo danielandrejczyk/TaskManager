@@ -7,33 +7,35 @@
 */
 import java.util.ArrayList;
 
-//test
-
 public class TaskManager {
 	
-	private ArrayList<Task> taskList = new ArrayList<Task>();
+	private ArrayList<Task> taskList;
+	
 	
 	/**
 	 * Default constructor
 	 */
 	public TaskManager() {
-		
+		taskList = new ArrayList<Task>();
 	}
 	
 	/**
 	 * Method to add a task to a space
 	 * @param aParent the space that will contain the task
 	 */
-	public void AddTask(Space aParent) {
-	
+	public void AddTask(Task aTask) {
+		taskList.add(aTask);
 	}
 	
 	/**
 	 * Method to edit a task
 	 * @param aTask the task that will be edited
 	 */
-	public void EditTask(Task aTask) {
-		
+	public void EditTask(Task aTask, Task eTask) {
+		aTask.SetName(eTask.GetName());
+		aTask.SetDate(eTask.GetDate());
+		aTask.SetPriority(eTask.GetPriority());
+		aTask.MoveTo(eTask.GetParentName());
 	}
 	
 	/**
@@ -41,7 +43,7 @@ public class TaskManager {
 	 * @param aTask the task that will be deleted
 	 */
 	public void DeleteTask(Task aTask) {
-		
+		taskList.removeIf(task -> task.equals(aTask));
 	}
 	
 	/**
