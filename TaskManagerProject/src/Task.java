@@ -22,13 +22,13 @@ public class Task {
 		 
 	 }
 	 public void SetName(String n){
-		 
+		 name = n;
 	 }
 	 public String toString() {
 		 return name;
 	 }
 	 public void SetDate(Date d){
-		 
+		 dueDate = d;
 	 }
 	 //public String GetDate(){
 		// 
