@@ -1,3 +1,4 @@
+import java.util.Date;
 
 public class Task {
 
@@ -23,25 +24,25 @@ public class Task {
 		 
 	 }
 	 public String GetName(){
-		 
+		 return name;
 	 }
 	 public void SetDate(Date d){
 		 
 	 }
-	 public String GetDate(){
-		 
-	 }
+	 //public String GetDate(){
+		// 
+	 //}
 	 public void SetPriority(Priority p){
 		 
 	 }
 	 public Priority GetPriority(){
-		 
+		 return currentPriority;
 	 }
 	 public void MoveTo(Space aSpace){
 		 
 	 }
 	 public String GetParentName(){
-		 
+		 return parentSpace.toString();
 	 }
 
 }
