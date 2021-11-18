@@ -7,7 +7,7 @@ public class Task {
 	// calen 2
 	
 	 private String name;
-	 private Date duedate;
+	 private Date dueDate;
 	 private enum Priority
 	 {
 		 LOW, MEDIUM, HIGH;
@@ -15,7 +15,8 @@ public class Task {
 	 private Priority currentPriority = Priority.MEDIUM;
 	 private Space parentSpace;
 	 public Task(String n, Date dd){
-		 
+		 name = n;
+		 dueDate = dd;
 	 }
 	 public Task(String n, Date dd, Space aSpace){
 		 
