@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
@@ -16,6 +17,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -171,9 +176,56 @@ public class Overview extends Application {
     	ObservableList<Task> tasks = FXCollections.observableArrayList(new Task("Physics Chapter 1", today), new Task("Calculus Chapter 1", today));
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
+    	listView.setPrefWidth(400.0);
     	
+    	Label taskLabel = new Label("Tasks:");
+    	taskLabel.setFont(new Font("Arial", 24));
+    	taskLabel.setPrefSize(400.0, 80.0);
+    	
+    	Label dateLabel = new Label(newCalendar.getTime().toString());
+    	dateLabel.setFont(new Font("Arial", 24));
+    	dateLabel.setPrefSize(400.0, 80.0);
+    	
+    	// Task information text flow
+    	VBox taskInformation = new VBox();
+    		
+    	// Get the selected task
+    	listView.setOnMouseClicked(event -> {
+    		ObservableList<Task> selectedIndices = listView.getSelectionModel().getSelectedItems();
+    		
+    		Task selectedTask = selectedIndices.get(0);
+    		
+    		taskInformation.getChildren().clear();
+    		
+    		Text priority = new Text("Priority: " + selectedTask.GetPriority());
+    		Text status = new Text("Status: ");
+    		Text statusDesc = new Text("Status Description: ");
+    		Text parentSpace = new Text("Parent Space: ");// + selectedTask.GetParentName());
+    		
+    		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace);
+    	});
+    	
+    	//
+    	// Anchoring
+    	//
+    	
+    	// Task Label 
+    	AnchorPane.setTopAnchor(taskLabel, 10.0);
+    	AnchorPane.setRightAnchor(taskLabel, 10.0);
+    	
+    	// Date Label
+    	AnchorPane.setTopAnchor(dateLabel, 10.0);
+    	AnchorPane.setLeftAnchor(dateLabel, 20.0);
+    	
+    	// Task List
     	AnchorPane.setRightAnchor(listView, 10.0);
-    	homePane.getChildren().add(listView);
+    	AnchorPane.setTopAnchor(listView, 90.0);
+    	
+    	// Task Information
+    	AnchorPane.setTopAnchor(taskInformation, 90.0);
+    	AnchorPane.setLeftAnchor(taskInformation, 20.0);
+    	
+    	homePane.getChildren().addAll(listView, taskLabel, dateLabel, taskInformation);
     	
     	b.setCenter(homePane);
     	
