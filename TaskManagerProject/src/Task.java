@@ -30,9 +30,10 @@ public class Task {
 	 public void SetDate(Date d){
 		 
 	 }
-	 //public String GetDate(){
-		// 
-	 //}
+	 
+	 public Date GetDate(){
+		 return dueDate;
+	 }
 	 public void SetPriority(Priority p){
 		 
 	 }

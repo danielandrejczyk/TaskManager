@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -162,6 +163,8 @@ public class Overview extends Application {
     private void toggleHome(BorderPane b)
     {
     	
+    	AnchorPane homePane = new AnchorPane();
+    	
     	Calendar newCalendar = Calendar.getInstance();
     	Date today = newCalendar.getTime();
     	
@@ -169,7 +172,10 @@ public class Overview extends Application {
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
     	
-    	b.setCenter(listView);
+    	AnchorPane.setRightAnchor(listView, 10.0);
+    	homePane.getChildren().add(listView);
+    	
+    	b.setCenter(homePane);
     	
     }
 }
