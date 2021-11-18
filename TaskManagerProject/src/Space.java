@@ -14,8 +14,8 @@ public class Space {
 	 * Default constructor
 	 * @param name the name of space to be created
 	 */
-	public Space(String name) {
-		this.name = name;
+	public Space(String n) {
+		this.name = n;
 	}
 	
 	/**
@@ -23,9 +23,9 @@ public class Space {
 	 * @param parent the name of the target parent space
 	 * @param name the name of space to be created
 	 */
-	public Space(Space parent, String name) {
+	public Space(Space parent, String n) {
 		this.parentSpace = parent;
-		this.name = name;
+		this.name = n;
 	}
 	
 	/**
@@ -33,7 +33,7 @@ public class Space {
 	 * @param n the name of the space to be modified
 	 */
 	public void SetName(String n) {
-		this.name = name;
+		this.name = n;
 	}
 	
 	/**
@@ -59,5 +59,10 @@ public class Space {
 	 */
 	public String GetParentName() {
 		return parentSpace.toString();
+	}
+	
+	public void Delete() {
+		this.name = null;
+		this.parentSpace = null;
 	}
 }

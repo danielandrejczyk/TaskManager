@@ -62,26 +62,6 @@ public class Overview extends Application {
         Button editSpace = new Button("Edit Space");
         editSpace.setPrefSize(40, 40);
         
-        // pop-up for editing space
-        editSpace.setOnAction(
-            new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    final Stage dialog = new Stage();
-                    //dialog.initModality(Modality.APPLICATION_MODAL);
-                    dialog.initOwner(primaryStage);
-                    VBox dialogVbox = new VBox(20);
-                    //dialogVbox.getChildren().add(new Text("This is a Dialog"));
-                    Scene dialogScene = new Scene(dialogVbox, 300, 200);
-                    dialog.setScene(dialogScene);
-                    dialog.show();
-                    
-                    /*
-                     * Functionality to be added
-                     */
-                }
-             });
-        
         Button deleteSpace = new Button("Delete Space");
         deleteSpace.setPrefSize(40, 40);
         
@@ -125,6 +105,15 @@ public class Overview extends Application {
         		spaceFilter.getItems().addAll(spaceList);
         	}
         });
+        
+     // pop-up for editing space
+        editSpace.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+               tm_spaceManager.EditSpace(spaceFilter.getSelectionModel().getSelectedIndex(), "Space changed!");
+            }
+         });
         
         // Overview toggle buttons
         Button dailyToggle = new Button("Daily");
