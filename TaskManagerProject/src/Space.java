@@ -32,7 +32,7 @@ public class Space {
 	 * Setter method for modifying Space name
 	 * @param n the name of the space to be modified
 	 */
-	public void SetName(String n) {
+	public void setName(String n) {
 		this.name = n;
 	}
 	
@@ -49,7 +49,7 @@ public class Space {
 	 * Method to change the parent space of this space
 	 * @param aSpace the target space
 	 */
-	public void MoveTo(Space aSpace) {
+	public void moveTo(Space aSpace) {
 		parentSpace = aSpace;
 	}
 	
@@ -57,11 +57,11 @@ public class Space {
 	 * Getter method for retrieving parent Space name
 	 * @return String name of parent space
 	 */
-	public String GetParentName() {
+	public String getParentName() {
 		return parentSpace.toString();
 	}
 	
-	public void Delete() {
+	public void delete() {
 		this.name = null;
 		this.parentSpace = null;
 	}

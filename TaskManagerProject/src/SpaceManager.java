@@ -20,22 +20,22 @@ public class SpaceManager {
 		spaceList.add(MY_TASKS);
 	}
 	
-	public void AddSpace(Space aParent, String n) {
+	public void addSpace(Space aParent, String n) {
 		spaceList.add(new Space(aParent, n));
 	}
 	
-	public void EditSpace(int position, String n) {
+	public void editSpace(int position, String n) {
 		Space tempSpace = spaceList.get(position);
-		tempSpace.SetName(n);
+		tempSpace.setName(n);
 		spaceList.set(position, tempSpace);
 	}
 	
-	public void DeleteSpace(int position) {
-		spaceList.get(position).Delete();
+	public void deleteSpace(int position) {
+		spaceList.get(position).delete();
 		spaceList.remove(position);
 	}
 	
-	public void SelectSpace() {
+	public void selectSpace() {
 		
 	}
 	
@@ -43,7 +43,7 @@ public class SpaceManager {
 	 * Returns a copy of the current task spaces
 	 * @return ArrayList, a copy of the spaces in the task application
 	 */
-	public ArrayList<Space> GetSpaceList() {
+	public ArrayList<Space> getSpaceList() {
 		ArrayList<Space> tempList = spaceList;
 		return tempList;
 	}
