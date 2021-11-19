@@ -200,7 +200,7 @@ public class Overview extends Application {
         leftSection.getChildren().addAll(homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
         // Home view
-        toggleHome(border);
+        toggleHome(border, tm_spaceManager);
         
         // Set sections to borderpane
         border.setTop(topSection);
@@ -220,7 +220,7 @@ public class Overview extends Application {
      * 
      * @param	b	The borderpane to anchor the home overview to
      */
-    private void toggleHome(BorderPane b)
+    private void toggleHome(BorderPane b, SpaceManager m)
     {
     	
     	AnchorPane homePane = new AnchorPane();
@@ -228,7 +228,16 @@ public class Overview extends Application {
     	Calendar newCalendar = Calendar.getInstance();
     	Date today = newCalendar.getTime();
     	
-    	ObservableList<Task> tasks = FXCollections.observableArrayList(new Task("Physics Chapter 1", today), new Task("Calculus Chapter 1", today));
+    	Space myTasks = m.getSpaceList().get(0);
+    	
+    	Task physCh1 = new Task("Physics Chapter 1", today, myTasks);
+    	physCh1.setCurrent(Status.progress.DONE);
+    	physCh1.setDescription("Ask professor about problem 7");
+    	Task calcCh1 = new Task("Calculus Chapter 1", today, myTasks);
+    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
+    	calcCh1.setDescription("Help!");
+    	
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
     	listView.setPrefWidth(400.0);
@@ -252,10 +261,10 @@ public class Overview extends Application {
     		
     		taskInformation.getChildren().clear();
     		
-    		Text priority = new Text("Priority: " + selectedTask.GetPriority());
-    		Text status = new Text("Status: ");
-    		Text statusDesc = new Text("Status Description: ");
-    		Text parentSpace = new Text("Parent Space: ");// + selectedTask.GetParentName());
+    		Text priority = new Text("Priority: " + selectedTask.getPriority());
+    		Text status = new Text("Status: " + selectedTask.getCurrent());
+    		Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
+    		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
     		
     		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace);
     	});

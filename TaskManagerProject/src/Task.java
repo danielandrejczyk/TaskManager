@@ -71,5 +71,21 @@ public class Task {
 	public String getParentName(){
 		return parentSpace.toString();
 	}
+	
+	public void setCurrent(Status.progress newProgress) {
+		status.setCurrent(newProgress);
+	}
+	
+	public Status.progress getCurrent() {
+		return status.getCurrent();
+	}
+	
+	public void setDescription(String aDesc) {
+		status.setDescription(aDesc);
+	}
+	
+	public String getDescription() {
+		return status.getDescription();
+	}
 
 }

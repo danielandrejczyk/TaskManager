@@ -7,7 +7,7 @@
 
 public class Status{
 	
-	private enum progress { TO_DO, IN_PROGRESS , DONE };
+	public static enum progress { TO_DO, IN_PROGRESS , DONE };
 	private progress currentStatus = progress.TO_DO;
 	private String description;
 	
@@ -23,28 +23,28 @@ public class Status{
 	
 	public Status(progress selectedStatus) {
 		currentStatus = selectedStatus;
-		description = "";
 		//empty string
+		description = "";
 	}
 	
 	public Status(progress selectedStatus, String description) {
 		currentStatus = selectedStatus;
-		description = "";
+		this.description = description;
 	}
 	
-	public void SetCurrent(progress newProgress) {
-		
+	public void setCurrent(progress newProgress) {
+		currentStatus = newProgress;
 	}
 	
-	public progress GetCurrent() {
+	public progress getCurrent() {
 		return currentStatus;
 	}
 	
-	public void SetDescription(String aDesc) {
+	public void setDescription(String aDesc) {
 		description = aDesc;
 	}
 	
-	public String GetDescription() {
+	public String getDescription() {
 		return description;
 	}
 }

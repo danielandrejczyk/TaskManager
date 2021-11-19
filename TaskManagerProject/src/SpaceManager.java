@@ -21,7 +21,12 @@ public class SpaceManager {
 	}
 	
 	public void addSpace(Space aParent, String n) {
-		spaceList.add(new Space(aParent, n));
+		Space finalParent = aParent;
+		if(finalParent == null)
+		{
+			finalParent = spaceList.get(0);
+		}
+		spaceList.add(new Space(finalParent, n));
 	}
 	
 	public void editSpace(int position, String n) {
@@ -31,13 +36,23 @@ public class SpaceManager {
 	}
 	
 	public void deleteSpace(int position) {
-		spaceList.get(position).delete();
+		
+		// Check that this is a leaf space
+		
+		// Retrieve all tasks that belong to this space
+		// and set them equal to MY_TASKS space
+		
+		//spaceList.get(position).delete();
+		//Space oldSpace = spaceList.get(position);
+		//oldSpace = null;
 		spaceList.remove(position);
 	}
 	
+	/* Hold on this
 	public void selectSpace() {
 		
 	}
+	*/
 	
 	/**
 	 * Returns a copy of the current task spaces

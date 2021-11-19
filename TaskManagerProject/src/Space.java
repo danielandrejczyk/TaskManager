@@ -11,11 +11,13 @@ public class Space {
 	private String name;
 	
 	/**
-	 * Default constructor
+	 * Default constructor. Used to construct the 
+	 * "My Tasks" space.
 	 * @param name the name of space to be created
 	 */
 	public Space(String n) {
 		this.name = n;
+		this.parentSpace = null;
 	}
 	
 	/**
@@ -58,11 +60,15 @@ public class Space {
 	 * @return String name of parent space
 	 */
 	public String getParentName() {
+		if(parentSpace == null)
+		{
+			return "";
+		}
 		return parentSpace.toString();
 	}
 	
-	public void delete() {
-		this.name = null;
-		this.parentSpace = null;
-	}
+	//public void delete() {
+		//this.name = null;
+		//this.parentSpace = null;
+	//}
 }
