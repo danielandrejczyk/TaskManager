@@ -7,18 +7,25 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -57,13 +64,13 @@ public class Overview extends Application {
         
         // Space manipulation buttons
         Button addSpace = new Button("Add Space");
-        addSpace.setPrefSize(40, 40);
+        addSpace.setPrefSize(100, 40);
         
         Button editSpace = new Button("Edit Space");
-        editSpace.setPrefSize(40, 40);
+        editSpace.setPrefSize(100, 40);
         
         Button deleteSpace = new Button("Delete Space");
-        deleteSpace.setPrefSize(40, 40);
+        deleteSpace.setPrefSize(100, 40);
         
         // create space manager
         SpaceManager tm_spaceManager = new SpaceManager();
@@ -72,16 +79,17 @@ public class Overview extends Application {
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
     	ArrayList<Space> spaceList = tm_spaceManager.GetSpaceList();
         spaceFilter.getItems().addAll(spaceList);
+        spaceFilter.getSelectionModel().selectFirst();
         
         // Task manipulation buttons
         Button addTask = new Button("Add Task");
-        addSpace.setPrefSize(40, 40);
+        addTask.setPrefSize(100, 40);
         
         Button editTask = new Button("Edit Task");
-        editSpace.setPrefSize(40, 40);
+        editTask.setPrefSize(100, 40);
         
         Button deleteTask = new Button("Delete Task");
-        deleteSpace.setPrefSize(40, 40);
+        deleteTask.setPrefSize(100, 40);
         
         topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
         
@@ -92,38 +100,99 @@ public class Overview extends Application {
         VBox leftSection = new VBox();
         
         Button homeToggle = new Button("Home");
-        editSpace.setPrefSize(40, 40);
+        homeToggle.setPrefSize(60, 40);
         
-        // Space onClick actions
+     // input dialog variables
+        TilePane a = new TilePane();
+        TextInputDialog addTD = new TextInputDialog();
+        addTD.setHeaderText("Add Space");
+        addTD.setContentText("Enter space name");
+        addTD.setTitle("Add Space");
+        addTD.setGraphic(null);
+        
+        // Add Space Actions
         addSpace.setOnAction(new EventHandler<ActionEvent>() {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		tm_spaceManager.AddSpace(tm_spaceManager.GetSpaceList().get(0), "Another Space");
+        		addTD.showAndWait();
+        		String n = addTD.getEditor().getText();
+        		
+        		try {
+        			tm_spaceManager.AddSpace(tm_spaceManager.GetSpaceList().get(0), n);
+        			spaceFilter.getItems().clear();
+            		spaceFilter.getItems().addAll(spaceList);
+            		spaceFilter.getSelectionModel().selectLast();
+        		}
+        		catch (Exception e) {
+        			// do something
+        		}
         		// Probably not the most efficient method. Re-visit this piece
-        		spaceFilter.getItems().clear();
-        		spaceFilter.getItems().addAll(spaceList);
         	}
         });
         
-     // pop-up for editing space
+        // input dialog variables
+        TilePane r = new TilePane();
+        TextInputDialog editTD = new TextInputDialog();
+        editTD.setContentText("Enter new space name");
+        editTD.setTitle("Edit Space");
+        editTD.setGraphic(null);
+        
+        /*Optional<String> result = editTD.showAndWait();*/ // currently doesn't work properly
+        
+        // Edit Space Actions
         editSpace.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
-               tm_spaceManager.EditSpace(spaceFilter.getSelectionModel().getSelectedIndex(), "Space changed!");
+               
+               int pos = spaceFilter.getSelectionModel().getSelectedIndex();
+               editTD.setHeaderText(tm_spaceManager.GetSpaceList().get(pos).toString());
+               editTD.showAndWait();
+               String n = editTD.getEditor().getText();
+               //if (result.isPresent()) {
+            	   try {
+	            	   tm_spaceManager.EditSpace(spaceFilter.getSelectionModel().getSelectedIndex(), n);
+	            	   spaceFilter.getItems().clear();
+	                   spaceFilter.getItems().addAll(spaceList);
+	                   spaceFilter.getSelectionModel().selectLast();
+	                   
+	               }
+	               catch (Exception e) {
+	            	   // do something
+	               }
+               //}
+            }
+         });
+        
+        // alert for deletion
+        Alert alert = new Alert(AlertType.CONFIRMATION, "Delete this space?", ButtonType.YES, ButtonType.CANCEL);
+        
+        // Delete space action
+        deleteSpace.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               
+            	// add more functionality for alert to show details about space
+            	alert.showAndWait();
+
+                if (alert.getResult() == ButtonType.YES) {
+                	tm_spaceManager.DeleteSpace(spaceFilter.getSelectionModel().getSelectedIndex());
+                    spaceFilter.getItems().clear();
+                    spaceFilter.getItems().addAll(spaceList);
+                    spaceFilter.getSelectionModel().selectFirst();
+                }
             }
          });
         
         // Overview toggle buttons
         Button dailyToggle = new Button("Daily");
-        deleteSpace.setPrefSize(40, 40);
+        dailyToggle.setPrefSize(60, 40);
         
         Button weeklyToggle = new Button("Weekly");
-        deleteSpace.setPrefSize(40, 40);
+        weeklyToggle.setPrefSize(60, 40);
         
         Button monthlyToggle = new Button("Monthly");
-        deleteSpace.setPrefSize(40, 40);
+        monthlyToggle.setPrefSize(60, 40);
         
         leftSection.getChildren().addAll(homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
