@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class SpaceManager {
 	
 	private ArrayList<Space> spaceList;
-	private int space_num;
 	
 	/**
 	 * Default constructor for SpaceManager class
@@ -16,22 +15,24 @@ public class SpaceManager {
 	 * Creates a default My Tasks space and adds to list of spaces
 	 */
 	public SpaceManager() {
-		space_num = 0;
 		spaceList = new ArrayList<Space>();
 		Space MY_TASKS = new Space("My Tasks");
 		spaceList.add(MY_TASKS);
 	}
 	
 	public void AddSpace(Space aParent, String n) {
-		spaceList.add(new Space(n));
+		spaceList.add(new Space(aParent, n));
 	}
 	
-	public void EditSpace(Space aSpace) {
-		
+	public void EditSpace(int position, String n) {
+		Space tempSpace = spaceList.get(position);
+		tempSpace.SetName(n);
+		spaceList.set(1, tempSpace);
 	}
 	
-	public void DeleteSpace(Space aSpace) {
-		
+	public void DeleteSpace(int position) {
+		spaceList.get(position).Delete();
+		spaceList.remove(position);
 	}
 	
 	public void SelectSpace() {
@@ -43,7 +44,7 @@ public class SpaceManager {
 	 * @return ArrayList, a copy of the spaces in the task application
 	 */
 	public ArrayList<Space> GetSpaceList() {
-//		return (ArrayList<Space>)spaceList.clone();
-		return spaceList;
+		ArrayList<Space> tempList = spaceList;
+		return tempList;
 	}
 }

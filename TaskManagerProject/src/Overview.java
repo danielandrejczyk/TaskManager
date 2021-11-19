@@ -7,24 +7,25 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -63,30 +64,10 @@ public class Overview extends Application {
         
         // Space manipulation buttons
         Button addSpace = new Button("Add Space");
-        addSpace.setPrefSize(40, 40);
+        addSpace.setPrefSize(100, 40);
         
         Button editSpace = new Button("Edit Space");
-        editSpace.setPrefSize(40, 40);
-        
-        // pop-up for editing space
-        editSpace.setOnAction(
-            new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    final Stage dialog = new Stage();
-                    //dialog.initModality(Modality.APPLICATION_MODAL);
-                    dialog.initOwner(primaryStage);
-                    VBox dialogVbox = new VBox(20);
-                    //dialogVbox.getChildren().add(new Text("This is a Dialog"));
-                    Scene dialogScene = new Scene(dialogVbox, 300, 200);
-                    dialog.setScene(dialogScene);
-                    dialog.show();
-                    
-                    /*
-                     * Functionality to be added
-                     */
-                }
-             });
+        editSpace.setPrefSize(100, 40);
         
         Button deleteSpace = new Button("Delete Space");
         deleteSpace.setPrefSize(40, 40);
@@ -98,16 +79,17 @@ public class Overview extends Application {
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
     	ArrayList<Space> spaceList = tm_spaceManager.GetSpaceList();
         spaceFilter.getItems().addAll(spaceList);
+        spaceFilter.getSelectionModel().selectFirst();
         
         // Task manipulation buttons
         Button addTask = new Button("Add Task");
-        addSpace.setPrefSize(40, 40);
+        addTask.setPrefSize(100, 40);
         
         Button editTask = new Button("Edit Task");
-        editSpace.setPrefSize(40, 40);
+        editTask.setPrefSize(100, 40);
         
         Button deleteTask = new Button("Delete Task");
-        deleteSpace.setPrefSize(40, 40);
+        deleteTask.setPrefSize(100, 40);
         
         topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
         
@@ -118,29 +100,46 @@ public class Overview extends Application {
         VBox leftSection = new VBox();
         
         Button homeToggle = new Button("Home");
-        editSpace.setPrefSize(40, 40);
+        homeToggle.setPrefSize(60, 40);
         
-        // Space onClick actions
+     // input dialog variables
+        TilePane a = new TilePane();
+        TextInputDialog addTD = new TextInputDialog();
+        addTD.setHeaderText("Add Space");
+        addTD.setContentText("Enter space name");
+        addTD.setTitle("Add Space");
+        addTD.setGraphic(null);
+        
+        // Add Space Actions
         addSpace.setOnAction(new EventHandler<ActionEvent>() {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		tm_spaceManager.AddSpace(tm_spaceManager.GetSpaceList().get(0), "Another Space");
+        		addTD.showAndWait();
+        		String n = addTD.getEditor().getText();
+        		
+        		try {
+        			tm_spaceManager.AddSpace(tm_spaceManager.GetSpaceList().get(0), n);
+        			spaceFilter.getItems().clear();
+            		spaceFilter.getItems().addAll(spaceList);
+            		spaceFilter.getSelectionModel().selectLast();
+        		}
+        		catch (Exception e) {
+        			// do something
+        		}
         		// Probably not the most efficient method. Re-visit this piece
-        		spaceFilter.getItems().clear();
-        		spaceFilter.getItems().addAll(spaceList);
         	}
         });
         
         // Overview toggle buttons
         Button dailyToggle = new Button("Daily");
-        deleteSpace.setPrefSize(40, 40);
+        dailyToggle.setPrefSize(60, 40);
         
         Button weeklyToggle = new Button("Weekly");
-        deleteSpace.setPrefSize(40, 40);
+        weeklyToggle.setPrefSize(60, 40);
         
         Button monthlyToggle = new Button("Monthly");
-        deleteSpace.setPrefSize(40, 40);
+        monthlyToggle.setPrefSize(60, 40);
         
         leftSection.getChildren().addAll(homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
