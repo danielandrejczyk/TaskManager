@@ -80,7 +80,7 @@ public class Overview extends Application {
         
         // Space selection drop-down
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
-    	ArrayList<Space> spaceList = tm_spaceManager.GetSpaceList();
+    	ArrayList<Space> spaceList = tm_spaceManager.getSpaceList();
         spaceFilter.getItems().addAll(spaceList);
         spaceFilter.getSelectionModel().selectFirst();
         
@@ -122,7 +122,7 @@ public class Overview extends Application {
         		String n = addTD.getEditor().getText();
         		
         		try {
-        			tm_spaceManager.AddSpace(tm_spaceManager.GetSpaceList().get(0), n);
+        			tm_spaceManager.addSpace(tm_spaceManager.getSpaceList().get(0), n);
         			spaceFilter.getItems().clear();
             		spaceFilter.getItems().addAll(spaceList);
             		spaceFilter.getSelectionModel().selectLast();
@@ -149,12 +149,12 @@ public class Overview extends Application {
             public void handle(ActionEvent event) {
                
                int pos = spaceFilter.getSelectionModel().getSelectedIndex();
-               editTD.setHeaderText(tm_spaceManager.GetSpaceList().get(pos).toString());
+               editTD.setHeaderText(tm_spaceManager.getSpaceList().get(pos).toString());
                editTD.showAndWait();
                String n = editTD.getEditor().getText();
                //if (result.isPresent()) {
             	   try {
-	            	   tm_spaceManager.EditSpace(spaceFilter.getSelectionModel().getSelectedIndex(), n);
+	            	   tm_spaceManager.editSpace(spaceFilter.getSelectionModel().getSelectedIndex(), n);
 	            	   spaceFilter.getItems().clear();
 	                   spaceFilter.getItems().addAll(spaceList);
 	                   spaceFilter.getSelectionModel().selectLast();
@@ -179,7 +179,7 @@ public class Overview extends Application {
             	alert.showAndWait();
 
                 if (alert.getResult() == ButtonType.YES) {
-                	tm_spaceManager.DeleteSpace(spaceFilter.getSelectionModel().getSelectedIndex());
+                	tm_spaceManager.deleteSpace(spaceFilter.getSelectionModel().getSelectedIndex());
                     spaceFilter.getItems().clear();
                     spaceFilter.getItems().addAll(spaceList);
                     spaceFilter.getSelectionModel().selectFirst();
