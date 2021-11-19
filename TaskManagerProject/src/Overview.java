@@ -73,7 +73,7 @@ public class Overview extends Application {
         editSpace.setPrefSize(100, 40);
         
         Button deleteSpace = new Button("Delete Space");
-        deleteSpace.setPrefSize(40, 40);
+        deleteSpace.setPrefSize(100, 40);
         
         // create space manager
         SpaceManager tm_spaceManager = new SpaceManager();
@@ -133,6 +133,59 @@ public class Overview extends Application {
         		// Probably not the most efficient method. Re-visit this piece
         	}
         });
+        
+     // input dialog variables
+        TilePane r = new TilePane();
+        TextInputDialog editTD = new TextInputDialog();
+        editTD.setContentText("Enter new space name");
+        editTD.setTitle("Edit Space");
+        editTD.setGraphic(null);
+        
+        /*Optional<String> result = editTD.showAndWait();*/ // currently doesn't work properly
+        
+        // Edit Space Actions
+        editSpace.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               
+               int pos = spaceFilter.getSelectionModel().getSelectedIndex();
+               editTD.setHeaderText(tm_spaceManager.GetSpaceList().get(pos).toString());
+               editTD.showAndWait();
+               String n = editTD.getEditor().getText();
+               //if (result.isPresent()) {
+            	   try {
+	            	   tm_spaceManager.EditSpace(spaceFilter.getSelectionModel().getSelectedIndex(), n);
+	            	   spaceFilter.getItems().clear();
+	                   spaceFilter.getItems().addAll(spaceList);
+	                   spaceFilter.getSelectionModel().selectLast();
+	                   
+	               }
+	               catch (Exception e) {
+	            	   // do something
+	               }
+               //}
+            }
+         });
+        
+     // alert for deletion
+        Alert alert = new Alert(AlertType.CONFIRMATION, "Delete this space?", ButtonType.YES, ButtonType.CANCEL);
+        
+        // Delete space action
+        deleteSpace.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               
+            	// add more functionality for alert to show details about space
+            	alert.showAndWait();
+
+                if (alert.getResult() == ButtonType.YES) {
+                	tm_spaceManager.DeleteSpace(spaceFilter.getSelectionModel().getSelectedIndex());
+                    spaceFilter.getItems().clear();
+                    spaceFilter.getItems().addAll(spaceList);
+                    spaceFilter.getSelectionModel().selectFirst();
+                }
+            }
+         });
         
         // Overview toggle buttons
         Button dailyToggle = new Button("Daily");
