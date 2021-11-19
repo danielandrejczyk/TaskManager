@@ -6,18 +6,23 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
@@ -25,6 +30,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -105,80 +112,167 @@ public class Overview extends Application {
         Button homeToggle = new Button("Home");
         homeToggle.setPrefSize(60, 40);
         
-     // input dialog variables
-        TilePane a = new TilePane();
-        TextInputDialog addTD = new TextInputDialog();
-        addTD.setHeaderText("Add Space");
-        addTD.setContentText("Enter space name");
-        addTD.setTitle("Add Space");
-        addTD.setGraphic(null);
+        /*
+         * Top Button Action Events
+         */
+        
+        // Add Space Dialog
+        
+        // creates new add space dialog
+        Dialog<Pair<String, Integer>> addSD = new Dialog<>();
+        addSD.setTitle("New Space");
+        addSD.setHeaderText("Add Space");
+        GridPane aSGrid = new GridPane();
+        
+        // adds buttons for dialog
+        ButtonType addConfirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
+        addSD.getDialogPane().getButtonTypes().addAll(addConfirmBtnType, ButtonType.CANCEL);
+        
+        // positioning
+        aSGrid.setHgap(10);
+        aSGrid.setVgap(10);
+        aSGrid.setPadding(new Insets(20, 150, 10, 10));
+        
+        // text field and parent space options
+        TextField addSName = new TextField();
+        addSName.setPromptText("Space name");
+        ComboBox<Space> addPSpace = new ComboBox<Space>();
+        addPSpace.getItems().clear();
+        addPSpace.getItems().addAll(spaceList);
+        addPSpace.getSelectionModel().selectFirst();
+        
+        aSGrid.add(new Label("Space Name"), 0, 0);
+		aSGrid.add(addSName, 0, 1);
+		aSGrid.add(new Label("Parent Space"), 1, 0);
+		aSGrid.add(addPSpace, 1, 1);
+        
+        Node addConfirmBtn = addSD.getDialogPane().lookupButton(addConfirmBtnType);
+        addConfirmBtn.setDisable(true);
+        addSD.getDialogPane().setContent(aSGrid);
+        addSName.textProperty().addListener((observable, oldValue, newValue) -> {
+        	addConfirmBtn.setDisable(newValue.trim().isEmpty());
+        });
         
         // Add Space Actions
         addSpace.setOnAction(new EventHandler<ActionEvent>() {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		addTD.showAndWait();
-        		String n = addTD.getEditor().getText();
         		
-        		try {
-        			tm_spaceManager.addSpace(tm_spaceManager.getSpaceList().get(0), n);
+        		addSD.setResultConverter(addSDBtn -> {
+        			
+        			if (addSDBtn == addConfirmBtnType) {
+        				return new Pair<>(addSName.getText(), addPSpace.getSelectionModel().getSelectedIndex());
+        			}
+        			return null;
+        		});
+        		
+        		Optional<Pair<String, Integer>> result = addSD.showAndWait();
+        		
+        		result.ifPresent(newSpaceValue -> {
+        			String spcStr = newSpaceValue.getKey();
+        			int pIndex = newSpaceValue.getValue();
+        			tm_spaceManager.addSpace(tm_spaceManager.getSpaceList().get(pIndex), spcStr);
         			spaceFilter.getItems().clear();
             		spaceFilter.getItems().addAll(spaceList);
             		spaceFilter.getSelectionModel().selectLast();
-        		}
-        		catch (Exception e) {
-        			// do something
-        		}
-        		// Probably not the most efficient method. Re-visit this piece
+        		});
+        		
+        		addPSpace.getItems().clear();
+        		addPSpace.getItems().addAll(spaceList);
+        		addPSpace.getSelectionModel().selectFirst();
+        		
+        		addSName.setText("");
+        		addSName.setPromptText("");
         	}
         });
+       
+        // Edit Space
         
-     // input dialog variables
-        TilePane r = new TilePane();
-        TextInputDialog editTD = new TextInputDialog();
-        editTD.setContentText("Enter new space name");
-        editTD.setTitle("Edit Space");
-        editTD.setGraphic(null);
+        Dialog<Pair<String, Integer>> editSD = new Dialog<>();
+        editSD.setTitle("Edit Space");
+        GridPane eSGrid = new GridPane();
         
-        /*Optional<String> result = editTD.showAndWait();*/ // currently doesn't work properly
+        // adds buttons for dialog
+        ButtonType editConfirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
+        editSD.getDialogPane().getButtonTypes().addAll(editConfirmBtnType, ButtonType.CANCEL);
+        
+        // positioning
+        eSGrid.setHgap(10);
+        eSGrid.setVgap(10);
+        eSGrid.setPadding(new Insets(20, 150, 10, 10));
+        
+        // text field and parent space options
+        TextField editSName = new TextField();
+        ComboBox<Space> editPSpace = new ComboBox<Space>();
+        editPSpace.getItems().clear();
+        editPSpace.getItems().addAll(spaceList);
+        editPSpace.getSelectionModel().selectFirst();
+        
+        eSGrid.add(new Label("Space Name"), 0, 0);
+        eSGrid.add(editSName, 0, 1);
+        eSGrid.add(new Label("Parent Space"), 1, 0);
+        eSGrid.add(editPSpace, 1, 1);
+        
+        Node editConfirmBtn = editSD.getDialogPane().lookupButton(editConfirmBtnType);
+        editConfirmBtn.setDisable(true);
+        editSD.getDialogPane().setContent(eSGrid);
+        editSName.textProperty().addListener((observable, oldValue, newValue) -> {
+        	editConfirmBtn.setDisable(newValue.trim().isEmpty());
+        });
         
         // Edit Space Actions
         editSpace.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-               
-               int pos = spaceFilter.getSelectionModel().getSelectedIndex();
-               editTD.setHeaderText(tm_spaceManager.getSpaceList().get(pos).toString());
-               editTD.showAndWait();
-               String n = editTD.getEditor().getText();
-               //if (result.isPresent()) {
-            	   try {
-	            	   tm_spaceManager.editSpace(spaceFilter.getSelectionModel().getSelectedIndex(), n);
-	            	   spaceFilter.getItems().clear();
-	                   spaceFilter.getItems().addAll(spaceList);
-	                   spaceFilter.getSelectionModel().selectLast();
-	                   
-	               }
-	               catch (Exception e) {
-	            	   // do something
-	               }
-               //}
-            }
-         });
+        	
+        	@Override
+        	public void handle(ActionEvent event) {
+        		
+        		editSD.setHeaderText("Modify " + spaceFilter.getSelectionModel().getSelectedItem().toString());
+        		editSName.setPromptText(spaceFilter.getSelectionModel().getSelectedItem().toString());
+        		// add ability to see what the current parent space is
+        		editSD.setResultConverter(editSDBtn -> {
+        			if (editSDBtn == editConfirmBtnType) {
+        				return new Pair<>(editSName.getText(), editPSpace.getSelectionModel().getSelectedIndex());
+        			}
+        			return null;
+        		});
+        		
+        		Optional<Pair<String, Integer>> result = editSD.showAndWait();
+        		
+        		result.ifPresent(editSpaceValue -> {
+        			// get values from form boxes
+        			String spcStr = editSpaceValue.getKey();
+        			int pIndex = editSpaceValue.getValue();
+        			int i = spaceFilter.getSelectionModel().getSelectedIndex();
+        			
+        			tm_spaceManager.editSpace(tm_spaceManager.getSpaceList().get(pIndex), i, spcStr);
+        			spaceFilter.getItems().clear();
+        			spaceFilter.getItems().addAll(spaceList);
+            		spaceFilter.getSelectionModel().select(i);
+        		});
+        		
+        		editPSpace.getItems().clear();
+        		editPSpace.getItems().addAll(spaceList);
+        		editPSpace.getSelectionModel().selectFirst();
+        		
+        		editSName.setText("");
+        		editSName.setPromptText("");
+        	}
+        });
         
-     // alert for deletion
-        Alert alert = new Alert(AlertType.CONFIRMATION, "Delete this space?", ButtonType.YES, ButtonType.CANCEL);
+     	// Delete Space Actions
+        Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this space?", ButtonType.YES, ButtonType.CANCEL);
+        deleteSD.setTitle("Delete Space");
         
         // Delete space action
         deleteSpace.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                
-            	// add more functionality for alert to show details about space
-            	alert.showAndWait();
+            	deleteSD.setHeaderText("Delete " + spaceFilter.getSelectionModel().getSelectedItem().toString());
+            	deleteSD.showAndWait();
 
-                if (alert.getResult() == ButtonType.YES) {
+                if (deleteSD.getResult() == ButtonType.YES) {
                 	tm_spaceManager.deleteSpace(spaceFilter.getSelectionModel().getSelectedIndex());
                     spaceFilter.getItems().clear();
                     spaceFilter.getItems().addAll(spaceList);

@@ -16,8 +16,7 @@ public class SpaceManager {
 	 */
 	public SpaceManager() {
 		spaceList = new ArrayList<Space>();
-		Space MY_TASKS = new Space("My Tasks");
-		spaceList.add(MY_TASKS);
+		spaceList.add(new Space("My Tasks"));
 	}
 	
 	public void addSpace(Space aParent, String n) {
@@ -29,7 +28,7 @@ public class SpaceManager {
 		spaceList.add(new Space(finalParent, n));
 	}
 	
-	public void editSpace(int position, String n) {
+	public void editSpace(Space aParent, int position, String n) {
 		Space tempSpace = spaceList.get(position);
 		tempSpace.setName(n);
 		spaceList.set(position, tempSpace);
@@ -37,15 +36,24 @@ public class SpaceManager {
 	
 	public void deleteSpace(int position) {
 		
-		// Check that this is a leaf space
-		
-		// Retrieve all tasks that belong to this space
-		// and set them equal to MY_TASKS space
-		
-		//spaceList.get(position).delete();
-		//Space oldSpace = spaceList.get(position);
-		//oldSpace = null;
-		spaceList.remove(position);
+		if (position == 0)
+			System.out.println("My Tasks!");
+			// throw
+		else {
+			// check that there are no sub-spaces
+			for (Space s : spaceList) {
+				
+				// if current space has target space as parent
+				if (s.getParentName().equals(spaceList.get(position).toString()))
+					System.out.println("Did something!");
+					// throw exception that space has sub-spaces
+			}
+			
+			/*
+			 * Reassign all tasks that have the space to be deleted as parent to My Tasks
+			 */
+			spaceList.remove(position);
+		}
 	}
 	
 	/* Hold on this
