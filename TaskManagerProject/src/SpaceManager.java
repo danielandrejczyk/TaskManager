@@ -27,7 +27,7 @@ public class SpaceManager {
 	public void EditSpace(int position, String n) {
 		Space tempSpace = spaceList.get(position);
 		tempSpace.SetName(n);
-		spaceList.set(1, tempSpace);
+		spaceList.set(position, tempSpace);
 	}
 	
 	public void DeleteSpace(int position) {
