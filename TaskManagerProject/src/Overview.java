@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -21,14 +22,19 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -38,6 +44,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
 
 public class Overview extends Application {
 	
@@ -60,6 +67,7 @@ public class Overview extends Application {
     	
     	// Set the title
         primaryStage.setTitle("Task Manager");
+        primaryStage.centerOnScreen();
         
         // Create a border pane to lay out all the items
         BorderPane border = new BorderPane();
@@ -69,6 +77,7 @@ public class Overview extends Application {
         //
         
         HBox topSection = new HBox();
+        topSection.setBackground(new Background(new BackgroundFill(Color.LIGHTSTEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         topSection.setPadding(new Insets(15, 12, 15, 12));
         topSection.setSpacing(10);
         
@@ -90,6 +99,8 @@ public class Overview extends Application {
     	ArrayList<Space> spaceList = tm_spaceManager.getSpaceList();
         spaceFilter.getItems().addAll(spaceList);
         spaceFilter.getSelectionModel().selectFirst();
+        spaceFilter.setPrefHeight(40);
+        spaceFilter.setPrefWidth(200);
         
         // Task manipulation buttons
         Button addTask = new Button("Add Task");
@@ -108,9 +119,12 @@ public class Overview extends Application {
         //
         
         VBox leftSection = new VBox();
+        leftSection.setPadding(new Insets(15,15,15,15));
+        leftSection.setSpacing(10);
+        leftSection.setBackground(new Background(new BackgroundFill(Color.STEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         
         Button homeToggle = new Button("Home");
-        homeToggle.setPrefSize(60, 40);
+        homeToggle.setPrefSize(80, 40);
         
         /*
          * Top Button Action Events
@@ -283,15 +297,19 @@ public class Overview extends Application {
         
         // Overview toggle buttons
         Button dailyToggle = new Button("Daily");
-        dailyToggle.setPrefSize(60, 40);
+        dailyToggle.setPrefSize(80, 40);
         
         Button weeklyToggle = new Button("Weekly");
-        weeklyToggle.setPrefSize(60, 40);
+        weeklyToggle.setPrefSize(80, 40);
         
         Button monthlyToggle = new Button("Monthly");
-        monthlyToggle.setPrefSize(60, 40);
+        monthlyToggle.setPrefSize(80, 40);
         
-        leftSection.getChildren().addAll(homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
+        Text toggleLabel = new Text("View");
+        toggleLabel.setFont(new Font("Arial Bold", 16));
+        //toggleLabel.setTextAlignment(TextAlignment.CENTER);
+        
+        leftSection.getChildren().addAll(toggleLabel, homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
         // Home view
         toggleHome(border, tm_spaceManager);

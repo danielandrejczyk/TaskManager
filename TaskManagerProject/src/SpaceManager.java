@@ -19,6 +19,12 @@ public class SpaceManager {
 		spaceList.add(new Space("My Tasks"));
 	}
 	
+	/**
+	 * Add space to space list
+	 * 
+	 * @param aParent, the parent class of the new space
+	 * @param n, the name of the new space
+	 */
 	public void addSpace(Space aParent, String n) {
 		Space finalParent = aParent;
 		if(finalParent == null)
@@ -28,12 +34,24 @@ public class SpaceManager {
 		spaceList.add(new Space(finalParent, n));
 	}
 	
+	/**
+	 * Edit space in space list
+	 * 
+	 * @param aParent, the parent class (new or same) of the edited space
+	 * @param position, the position of the target edited space in spaceList
+	 * @param n, the new (or old) name of the space
+	 */
 	public void editSpace(Space aParent, int position, String n) {
 		Space tempSpace = spaceList.get(position);
 		tempSpace.setName(n);
 		spaceList.set(position, tempSpace);
 	}
 	
+	/**
+	 * Delete space in space list
+	 * 
+	 * @param position, the position of the target deleted space in spaceList
+	 */
 	public void deleteSpace(int position) {
 		
 		if (position == 0)
@@ -44,14 +62,10 @@ public class SpaceManager {
 			for (Space s : spaceList) {
 				
 				// if current space has target space as parent
-				if (s.getParentName().equals(spaceList.get(position).toString()))
-					System.out.println("Did something!");
-					// throw exception that space has sub-spaces
+				if (s.getParentName().equals(spaceList.get(position).toString())) {
+					s.moveTo(spaceList.get(0)); // by default, reassign subspaces to have parent space My Tasks
+				}
 			}
-			
-			/*
-			 * Reassign all tasks that have the space to be deleted as parent to My Tasks
-			 */
 			spaceList.remove(position);
 		}
 	}
