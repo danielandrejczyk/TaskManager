@@ -1,13 +1,13 @@
-/**
-*
-* @author calen4
-* 
-* 
-*
-*/
+
 import java.util.ArrayList;
 import java.util.Date;
 
+
+/**
+ * A class that stores all task objects, being able to
+ * add, edit, and delete them
+ * @author Calen
+ */
 public class TaskManager {
 	
 	private ArrayList<Task> taskList;

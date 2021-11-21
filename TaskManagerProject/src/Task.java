@@ -1,17 +1,23 @@
-import java.util.Date;
 
+import java.time.LocalDate;
+
+/**
+ * A class that constructs a task object that
+ * contains a status, name, due date, and priority level,
+ * and methods for setting and getting these values
+ * 
+ * @author zcste
+ * @author justin
+ */
 public class Task {
 
-	// Justin Wilson
-
-	// calen 2
 
 	/*
 	 * Variables
 	 */
 	private Status status;
 	private String name;
-	private Date dueDate;
+	private LocalDate dueDate;
 	private enum Priority
 	{
 		LOW, MEDIUM, HIGH;
@@ -26,10 +32,10 @@ public class Task {
 	 * @param dd the due date of task
 	 */
 	
-	public Task(String n, Date dd)
+	public Task(String n, String dd)
 	{
 		name = n;
-		dueDate = dd;
+		dueDate = LocalDate.parse(dd);
 		status = new Status();
 	}
 	
@@ -41,10 +47,10 @@ public class Task {
 	 * @param aSpace the parent of space of the new task
 	 */
 	
-	public Task(String n, Date dd, Space aSpace)
+	public Task(String n, String dd, Space aSpace)
 	{
 		name = n;
-		dueDate = dd;
+		dueDate = LocalDate.parse(dd);
 		parentSpace = aSpace;
 		status = new Status();
 	}
@@ -67,12 +73,20 @@ public class Task {
 		return name;
 	}
 	
-	// Can't do: new Date(2021, 11, 18);
-	public void setDate(Date d){
-		dueDate = d;
+	/**
+	 * Setter method for changing the due date of
+	 * the task
+	 * @param dd a string that contains the date information
+	 */
+	public void setDate(String dd){
+		dueDate = LocalDate.parse(dd);
 	}
 
-	public Date getDate(){
+	/**
+	 * Getter method for retrieving task due date
+	 * @return dueDate a LocalDate object that is the due date
+	 */
+	public LocalDate getDate(){
 		return dueDate;
 	}
 	
@@ -113,18 +127,40 @@ public class Task {
 		return parentSpace.toString();
 	}
 	
+	/**
+	 * Setter method for changing the status of the task
+	 * @param newProgress the new status of the task
+	 */
 	public void setCurrent(Status.progress newProgress) {
 		status.setCurrent(newProgress);
 	}
 	
+	/**
+	 * Getter method for retrieving the current status
+	 * of the task
+	 * @return status.getCurrent() the current status 
+	 * of the task
+	 */
 	public Status.progress getCurrent() {
 		return status.getCurrent();
 	}
 	
+	/**
+	 * Setter method for setting the description
+	 * of the task
+	 * @param aDesc a string that will be the new
+	 * description
+	 */
 	public void setDescription(String aDesc) {
 		status.setDescription(aDesc);
 	}
 	
+	/**
+	 * Getter method for retrieving the description
+	 * of the task
+	 * @return status.getDescription a string that 
+	 * represents the description of the task
+	 */
 	public String getDescription() {
 		return status.getDescription();
 	}
