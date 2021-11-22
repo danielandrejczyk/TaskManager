@@ -123,10 +123,7 @@ public class Overview extends Application {
         Button deleteTask = new Button("Delete Task");
         deleteTask.setPrefSize(100, 40);
         
-        Button testDialog = new Button("Test");
-        testDialog.setPrefSize(60, 40);
-        
-        topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, testDialog, spaceFilter, addTask, editTask, deleteTask);
+        topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
         
         //
         // Left panel
