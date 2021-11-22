@@ -9,6 +9,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -21,6 +23,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -38,8 +42,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -125,9 +133,6 @@ public class Overview extends Application {
         leftSection.setPadding(new Insets(15,15,15,15));
         leftSection.setSpacing(10);
         leftSection.setBackground(new Background(new BackgroundFill(Color.STEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-        
-        Button homeToggle = new Button("Home");
-        homeToggle.setPrefSize(80, 40);
         
         /*
          * Top Button Action Events
@@ -388,6 +393,9 @@ public class Overview extends Application {
         });
         
         // Overview toggle buttons
+        Button homeToggle = new Button("Home");
+        homeToggle.setPrefSize(80, 40);
+        
         Button dailyToggle = new Button("Daily");
         dailyToggle.setPrefSize(80, 40);
         
@@ -397,13 +405,18 @@ public class Overview extends Application {
         Button monthlyToggle = new Button("Monthly");
         monthlyToggle.setPrefSize(80, 40);
         
+        // Connect overview toggle buttons to their
+        // MouseClick event handlers
+        homeToggle.setOnMouseClicked(e -> toggleHome(border, tm_spaceManager));
+        dailyToggle.setOnMouseClicked(e -> toggleDaily(border, tm_spaceManager));
+        
         Text toggleLabel = new Text("View");
         toggleLabel.setFont(new Font("Arial Bold", 16));
         //toggleLabel.setTextAlignment(TextAlignment.CENTER);
         
         leftSection.getChildren().addAll(toggleLabel, homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
-        // Home view
+        // Set up the default overview (home overview)
         toggleHome(border, tm_spaceManager);
         
         // Set sections to borderpane
@@ -501,6 +514,82 @@ public class Overview extends Application {
     	homePane.getChildren().addAll(listView, taskLabel, dateLabel, taskInformation);
     	
     	b.setCenter(homePane);
+    	
+    }
+    
+    private void toggleDaily(BorderPane b, SpaceManager m)
+    {
+    	
+    	AnchorPane dailyPane = new AnchorPane();
+    	
+    	VBox taskCol1 = new VBox();
+    	taskCol1.setSpacing(10.0);
+    	
+    	final int WIDTH = (int) b.getCenter().getBoundsInLocal().getMaxX();
+    	final int HEIGHT = (int) b.getCenter().getBoundsInLocal().getMaxY();
+    	
+    	// Create a canvas 
+        Canvas canvas = new Canvas(WIDTH, HEIGHT);
+
+        // Get the graphics context of the canvas 
+        GraphicsContext gc = canvas.getGraphicsContext2D(); 
+
+        // Set line width and fill color 
+        gc.setLineWidth(2.0); 
+        gc.setFill(Color.BLACK); 
+
+    	gc.strokeRect(10, 10, WIDTH - 20, HEIGHT - 20);
+    	
+    	// Date Label
+    	gc.setFont(new Font("Arial", 24));
+    	// current day
+    	String dateHeader = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(new java.util.Date());
+    	gc.fillText(dateHeader, 20, 40);
+    	
+    	gc.strokeRect(10, 10, 230, 40);
+    	
+    	Space myTasks = m.getSpaceList().get(0);
+    	
+    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now().toString(), myTasks);
+    	physCh1.setCurrent(Status.progress.DONE);
+    	physCh1.setDescription("Ask professor about problem 7");
+    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now().toString(), myTasks);
+    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
+    	calcCh1.setDescription("Help!");
+    	
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
+    	
+    	// Cycle through each task and create a box for each one
+    	for(Task task: tasks)
+    	{
+    		// If task is due today...
+    		Button taskButton = new Button(task.toString());
+    		FileInputStream input;
+			try {
+				String userDirectory = System.getProperty("user.dir");
+				System.out.println(userDirectory);
+				switch(task.getPriority())
+				{
+					case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png");
+					case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png");
+					case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png");
+					default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png");
+				}
+				ImageView priority = new ImageView(new Image(input));
+				taskButton.setGraphic(priority);
+			} catch (FileNotFoundException e) {
+				System.out.println("Unable to find priority graphic for button!");
+			}
+    		taskCol1.getChildren().add(taskButton);
+    		
+    	}
+    	
+    	AnchorPane.setTopAnchor(taskCol1, 70.0);
+    	AnchorPane.setLeftAnchor(taskCol1, 50.0);
+    	
+    	dailyPane.getChildren().addAll(canvas, taskCol1);
+    	
+    	b.setCenter(dailyPane);
     	
     }
 }

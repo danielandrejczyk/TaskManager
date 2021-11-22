@@ -18,7 +18,7 @@ public class Task {
 	private Status status;
 	private String name;
 	private LocalDate dueDate;
-	private enum Priority
+	public static enum Priority
 	{
 		LOW, MEDIUM, HIGH;
 	}
