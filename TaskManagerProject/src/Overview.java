@@ -38,9 +38,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.swing.*;
@@ -139,8 +142,8 @@ public class Overview extends Application {
         GridPane aSGrid = new GridPane();
         
         // adds buttons for dialog
-        ButtonType addConfirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
-        addSD.getDialogPane().getButtonTypes().addAll(addConfirmBtnType, ButtonType.CANCEL);
+        ButtonType addSConfirmBtnType = new ButtonType("Create", ButtonData.OK_DONE);
+        addSD.getDialogPane().getButtonTypes().addAll(addSConfirmBtnType, ButtonType.CANCEL);
         
         // positioning
         aSGrid.setHgap(10);
@@ -160,7 +163,7 @@ public class Overview extends Application {
 		aSGrid.add(new Label("Parent Space"), 1, 0);
 		aSGrid.add(addPSpace, 1, 1);
         
-        Node addConfirmBtn = addSD.getDialogPane().lookupButton(addConfirmBtnType);
+        Node addConfirmBtn = addSD.getDialogPane().lookupButton(addSConfirmBtnType);
         addConfirmBtn.setDisable(true);
         addSD.getDialogPane().setContent(aSGrid);
         addSName.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -172,10 +175,14 @@ public class Overview extends Application {
         	
         	@Override
         	public void handle(ActionEvent event) {
+
+        		addPSpace.getItems().clear();
+        		addPSpace.getItems().addAll(spaceList);
+        		addPSpace.getSelectionModel().selectFirst();
         		
         		addSD.setResultConverter(addSDBtn -> {
         			
-        			if (addSDBtn == addConfirmBtnType) {
+        			if (addSDBtn == addSConfirmBtnType) {
         				return new Pair<>(addSName.getText(), addPSpace.getSelectionModel().getSelectedIndex());
         			}
         			return null;
@@ -192,10 +199,6 @@ public class Overview extends Application {
             		spaceFilter.getSelectionModel().selectLast();
         		});
         		
-        		addPSpace.getItems().clear();
-        		addPSpace.getItems().addAll(spaceList);
-        		addPSpace.getSelectionModel().selectFirst();
-        		
         		addSName.setText("");
         		addSName.setPromptText("");
         	}
@@ -208,8 +211,8 @@ public class Overview extends Application {
         GridPane eSGrid = new GridPane();
         
         // adds buttons for dialog
-        ButtonType editConfirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
-        editSD.getDialogPane().getButtonTypes().addAll(editConfirmBtnType, ButtonType.CANCEL);
+        ButtonType editSConfirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
+        editSD.getDialogPane().getButtonTypes().addAll(editSConfirmBtnType, ButtonType.CANCEL);
         
         // positioning
         eSGrid.setHgap(10);
@@ -228,7 +231,7 @@ public class Overview extends Application {
         eSGrid.add(new Label("Parent Space"), 1, 0);
         eSGrid.add(editPSpace, 1, 1);
         
-        Node editConfirmBtn = editSD.getDialogPane().lookupButton(editConfirmBtnType);
+        Node editConfirmBtn = editSD.getDialogPane().lookupButton(editSConfirmBtnType);
         editConfirmBtn.setDisable(true);
         editSD.getDialogPane().setContent(eSGrid);
         editSName.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -241,11 +244,15 @@ public class Overview extends Application {
         	@Override
         	public void handle(ActionEvent event) {
         		
+        		editPSpace.getItems().clear();
+        		editPSpace.getItems().addAll(spaceList);
+        		editPSpace.getSelectionModel().selectFirst();
+        		
         		editSD.setHeaderText("Modify " + spaceFilter.getSelectionModel().getSelectedItem().toString());
         		editSName.setPromptText(spaceFilter.getSelectionModel().getSelectedItem().toString());
         		// add ability to see what the current parent space is
         		editSD.setResultConverter(editSDBtn -> {
-        			if (editSDBtn == editConfirmBtnType) {
+        			if (editSDBtn == editSConfirmBtnType) {
         				return new Pair<>(editSName.getText(), editPSpace.getSelectionModel().getSelectedIndex());
         			}
         			return null;
@@ -264,10 +271,6 @@ public class Overview extends Application {
         			spaceFilter.getItems().addAll(spaceList);
             		spaceFilter.getSelectionModel().select(i);
         		});
-        		
-        		editPSpace.getItems().clear();
-        		editPSpace.getItems().addAll(spaceList);
-        		editPSpace.getSelectionModel().selectFirst();
         		
         		editSName.setText("");
         		editSName.setPromptText("");
@@ -294,6 +297,95 @@ public class Overview extends Application {
                 }
             }
          });
+        
+        // Task options
+        
+        /* Add Task Dialog */
+        
+        // creates new add space dialog
+        Dialog<Pair<String, Integer>> addTD = new Dialog<>();
+        addTD.setTitle("Add Task");
+        addTD.setHeaderText("Add Task");
+        GridPane aTGrid = new GridPane();
+        
+        // adds buttons for dialog
+        ButtonType addTConfirmBtnType = new ButtonType("Create", ButtonData.OK_DONE);
+        addTD.getDialogPane().getButtonTypes().addAll(addTConfirmBtnType, ButtonType.CANCEL);
+        
+        // positioning
+        aTGrid.setHgap(10);
+        aTGrid.setVgap(10);
+        aTGrid.setPadding(new Insets(20, 150, 10, 10));
+        
+        // text field and parent space options
+        TextField addTName = new TextField();
+        addTName.setPromptText("Task name");
+        ComboBox<Space> addTPSpace = new ComboBox<Space>();
+        addTPSpace.getItems().clear();
+        addTPSpace.getItems().addAll(spaceList);
+        addTPSpace.getSelectionModel().selectFirst();
+        
+        aTGrid.add(new Label("Task Name"), 0, 0);
+		aTGrid.add(addTName, 1, 0);
+		aTGrid.add(new Label("Parent Space"), 0, 1);
+		aTGrid.add(addTPSpace, 1, 1);
+		
+		// add due date vars and other necessary stuff here @Calen
+		aTGrid.add(new Label("Due Date"), 0, 2);
+		//aTGrid.add(DateVar, 1, 2);
+		aTGrid.add(new Label("Priority"), 0, 3);
+		//aTGrid.add(PriorityVar, 1, 3);
+        
+        Node addTConfirmBtn = addTD.getDialogPane().lookupButton(addTConfirmBtnType);
+        addTConfirmBtn.setDisable(true);
+        addTD.getDialogPane().setContent(aTGrid);
+        addTName.textProperty().addListener((observable, oldValue, newValue) -> {
+        	addTConfirmBtn.setDisable(newValue.trim().isEmpty());
+        });
+        
+        // Add Space Actions
+        addTask.setOnAction(new EventHandler<ActionEvent>() {
+        	
+        	@Override
+        	public void handle(ActionEvent event) {
+        		
+        		addTPSpace.getItems().clear();
+        		addTPSpace.getItems().addAll(spaceList);
+        		addTPSpace.getSelectionModel().selectFirst();
+        		addTD.showAndWait();
+        		
+        		
+        		/*
+        		 * Add task creation functionality here @Calen
+        		 * 
+        		 */
+//        		addTD.setResultConverter(addSDBtn -> {
+//        			
+//        			if (addSDBtn == addTConfirmBtnType) {
+//        				return new Pair<>(addSName.getText(), addPSpace.getSelectionModel().getSelectedIndex());
+//        			}
+//        			return null;
+//        		});
+//        		
+//        		Optional<Pair<String, Integer>> result = addSD.showAndWait();
+//        		
+//        		result.ifPresent(newSpaceValue -> {
+//        			String spcStr = newSpaceValue.getKey();
+//        			int pIndex = newSpaceValue.getValue();
+//        			tm_spaceManager.addSpace(tm_spaceManager.getSpaceList().get(pIndex), spcStr);
+//        			spaceFilter.getItems().clear();
+//            		spaceFilter.getItems().addAll(spaceList);
+//            		spaceFilter.getSelectionModel().selectLast();
+//        		});
+//        		
+//        		addPSpace.getItems().clear();
+//        		addPSpace.getItems().addAll(spaceList);
+//        		addPSpace.getSelectionModel().selectFirst();
+//        		
+//        		addSName.setText("");
+//        		addSName.setPromptText("");
+        	}
+        });
         
         // Overview toggle buttons
         Button dailyToggle = new Button("Daily");
@@ -324,6 +416,8 @@ public class Overview extends Application {
         primaryStage.setMinWidth(1000);
         // Show the scene
         primaryStage.show();
+        
+        
     }
     
     /**
@@ -338,14 +432,14 @@ public class Overview extends Application {
     	AnchorPane homePane = new AnchorPane();
     	
     	Calendar newCalendar = Calendar.getInstance();
-    	Date today = newCalendar.getTime();
+    	LocalDate today = LocalDate.now();
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", today, myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", today.toString(), myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today, myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1", today.toString(), myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
@@ -358,7 +452,10 @@ public class Overview extends Application {
     	taskLabel.setFont(new Font("Arial", 24));
     	taskLabel.setPrefSize(400.0, 80.0);
     	
-    	Label dateLabel = new Label(newCalendar.getTime().toString());
+    	// current day
+    	String now = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(new java.util.Date());
+    	
+    	Label dateLabel = new Label(now);
     	dateLabel.setFont(new Font("Arial", 24));
     	dateLabel.setPrefSize(400.0, 80.0);
     	
