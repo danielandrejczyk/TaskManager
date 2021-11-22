@@ -168,48 +168,32 @@ public class Overview extends Application {
         
         // Task options
         
-        /* Add Task Dialog */
-        
-        // creates new add space dialog
-        Dialog<Pair<String, Integer>> addTD = new Dialog<>();
-        addTD.setTitle("Add Task");
-        addTD.setHeaderText("Add Task");
-        GridPane aTGrid = new GridPane();
-        
-        // adds buttons for dialog
-        ButtonType addTConfirmBtnType = new ButtonType("Create", ButtonData.OK_DONE);
-        addTD.getDialogPane().getButtonTypes().addAll(addTConfirmBtnType, ButtonType.CANCEL);
-        
-        // positioning
-        aTGrid.setHgap(10);
-        aTGrid.setVgap(10);
-        aTGrid.setPadding(new Insets(20, 150, 10, 10));
-        
-        // text field and parent space options
-        TextField addTName = new TextField();
-        addTName.setPromptText("Task name");
-        ComboBox<Space> addTPSpace = new ComboBox<Space>();
-        addTPSpace.getItems().clear();
-        addTPSpace.getItems().addAll(spaceList);
-        addTPSpace.getSelectionModel().selectFirst();
-        
-        aTGrid.add(new Label("Task Name"), 0, 0);
-		aTGrid.add(addTName, 1, 0);
-		aTGrid.add(new Label("Parent Space"), 0, 1);
-		aTGrid.add(addTPSpace, 1, 1);
-		
-		// add due date vars and other necessary stuff here @Calen
-		aTGrid.add(new Label("Due Date"), 0, 2);
-		//aTGrid.add(DateVar, 1, 2);
-		aTGrid.add(new Label("Priority"), 0, 3);
-		//aTGrid.add(PriorityVar, 1, 3);
-        
-        Node addTConfirmBtn = addTD.getDialogPane().lookupButton(addTConfirmBtnType);
-        addTConfirmBtn.setDisable(true);
-        addTD.getDialogPane().setContent(aTGrid);
-        addTName.textProperty().addListener((observable, oldValue, newValue) -> {
-        	addTConfirmBtn.setDisable(newValue.trim().isEmpty());
+        // Add Task
+        addTask.setOnAction(new EventHandler<ActionEvent>() {
+        	
+        	@Override
+        	public void handle(ActionEvent event) {
+        		// add task method
+        	}
         });
+        
+        // Edit Space
+        editTask.setOnAction(new EventHandler<ActionEvent>() {
+        	
+        	@Override
+        	public void handle(ActionEvent event) {
+        		// edit task method
+        	}
+        });
+        
+        // Delete space action
+        deleteTask.setOnAction(new EventHandler<ActionEvent>() {
+            
+        	@Override
+            public void handle(ActionEvent event) {
+        		// delete task method
+            }
+         });
         
         // Overview toggle buttons
         Button homeToggle = new Button("Home");
@@ -262,6 +246,7 @@ public class Overview extends Application {
     {
     	
     	AnchorPane homePane = new AnchorPane();
+    	homePane.setPadding(new Insets(20, 20, 20, 20));
     	
     	Calendar newCalendar = Calendar.getInstance();
     	LocalDate today = LocalDate.now();
@@ -278,21 +263,24 @@ public class Overview extends Application {
     	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
-    	listView.setPrefWidth(400.0);
+    	listView.setPrefWidth(450);
     	
-    	Label taskLabel = new Label("Tasks:");
+    	Label taskLabel = new Label("Tasks");
     	taskLabel.setFont(new Font("Arial", 24));
-    	taskLabel.setPrefSize(400.0, 80.0);
+    	taskLabel.setPrefWidth(450);
     	
     	// current day
     	String now = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(new java.util.Date());
     	
     	Label dateLabel = new Label(now);
-    	dateLabel.setFont(new Font("Arial", 24));
-    	dateLabel.setPrefSize(400.0, 80.0);
+    	dateLabel.setFont(new Font("Arial Bold", 24));
+    	dateLabel.setPrefWidth(350);
     	
     	// Task information text flow
     	VBox taskInformation = new VBox();
+    	taskInformation.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    	taskInformation.setSpacing(10);
+    	taskInformation.setMaxWidth(350);
     		
     	// Get the selected task
     	listView.setOnMouseClicked(event -> {
@@ -308,6 +296,8 @@ public class Overview extends Application {
     		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
     		
     		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace);
+    		taskInformation.setPrefSize(350, 400);
+    		taskInformation.setPadding(new Insets(20,20,20,20));
     	});
     	
     	//
@@ -324,10 +314,10 @@ public class Overview extends Application {
     	
     	// Task List
     	AnchorPane.setRightAnchor(listView, 10.0);
-    	AnchorPane.setTopAnchor(listView, 90.0);
+    	AnchorPane.setTopAnchor(listView, 60.0);
     	
     	// Task Information
-    	AnchorPane.setTopAnchor(taskInformation, 90.0);
+    	AnchorPane.setTopAnchor(taskInformation, 60.0);
     	AnchorPane.setLeftAnchor(taskInformation, 20.0);
     	
     	homePane.getChildren().addAll(listView, taskLabel, dateLabel, taskInformation);
@@ -412,6 +402,14 @@ public class Overview extends Application {
     	
     }
     
+    /**
+     * Helper method to create space dialogs for adding, editing, and deleting spaces
+     * 
+     * @param type, the type of space modification (0 = add, 1 = edit, 2 = delete)
+     * @param sList, the list of spaces from overview
+     * @param sFilter, the combobox of spaces from overview
+     * @param sManager, the space manager object from overview
+     */
     private void spaceDialog(int type, ArrayList<Space> sList, ComboBox<Space> sFilter, SpaceManager sManager) {
     	
     	// create dialog and naming
