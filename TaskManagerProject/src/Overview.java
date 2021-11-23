@@ -41,7 +41,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
+import javafx.stage.Popup;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
@@ -91,6 +91,7 @@ public class Overview extends Application {
         topSection.setBackground(new Background(new BackgroundFill(Color.LIGHTSTEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
         topSection.setPadding(new Insets(15, 12, 15, 12));
         topSection.setSpacing(10);
+        topSection.setAlignment(Pos.CENTER);
         
         // Space manipulation buttons
         Button addSpace = new Button("Add Space");
@@ -113,6 +114,10 @@ public class Overview extends Application {
         spaceFilter.setPrefHeight(40);
         spaceFilter.setPrefWidth(200);
         
+//        Text progName = new Text("TASK MANAGER");
+//        progName.setFont(new Font("Arial Bold", 20));
+//        progName.setX(20);
+        
         // Task manipulation buttons
         Button addTask = new Button("Add Task");
         addTask.setPrefSize(100, 40);
@@ -133,6 +138,7 @@ public class Overview extends Application {
         leftSection.setPadding(new Insets(15,15,15,15));
         leftSection.setSpacing(10);
         leftSection.setBackground(new Background(new BackgroundFill(Color.STEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+        leftSection.setAlignment(Pos.TOP_CENTER);
         
         /*
          * Top Button Action Events
@@ -214,6 +220,7 @@ public class Overview extends Application {
         dailyToggle.setOnMouseClicked(e -> toggleDaily(border, spaceManager));
         
         Text toggleLabel = new Text("View");
+        toggleLabel.setFill(Color.WHITE);
         toggleLabel.setFont(new Font("Arial Bold", 16));
         //toggleLabel.setTextAlignment(TextAlignment.CENTER);
         
@@ -281,6 +288,11 @@ public class Overview extends Application {
     	taskInformation.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
     	taskInformation.setSpacing(10);
     	taskInformation.setMaxWidth(350);
+    	
+    	Text noTaskSelected = new Text("Select a task from the right list to see more information");
+    	taskInformation.getChildren().add(noTaskSelected);
+    	taskInformation.setPrefSize(350, 400);
+		taskInformation.setPadding(new Insets(20,20,20,20));
     		
     	// Get the selected task
     	listView.setOnMouseClicked(event -> {
@@ -296,8 +308,6 @@ public class Overview extends Application {
     		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
     		
     		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace);
-    		taskInformation.setPrefSize(350, 400);
-    		taskInformation.setPadding(new Insets(20,20,20,20));
     	});
     	
     	//
@@ -428,11 +438,12 @@ public class Overview extends Application {
     	case 1: // Edit Space
     		sDialog.setTitle("Edit Space");
     		sDialog.setHeaderText("Edit space: " + sFilter.getSelectionModel().getSelectedItem().toString());
+    		sDialog.setContentText("Parent space: " + sFilter.getSelectionModel().getSelectedItem().getParentName());
     		break;
     	case 2: // Delete Space + custom alert execution
     		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this space?", ButtonType.YES, ButtonType.CANCEL);
             deleteSD.setTitle("Delete Space");
-            deleteSD.setHeaderText("Delete " + sFilter.getSelectionModel().getSelectedItem().toString());
+            deleteSD.setHeaderText("Delete space: " + sFilter.getSelectionModel().getSelectedItem().toString());
             deleteSD.showAndWait();
 
             if (deleteSD.getResult() == ButtonType.YES) {
@@ -451,9 +462,10 @@ public class Overview extends Application {
     	sDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
     	
     	// parent space
+    	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
     	pSpace.getItems().clear();
     	pSpace.getItems().addAll(sList);
-    	pSpace.getSelectionModel().selectFirst();
+    	pSpace.getSelectionModel().select(pIndex);
     	
     	// positioning
     	sGrid.setHgap(10);
@@ -471,6 +483,7 @@ public class Overview extends Application {
     	sName.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
+    	sName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
     	
     	// return sDialog contents as Pair once confirmBtn is pressed
     	sDialog.setResultConverter(sDialogBtn -> {
@@ -489,16 +502,16 @@ public class Overview extends Application {
             
         	// pull variables from pair object
         	String spcStr = spaceValue.getKey();
-            int pIndex = spaceValue.getValue();
+            int newPIndex = spaceValue.getValue();
             int i = sFilter.getSelectionModel().getSelectedIndex();
             
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add Space
-            	sManager.addSpace(sManager.getSpaceList().get(pIndex), spcStr);
+            	sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
             	break;
             case 1: // Edit Space
-            	sManager.editSpace(sManager.getSpaceList().get(pIndex), i, spcStr);
+            	sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
             	break;
             }
             

@@ -66,9 +66,4 @@ public class Space {
 		}
 		return parentSpace.toString();
 	}
-	
-	//public void delete() {
-		//this.name = null;
-		//this.parentSpace = null;
-	//}
 }
