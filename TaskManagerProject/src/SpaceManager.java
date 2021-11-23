@@ -77,7 +77,7 @@ public class SpaceManager {
 	 * @param position, the location of the target space in spaceList
 	 * @return int, the index of the parent space of the target space
 	 */
-	public int getParentIndex(int position) {
+	public int getParentIndex(int position) { 
 		
 		// cycle through until current space parent = some space in the list
 		for (int i = 0; i < spaceList.size(); i++) {

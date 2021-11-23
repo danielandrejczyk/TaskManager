@@ -287,7 +287,7 @@ public class Overview extends Application {
     	VBox taskInformation = new VBox();
     	taskInformation.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
     	taskInformation.setSpacing(10);
-    	taskInformation.setMaxWidth(350);
+    	taskInformation.setMaxWidth(350); 
     	
     	Text noTaskSelected = new Text("Select a task from the right list to see more information");
     	taskInformation.getChildren().add(noTaskSelected);

@@ -46,7 +46,7 @@ public class Space {
 	public String toString() {
 		return name;
 	}
-	
+	 
 	/**
 	 * Method to change the parent space of this space
 	 * @param aSpace the target space
