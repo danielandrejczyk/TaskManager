@@ -6,7 +6,7 @@ import java.time.LocalDate;
  * contains a status, name, due date, and priority level,
  * and methods for setting and getting these values
  * 
- * @author zcste
+ * @author Calen
  * @author justin
  */
 public class Task {
@@ -32,10 +32,10 @@ public class Task {
 	 * @param dd the due date of task
 	 */
 	
-	public Task(String n, String dd)
+	public Task(String n, LocalDate dd)
 	{
 		name = n;
-		dueDate = LocalDate.parse(dd);
+		dueDate = dd;
 		status = new Status();
 	}
 	
@@ -47,10 +47,10 @@ public class Task {
 	 * @param aSpace the parent of space of the new task
 	 */
 	
-	public Task(String n, String dd, Space aSpace)
+	public Task(String n, LocalDate dd, Space aSpace)
 	{
 		name = n;
-		dueDate = LocalDate.parse(dd);
+		dueDate = dd;
 		parentSpace = aSpace;
 		status = new Status();
 	}
@@ -78,8 +78,8 @@ public class Task {
 	 * the task
 	 * @param dd a string that contains the date information
 	 */
-	public void setDate(String dd){
-		dueDate = LocalDate.parse(dd);
+	public void setDate(LocalDate dd){
+		dueDate = dd;
 	}
 
 	/**
