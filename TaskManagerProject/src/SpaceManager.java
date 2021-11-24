@@ -94,7 +94,6 @@ public class SpaceManager {
 	 * @return ArrayList, a copy of the spaces in the task application
 	 */
 	public ArrayList<Space> getSpaceList() {
-		ArrayList<Space> tempList = spaceList;
-		return tempList;
+		return new ArrayList<Space>(spaceList);
 	}
 }
