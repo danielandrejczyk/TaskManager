@@ -1,4 +1,5 @@
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,22 +24,33 @@ public class TaskManager {
 	 * Method to add a task to the task list
 	 * @param aTask the task that will be added
 	 */
-	public void addTask(Task aTask) {
-		taskList.add(aTask);
+	public void addTask(String n, LocalDate dd, Space aSpace, String statusDesc, Status.progress currentStatus, Task.Priority priority) {
+		Task newTask = new Task(n, dd, aSpace);
+		newTask.setPriority(priority);
+		newTask.setCurrent(currentStatus);
+		newTask.setDescription(statusDesc);
+		taskList.add(newTask);
 	}
 	
 	/**
 	 * Method to edit a task
 	 * @param aTask the task that will be edited
 	 */
-	public void EditTask(Task updatedTask) {
-		for(Task t: taskList)
-		{
-			if(updatedTask.equals(t))
-			{
-				t = updatedTask;
-			}
+	public void EditTask(Task oldTask, Task newTask) {
+		
+		// breaks encap but works
+		for (Task t : taskList) {
+			// assume name exists
+			if (t.equals(oldTask)) {
+				t = newTask;
+				// or
+				/*
+				 * t.setName(newTask.toString())
+				 * [...]
+				 */
+			}	
 		}
+	
 	}
 	
 	/**
@@ -49,12 +61,12 @@ public class TaskManager {
 		taskList.removeIf(task -> task.equals(aTask));
 	}
 	
-	/**
-	 * Method to select a task
-	 */
-	/*
-	public void selectTask() {
+	public ArrayList<Task> getTaskList(Space aParent) {
 		
+		// implement all tasks that have a particular parent
+		ArrayList<Task> filteredList = new ArrayList<Task>();
+		// add here
+		
+		return filteredList;
 	}
-	*/
 }

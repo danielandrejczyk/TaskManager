@@ -396,6 +396,8 @@ public class Overview extends Application {
 				}
 				ImageView priority = new ImageView(new Image(input));
 				taskButton.setGraphic(priority);
+				taskButton.setMinWidth(200);
+				taskButton.setAlignment(Pos.CENTER_LEFT);
 			} catch (FileNotFoundException e) {
 				System.out.println("Unable to find priority graphic for button!");
 			}
@@ -464,7 +466,7 @@ public class Overview extends Application {
     	// parent space
     	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
     	pSpace.getItems().clear();
-    	pSpace.getItems().addAll(sList);
+    	pSpace.getItems().addAll(sManager.getSpaceList());
     	pSpace.getSelectionModel().select(pIndex);
     	
     	// positioning

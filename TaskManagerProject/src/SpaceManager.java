@@ -27,6 +27,14 @@ public class SpaceManager {
 	 */
 	public void addSpace(Space aParent, String n) {
 		Space finalParent = aParent;
+		
+		// check that name isn't already used by another space
+		for (Space s: spaceList) {
+			if (s.toString().equals(n)) {
+				// do something here
+			}
+		}
+		
 		if(finalParent == null)
 		{
 			finalParent = spaceList.get(0);
@@ -43,6 +51,20 @@ public class SpaceManager {
 	 */
 	public void editSpace(Space aParent, int position, String n) {
 		Space tempSpace = spaceList.get(position);
+		
+		// My Tasks
+		if (position == 0) {
+			return;
+		}
+		// check that name isn't already used by another space
+		for (Space s: spaceList) {
+			if (s.toString().equals(n))
+				System.out.println("Same name!");
+			else {
+				// do something here
+			}
+		}
+		
 		tempSpace.setName(n);
 		tempSpace.moveTo(aParent);
 		spaceList.set(position, tempSpace);
