@@ -260,10 +260,10 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", today.toString(), myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", today, myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today.toString(), myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1", today, myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
@@ -369,10 +369,10 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now().toString(), myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now(), myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now().toString(), myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now(), myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
