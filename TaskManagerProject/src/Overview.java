@@ -379,7 +379,7 @@ public class Overview extends Application {
     	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
     	
     	// Cycle through each task and create a box for each one
-    	for(Task task: tasks)
+    	for(Task task: tasks) 
     	{
     		// If task is due today...
     		Button taskButton = new Button(task.toString());
