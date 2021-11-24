@@ -260,10 +260,10 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", today, myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", today.toString(), myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today, myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1", today.toString(), myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
@@ -369,10 +369,10 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now(), myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now().toString(), myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now(), myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now().toString(), myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
@@ -516,9 +516,131 @@ public class Overview extends Application {
             }
             
             // update space filter list
-            
             sFilter.getItems().clear();
-            sFilter.getItems().addAll(sManager.getSpaceList());
+            sFilter.getItems().addAll(sList);
+            sFilter.getSelectionModel().selectLast();
+        });
+        
+        // reset text and null values in textfield
+        sName.setText("");
+        sName.setPromptText("");
+     
+        return;
+    }
+    
+    /**
+     * Helper method to create space dialogs for adding, editing, and deleting spaces
+     * 
+     * @param type, the type of space modification (0 = add, 1 = edit, 2 = delete)
+     * @param sList, the list of spaces from overview
+     * @param sFilter, the combobox of spaces from overview
+     * @param sManager, the space manager object from overview
+     * @param tManager, the task manager object from overview
+     * @param tList, the list of spaces from overview
+     */
+    private void taskDialog(int type, ArrayList<Space> sList, ComboBox<Space> sFilter, SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList) {
+    	
+    	// create dialog and naming
+    	Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
+    	GridPane sGrid = new GridPane();
+    	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
+    	TextField sName = new TextField();
+    	ComboBox<Space> pSpace = new ComboBox<Space>();
+    
+    	// naming
+    	switch (type) {
+    	case 0:	// Add Task 
+    		sDialog.setTitle("Add Task");
+    		sDialog.setHeaderText("Add a new task");
+    		break;
+    	case 1: // Edit Task
+    		sDialog.setTitle("Edit Task");
+    		sDialog.setHeaderText("Edit task: " + sFilter.getSelectionModel().getSelectedItem().toString());
+    		sDialog.setContentText("Parent space: " + sFilter.getSelectionModel().getSelectedItem().getParentName());
+    		// add stuff
+    		//
+    		break;
+    	case 2: // Delete Space + custom alert execution
+    		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
+            deleteSD.setTitle("Delete Task");
+            deleteSD.setHeaderText("Delete task: " + sFilter.getSelectionModel().getSelectedItem().toString());
+            deleteSD.showAndWait();
+
+            if (deleteSD.getResult() == ButtonType.YES) {
+            	sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
+                sFilter.getItems().clear();
+                sFilter.getItems().addAll(sList);
+                sFilter.getSelectionModel().selectFirst();
+            }
+            return; 
+    	default:
+    		System.out.println("No type");
+    		break;
+    	}
+    	
+    	// add buttons
+    	sDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
+    	
+    	// parent space
+    	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
+    	pSpace.getItems().clear();
+    	pSpace.getItems().addAll(sList);
+    	pSpace.getSelectionModel().select(pIndex);
+    	
+    	// positioning
+    	sGrid.setHgap(10);
+    	sGrid.setVgap(10);
+    	sGrid.setPadding(new Insets(20, 150, 10, 10));
+    	sGrid.add(new Label("Space Name"), 0, 0);
+    	sGrid.add(sName, 0, 1);
+    	sGrid.add(new Label("Parent Space"), 1, 0);
+    	sGrid.add(pSpace, 1, 1);
+    	
+    	// disable confirm button until information is entered
+    	Node confirmBtn = sDialog.getDialogPane().lookupButton(confirmBtnType);
+    	confirmBtn.setDisable(true);
+    	sDialog.getDialogPane().setContent(sGrid);
+    	sName.textProperty().addListener((observable, oldValue, newValue) -> {
+    	    confirmBtn.setDisable(newValue.trim().isEmpty());
+    	});
+    	sName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
+    	
+    	// return sDialog contents as Pair once confirmBtn is pressed
+    	sDialog.setResultConverter(sDialogBtn -> {
+            
+	        if (sDialogBtn == confirmBtnType) {
+	            return new Pair<>(sName.getText(), pSpace.getSelectionModel().getSelectedIndex());
+	        }
+	            return null;
+        });
+        
+    	// create not-null result object whose contents are the Pair of values
+        Optional<Pair<String, Integer>> result = sDialog.showAndWait();
+        
+        // execute once sDialog is completed and result is not null
+        result.ifPresent(spaceValue -> {
+            
+        	// pull variables from pair object
+        	String spcStr = spaceValue.getKey();
+            int newPIndex = spaceValue.getValue();
+            int i = sFilter.getSelectionModel().getSelectedIndex();
+            
+            // execute based on current dialog type
+            switch(type) {
+            case 0:	// Add Space
+            	sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            	break;
+            case 1: // Edit Space
+            	sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            	break;
+            	
+            	// copy and change
+            	// add stuff for edit task
+            }
+            
+            // update space filter list
+            sFilter.getItems().clear();
+            sFilter.getItems().addAll(sList);
             sFilter.getSelectionModel().selectLast();
         });
         
