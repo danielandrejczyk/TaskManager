@@ -61,11 +61,22 @@ public class TaskManager {
 		taskList.removeIf(task -> task.equals(aTask));
 	}
 	
+	/**
+	 * Method to return an array list of tasks with given
+	 * parent space
+	 * @param aParent
+	 * @return filteredList and array list
+	 */
 	public ArrayList<Task> getTaskList(Space aParent) {
 		
 		// implement all tasks that have a particular parent
 		ArrayList<Task> filteredList = new ArrayList<Task>();
-		// add here
+		
+		for (Task t : taskList) {
+			if (t.getParentName().equals(aParent.toString())) {
+				filteredList.add(t);
+			}
+		}
 		
 		return filteredList;
 	}
