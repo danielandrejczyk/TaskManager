@@ -451,7 +451,7 @@ public class Overview extends Application {
             if (deleteSD.getResult() == ButtonType.YES) {
             	sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
                 sFilter.getItems().clear();
-                sFilter.getItems().addAll(sList);
+                sFilter.getItems().addAll(sManager.getSpaceList());
                 sFilter.getSelectionModel().selectFirst();
             }
             return; 
@@ -519,7 +519,7 @@ public class Overview extends Application {
             
             // update space filter list
             sFilter.getItems().clear();
-            sFilter.getItems().addAll(sList);
+            sFilter.getItems().addAll(sManager.getSpaceList());
             sFilter.getSelectionModel().selectLast();
         });
         
