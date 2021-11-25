@@ -1,6 +1,8 @@
 // Author: Daniel Andrejczyk
 
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,7 +30,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -45,9 +49,14 @@ import javafx.stage.Popup;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -56,6 +65,8 @@ import java.util.Optional;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
+
+import com.sun.javafx.geom.Rectangle;
 
 public class Overview extends Application {
 	
@@ -203,21 +214,20 @@ public class Overview extends Application {
         
         // Overview toggle buttons
         Button homeToggle = new Button("Home");
-        homeToggle.setPrefSize(80, 40);
-        
-        Button dailyToggle = new Button("Daily");
-        dailyToggle.setPrefSize(80, 40);
-        
+        Button dailyToggle = new Button("Daily"); 
         Button weeklyToggle = new Button("Weekly");
-        weeklyToggle.setPrefSize(80, 40);
-        
         Button monthlyToggle = new Button("Monthly");
+        homeToggle.setPrefSize(80, 40);
+        dailyToggle.setPrefSize(80, 40);
+        weeklyToggle.setPrefSize(80, 40);
         monthlyToggle.setPrefSize(80, 40);
         
         // Connect overview toggle buttons to their
         // MouseClick event handlers
         homeToggle.setOnMouseClicked(e -> toggleHome(border, spaceManager));
         dailyToggle.setOnMouseClicked(e -> toggleDaily(border, spaceManager));
+        //weeklyToggle
+        monthlyToggle.setOnMouseClicked(e -> toggleMonthly(border, spaceManager));
         
         Text toggleLabel = new Text("View");
         toggleLabel.setFill(Color.WHITE);
@@ -260,10 +270,10 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", today.toString(), myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", today, myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today.toString(), myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1", today, myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
@@ -369,10 +379,10 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now().toString(), myTasks);
+    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now(), myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now().toString(), myTasks);
+    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now(), myTasks);
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
     	
@@ -414,6 +424,120 @@ public class Overview extends Application {
     	
     }
     
+    private void toggleWeekly() {
+    	
+    }
+    
+    private void toggleMonthly(BorderPane b, SpaceManager sManager) {
+    	
+    	// Code is currently adapted from https://gist.github.com/james-d/ee8a5c216fb3c6e027ea
+    	/*
+    	 * Plan is to see how it works and how to implement it and then rewrite in the future. Not trying to plagiarize.
+    	 */
+    	
+    	final ObjectProperty<YearMonth> month = new SimpleObjectProperty<>();
+    	final ObjectProperty<Locale> locale = new SimpleObjectProperty<>(Locale.getDefault());
+    	
+    	month.setValue(YearMonth.now());
+    	
+    	AnchorPane monthPane = new AnchorPane();
+    	
+    	final int WIDTH = (int) b.getCenter().getBoundsInLocal().getMaxX() - 50;
+    	final int HEIGHT = (int) b.getCenter().getBoundsInLocal().getMaxY() - 70;
+   
+    	GridPane calGrid = new GridPane();
+    	calGrid.setPadding(new Insets(0, 25, 0, 25));
+    	//calGrid.setGridLinesVisible(true);
+    	
+    	final int CELL_WIDTH = WIDTH / 14;
+    	final int CELL_HEIGHT = HEIGHT / 10;
+    	
+    	Button prevMonth = new Button("<");
+    	Button nextMonth = new Button(">");
+    	Label currentMonth = new Label(new SimpleDateFormat("MMMM yyyy", locale.get()).format(new java.util.Date()));
+    	prevMonth.setPrefSize(CELL_WIDTH * 2, 75);
+    	nextMonth.setPrefSize(CELL_WIDTH * 2, 75);
+    	currentMonth.setFont(new Font("Arial Bold", 24));
+    	currentMonth.setAlignment(Pos.CENTER);
+    	currentMonth.setPrefWidth(CELL_WIDTH * 2 * 5);
+    	
+    	// methods for moving forward and backward a month
+    	prevMonth.setOnAction(e -> {
+    		month.set(month.get().minusMonths(1));
+    	});
+    	nextMonth.setOnAction(e -> {
+    		month.set(month.get().plusMonths(1));
+    	});
+    	
+    	
+    	calGrid.setAlignment(Pos.TOP_CENTER);
+    	calGrid.add(prevMonth, 0, 0, 1, 1);
+    	calGrid.add(currentMonth, 1, 0, 5, 1);
+    	calGrid.add(nextMonth, 6, 0, 1, 1);
+    	
+    	WeekFields weekFields = WeekFields.of(locale.get());
+    	LocalDate first = month.get().atDay(1);
+    	
+    	int dayOfWeekOfFirst = first.get(weekFields.dayOfWeek());
+    	
+    	// add week day name
+    	for (int dayOfWeek = 1; dayOfWeek <= 7; dayOfWeek++) {
+    		LocalDate date = first.minusDays(dayOfWeekOfFirst - dayOfWeek);
+    		DayOfWeek day = date.getDayOfWeek();
+    		Label calDay = new Label(day.getDisplayName(TextStyle.SHORT_STANDALONE, locale.get()));
+    		calDay.setPadding(new Insets(5));
+    		calGrid.add(calDay, dayOfWeek - 1, 1);
+    		calGrid.setPrefHeight(20);
+    		calGrid.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    	}
+    	
+    	// populate calendar
+    	LocalDate firstDisplayedDate = first.minusDays(dayOfWeekOfFirst - 1);
+    	LocalDate last = month.get().atEndOfMonth();
+    	int dayOfWeekOfLast = last.get(weekFields.dayOfWeek());
+    	LocalDate lastDisplayedDate = last.plusDays(7 - dayOfWeekOfLast);
+    	
+    	for (LocalDate date = firstDisplayedDate; !date.isAfter(lastDisplayedDate); date = date.plusDays(1)) {
+    			
+    			GridPane cellGrid = new GridPane();
+    			cellGrid.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+    			
+    			Label dayNum = new Label(String.valueOf(date.getDayOfMonth()));
+    			dayNum.setFont(new Font("Arial Bold", 18));
+    			Label tasks = new Label("5 Tasks");
+    			//cellGrid.setPadding(new Insets(CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT, CELL_WIDTH));
+    			
+    			int dayOfWeek = date.get(weekFields.dayOfWeek());
+    			int daysSinceFirstDisplayed = (int) firstDisplayedDate.until(date,  ChronoUnit.DAYS);
+    			int weeksSinceFirstDisplayed = daysSinceFirstDisplayed / 7;
+    			
+    			cellGrid.setAlignment(Pos.CENTER);
+    			cellGrid.setPadding(new Insets(5));
+    			cellGrid.add(dayNum, 0, 0);
+    			cellGrid.add(tasks, 0, 1);
+    			dayNum.setPrefWidth(CELL_WIDTH * 2 - 20);
+    			tasks.setMinHeight(CELL_HEIGHT * 2 - 20);
+    			//cellGrid.setGridLinesVisible(true);
+    			calGrid.add(cellGrid, dayOfWeek - 1, weeksSinceFirstDisplayed + 1);
+    		
+    	}
+    	
+    	Space myTasks = sManager.getSpaceList().get(0);
+    	
+    	
+    	//ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
+    	
+    	// Cycle through each task and create a box for each one
+    	
+    	//AnchorPane.setTopAnchor(taskCol1, 70.0);
+    	//AnchorPane.setLeftAnchor(taskCol1, 50.0);
+    	
+    	monthPane.getChildren().add(calGrid);
+    	
+    	b.setCenter(monthPane);
+    	
+    }
+    
     /**
      * Helper method to create space dialogs for adding, editing, and deleting spaces
      * 
@@ -449,7 +573,11 @@ public class Overview extends Application {
             deleteSD.showAndWait();
 
             if (deleteSD.getResult() == ButtonType.YES) {
-            	sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
+            	try {
+            		sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
+            	} catch (Exception e) {
+            		systemAlert(e);
+            	}
                 sFilter.getItems().clear();
                 sFilter.getItems().addAll(sManager.getSpaceList());
                 sFilter.getSelectionModel().selectFirst();
@@ -510,10 +638,20 @@ public class Overview extends Application {
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add Space
-            	sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            	try {
+            		sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            	}
+            	catch (Exception e) {
+            		systemAlert(e);
+            	}
             	break;
             case 1: // Edit Space
-            	sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            	try {
+            		sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            	}
+            	catch (Exception e) {
+            		systemAlert(e);
+            	}
             	break;
             }
             
@@ -569,7 +707,7 @@ public class Overview extends Application {
             deleteSD.showAndWait();
 
             if (deleteSD.getResult() == ButtonType.YES) {
-            	sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
+            	//sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
                 sFilter.getItems().clear();
                 sFilter.getItems().addAll(sList);
                 sFilter.getSelectionModel().selectFirst();
@@ -630,10 +768,21 @@ public class Overview extends Application {
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add Space
-            	sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            	try {
+            		//sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            	}
+            	catch (Exception e) {
+            		//systemAlert(e)
+            	}
             	break;
             case 1: // Edit Space
-            	sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            	//sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            	try {
+            		// do something
+            	}
+            	catch (Exception e) {
+            		//systemAlert(e);
+            	}
             	break;
             	
             	// copy and change
@@ -651,5 +800,16 @@ public class Overview extends Application {
         sName.setPromptText("");
      
         return;
+    }
+    
+    /**
+     * Helper method to notify user of actions that are not permitted
+     * 
+     * @param e, the exception message thrown by the calling method
+     */
+    private void systemAlert(Exception e) {
+    	Alert badName = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
+        badName.setTitle("Alert");
+        badName.showAndWait();
     }
 }

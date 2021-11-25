@@ -24,22 +24,32 @@ public class SpaceManager {
 	 * 
 	 * @param aParent, the parent class of the new space
 	 * @param n, the name of the new space
+	 * @throws Exception, thrown when user performs action that is not permitted
 	 */
-	public void addSpace(Space aParent, String n) {
-		Space finalParent = aParent;
+	public void addSpace(Space aParent, String n) throws Exception {
+		
+		boolean nameExists = false;
 		
 		// check that name isn't already used by another space
 		for (Space s: spaceList) {
 			if (s.toString().equals(n)) {
-				// do something here
+				nameExists = true;
 			}
 		}
 		
-		if(finalParent == null)
+		// if no parent is passed, default parent space to My Tasks
+		if(aParent == null)
 		{
-			finalParent = spaceList.get(0);
+			aParent = spaceList.get(0);
 		}
-		spaceList.add(new Space(finalParent, n));
+		
+		// add space only if the name is unique
+		if (!nameExists)
+			spaceList.add(new Space(aParent, n));
+		else 
+			throw new Exception("Must give new space a unique name");
+		
+		return;
 	}
 	
 	/**
@@ -48,38 +58,45 @@ public class SpaceManager {
 	 * @param aParent, the parent class (new or same) of the edited space
 	 * @param position, the position of the target edited space in spaceList
 	 * @param n, the new (or old) name of the space
+	 * @throws Exception, thrown when user performs action that is not permitted
 	 */
-	public void editSpace(Space aParent, int position, String n) {
+	public void editSpace(Space aParent, int position, String n) throws Exception{
 		Space tempSpace = spaceList.get(position);
+		boolean nameExists = false;
 		
 		// My Tasks
 		if (position == 0) {
-			return;
-		}
-		// check that name isn't already used by another space
-		for (Space s: spaceList) {
-			if (s.toString().equals(n))
-				System.out.println("Same name!");
-			else {
-				// do something here
-			}
+			throw new Exception("My Tasks cannot be modified! Try editing another space");
 		}
 		
-		tempSpace.setName(n);
-		tempSpace.moveTo(aParent);
-		spaceList.set(position, tempSpace);
+		// check that name isn't already used by another space AND that it is actually another space and not this space
+		for (Space s: spaceList) {
+			if (s.toString().equals(n) && !spaceList.get(position).toString().equals(n))
+				nameExists = true;
+		}
+		
+		// if name is unique, update space in space list
+		if (!nameExists) {
+			tempSpace.setName(n);
+			tempSpace.moveTo(aParent);
+			spaceList.set(position, tempSpace);
+		}
+		else
+			throw new Exception("Must give space a unique name");
+		
+		return;
 	}
 	
 	/**
 	 * Delete space in space list
 	 * 
 	 * @param position, the position of the target deleted space in spaceList
+	 * @throws Exception, thrown when user performs action that is not permitted
 	 */
-	public void deleteSpace(int position) {
+	public void deleteSpace(int position) throws Exception {
 		
 		if (position == 0)
-			System.out.println("My Tasks!");
-			// throw
+			throw new Exception("My Tasks cannot be deleted! Try deleting a different space");
 		else {
 			// check that there are no sub-spaces
 			for (Space s : spaceList) {
@@ -91,6 +108,8 @@ public class SpaceManager {
 			}
 			spaceList.remove(position);
 		}
+		
+		return;
 	}
 	
 	
