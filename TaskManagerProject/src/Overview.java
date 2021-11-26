@@ -428,114 +428,182 @@ public class Overview extends Application {
     	
     }
     
+    /**
+     * @author Tom Teper
+     * 
+     * @param b
+     * @param sManager
+     */
     private void toggleMonthly(BorderPane b, SpaceManager sManager) {
     	
-    	// Code is currently adapted from https://gist.github.com/james-d/ee8a5c216fb3c6e027ea
-    	/*
-    	 * Plan is to see how it works and how to implement it and then rewrite in the future. Not trying to plagiarize.
-    	 */
+    	// Some based on https://gist.github.com/james-d/ee8a5c216fb3c6e027ea 
+    	// However, the majority of it is modified to fit the purposes of this project, which is to display tasks
     	
+    	// variables for the month and the current locale
     	final ObjectProperty<YearMonth> month = new SimpleObjectProperty<>();
     	final ObjectProperty<Locale> locale = new SimpleObjectProperty<>(Locale.getDefault());
     	
+    	// set month to now
     	month.setValue(YearMonth.now());
     	
+    	// anchorpane for displaying calendar
     	AnchorPane monthPane = new AnchorPane();
     	
-    	final int WIDTH = (int) b.getCenter().getBoundsInLocal().getMaxX() - 50;
-    	final int HEIGHT = (int) b.getCenter().getBoundsInLocal().getMaxY() - 70;
+    	// get boundaries of container to draw calendar
+    	final int WIDTH = (int) b.getCenter().getBoundsInLocal().getMaxX();
+    	final int HEIGHT = (int) b.getCenter().getBoundsInLocal().getMaxY();
    
+    	// create new grid for calendar layout
     	GridPane calGrid = new GridPane();
-    	calGrid.setPadding(new Insets(0, 25, 0, 25));
-    	//calGrid.setGridLinesVisible(true);
     	
-    	final int CELL_WIDTH = WIDTH / 14;
-    	final int CELL_HEIGHT = HEIGHT / 10;
+    	// calculate ideal cell widths and heights
+    	final int CELL_WIDTH = WIDTH / 7;
+    	final int CELL_HEIGHT = HEIGHT / 5;
     	
+    	// create buttons to move to next month and previous; styling
     	Button prevMonth = new Button("<");
     	Button nextMonth = new Button(">");
-    	Label currentMonth = new Label(new SimpleDateFormat("MMMM yyyy", locale.get()).format(new java.util.Date()));
-    	prevMonth.setPrefSize(CELL_WIDTH * 2, 75);
-    	nextMonth.setPrefSize(CELL_WIDTH * 2, 75);
-    	currentMonth.setFont(new Font("Arial Bold", 24));
-    	currentMonth.setAlignment(Pos.CENTER);
-    	currentMonth.setPrefWidth(CELL_WIDTH * 2 * 5);
+    	prevMonth.setBackground(new Background(new BackgroundFill(Color.SLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    	nextMonth.setBackground(new Background(new BackgroundFill(Color.SLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    	prevMonth.setStyle("-fx-border-color: #708090");
+    	nextMonth.setStyle("-fx-border-color: #708090");
+    	prevMonth.setFont(new Font("Arial Bold", 14));
+    	nextMonth.setFont(new Font("Arial Bold", 14));
+    	prevMonth.setTextFill(Color.WHITE);
+    	nextMonth.setTextFill(Color.WHITE);
     	
-    	// methods for moving forward and backward a month
+    	// methods for moving forward and backward a month; calls drawCalendar(...) to redraw the calendar and populate with next/prev month's contents
     	prevMonth.setOnAction(e -> {
     		month.set(month.get().minusMonths(1));
+    		calGrid.getChildren().clear();
+    		calGrid.add(prevMonth, 0, 0, 1, 1);
+        	calGrid.add(nextMonth, 6, 0, 1, 1);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT);
     	});
     	nextMonth.setOnAction(e -> {
     		month.set(month.get().plusMonths(1));
+    		calGrid.getChildren().clear();
+    		calGrid.add(prevMonth, 0, 0, 1, 1);
+        	calGrid.add(nextMonth, 6, 0, 1, 1);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT);
     	});
     	
-    	
-    	calGrid.setAlignment(Pos.TOP_CENTER);
+    	// add buttons to the calendar grid
     	calGrid.add(prevMonth, 0, 0, 1, 1);
-    	calGrid.add(currentMonth, 1, 0, 5, 1);
     	calGrid.add(nextMonth, 6, 0, 1, 1);
     	
+    	// set sizing for buttons
+    	prevMonth.setPrefSize(CELL_WIDTH, 25);
+    	nextMonth.setPrefSize(CELL_WIDTH, 25);
+    	
+    	// draw starting calendar
+    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT);
+    	
+    	// place calendar in the anchor pane
+    	monthPane.getChildren().add(calGrid);
+    	b.setCenter(monthPane);
+    	
+    }
+    
+    /**
+     * @author Tom Teper
+     * 
+     * Helper method to redraw the calendar when button is pressed to advance/go back to next/prev month
+     * 
+     * @param month, YearMonth object that passes current selected month
+     * @param locale, Locale object that passes current locale
+     * @param calGrid, GridPane object for laying out calendar contents
+     * @param CELL_WIDTH, width of cell
+     * @param CELL_HEIGHT, height of cell
+     */
+    private void drawCalendar(ObjectProperty<YearMonth> month, ObjectProperty<Locale> locale, GridPane calGrid, final int CELL_WIDTH, final int CELL_HEIGHT) {
+    	
+    	// positioning variables
+    	final int HEAD_WIDTH = CELL_WIDTH;
+    	final int HEAD_HEIGHT = 25;
+    	final int CAL_WIDTH = CELL_WIDTH * 7;
+    	final int CAL_HEIGHT = CELL_HEIGHT * 5;
+    	final int CAL_PADDING = 5;
+    	final int CELL_PADDING = 5;
+    	final int CELL_MARGIN = 2;
+    	
+    	// month and date label
+    	Label monthLabel = new Label(month.get().toString());
+    	monthLabel.setFont(new Font("Arial Bold", 24));
+    	monthLabel.setAlignment(Pos.CENTER);
+    	monthLabel.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    	monthLabel.setPrefSize(HEAD_WIDTH * 5, HEAD_HEIGHT);
+    	monthLabel.setTextFill(Color.WHITE);
+    	
+    	// adding a header (e.g., November 2021) and setting its position and styling
+    	calGrid.getChildren().remove(monthLabel);
+    	calGrid.add(monthLabel, 1, 0, 5, 1);
+    	calGrid.setPrefSize(CAL_WIDTH, CAL_HEIGHT);
+    	calGrid.setPadding(new Insets(CAL_PADDING));
+    	calGrid.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+    	calGrid.setAlignment(Pos.CENTER);
+    	
+    	// getting the names of the weeks and the first day of the month
     	WeekFields weekFields = WeekFields.of(locale.get());
     	LocalDate first = month.get().atDay(1);
     	
+    	// get the day of the week of the first day of the month
     	int dayOfWeekOfFirst = first.get(weekFields.dayOfWeek());
     	
-    	// add week day name
+    	// add week day name as header
     	for (int dayOfWeek = 1; dayOfWeek <= 7; dayOfWeek++) {
     		LocalDate date = first.minusDays(dayOfWeekOfFirst - dayOfWeek);
     		DayOfWeek day = date.getDayOfWeek();
-    		Label calDay = new Label(day.getDisplayName(TextStyle.SHORT_STANDALONE, locale.get()));
+    		Label calDay = new Label(day.getDisplayName(TextStyle.FULL, locale.get()));
     		calDay.setPadding(new Insets(5));
+    		calDay.setFont(new Font("Arial Bold", 14));
+    		calDay.setPrefSize(HEAD_WIDTH, HEAD_HEIGHT);
+    		calDay.setAlignment(Pos.CENTER);
     		calGrid.add(calDay, dayOfWeek - 1, 1);
-    		calGrid.setPrefHeight(20);
-    		calGrid.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
     	}
     	
-    	// populate calendar
-    	LocalDate firstDisplayedDate = first.minusDays(dayOfWeekOfFirst - 1);
-    	LocalDate last = month.get().atEndOfMonth();
-    	int dayOfWeekOfLast = last.get(weekFields.dayOfWeek());
-    	LocalDate lastDisplayedDate = last.plusDays(7 - dayOfWeekOfLast);
+    	// set variables for month creation
+    	LocalDate firstDisplayedDate = first.minusDays(dayOfWeekOfFirst - 1); // display days of previous month
+    	LocalDate last = month.get().atEndOfMonth(); // last day of current month
+    	LocalDate currentDay = LocalDate.now(); // current day, for setting previous days to show up greyed out
+    	int dayOfWeekOfLast = last.get(weekFields.dayOfWeek()); // get the day of the week for the last day of the month
+    	LocalDate lastDisplayedDate = last.plusDays(7 - dayOfWeekOfLast); // display days of next month
     	
+    	// loop to place dates and task contents
     	for (LocalDate date = firstDisplayedDate; !date.isAfter(lastDisplayedDate); date = date.plusDays(1)) {
     			
+    			// create a smaller grid inside each calendar grid box to show day number and tasks due that day; also positioning
     			GridPane cellGrid = new GridPane();
-    			cellGrid.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+    			cellGrid.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
+    			cellGrid.setPrefSize(CELL_WIDTH, CELL_HEIGHT);
+    			cellGrid.setPadding(new Insets(CELL_PADDING));
+    			GridPane.setMargin(cellGrid, new Insets(CELL_MARGIN));
     			
+    			// cell day number & positioning
     			Label dayNum = new Label(String.valueOf(date.getDayOfMonth()));
     			dayNum.setFont(new Font("Arial Bold", 18));
-    			Label tasks = new Label("5 Tasks");
-    			//cellGrid.setPadding(new Insets(CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT, CELL_WIDTH));
+    			dayNum.setPrefSize(CELL_WIDTH - CELL_PADDING, HEAD_HEIGHT);
     			
-    			int dayOfWeek = date.get(weekFields.dayOfWeek());
-    			int daysSinceFirstDisplayed = (int) firstDisplayedDate.until(date,  ChronoUnit.DAYS);
-    			int weeksSinceFirstDisplayed = daysSinceFirstDisplayed / 7;
+    			// task contents based on day
+    			Label tasks = new Label("Tasks would go here");
+    			tasks.setPrefSize(CELL_WIDTH, CELL_HEIGHT - HEAD_HEIGHT);
     			
+    			// variables for placement in the calendar grid
+    			int dayOfWeek = date.get(weekFields.dayOfWeek()); // gets the column+1 to place the contents into
+    			int daysSinceFirstDisplayed = (int) firstDisplayedDate.until(date,  ChronoUnit.DAYS); // local var to calculate number of weeks in the month
+    			int weeksSinceFirstDisplayed = daysSinceFirstDisplayed / 7; // calculates the row number to place the cell contents
+    			
+    			// grey out dates before current day
+    			if (date.isBefore(currentDay)) {
+    				cellGrid.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    			}
+    			
+    			// place contents into cell
     			cellGrid.setAlignment(Pos.CENTER);
-    			cellGrid.setPadding(new Insets(5));
     			cellGrid.add(dayNum, 0, 0);
     			cellGrid.add(tasks, 0, 1);
-    			dayNum.setPrefWidth(CELL_WIDTH * 2 - 20);
-    			tasks.setMinHeight(CELL_HEIGHT * 2 - 20);
-    			//cellGrid.setGridLinesVisible(true);
-    			calGrid.add(cellGrid, dayOfWeek - 1, weeksSinceFirstDisplayed + 1);
-    		
+    			calGrid.add(cellGrid, dayOfWeek - 1, weeksSinceFirstDisplayed + 2);
     	}
-    	
-    	Space myTasks = sManager.getSpaceList().get(0);
-    	
-    	
-    	//ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
-    	
-    	// Cycle through each task and create a box for each one
-    	
-    	//AnchorPane.setTopAnchor(taskCol1, 70.0);
-    	//AnchorPane.setLeftAnchor(taskCol1, 50.0);
-    	
-    	monthPane.getChildren().add(calGrid);
-    	
-    	b.setCenter(monthPane);
-    	
     }
     
     /**
@@ -767,7 +835,7 @@ public class Overview extends Application {
             
             // execute based on current dialog type
             switch(type) {
-            case 0:	// Add Space
+            case 0:	// Add task
             	try {
             		//sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
             	}
@@ -775,7 +843,7 @@ public class Overview extends Application {
             		//systemAlert(e)
             	}
             	break;
-            case 1: // Edit Space
+            case 1: // Edit task
             	//sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
             	try {
             		// do something
