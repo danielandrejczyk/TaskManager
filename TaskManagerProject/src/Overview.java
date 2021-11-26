@@ -412,10 +412,10 @@ public class Overview extends Application {
 				System.out.println(userDirectory);
 				switch(task.getPriority())
 				{
-					case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png");
-					case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png");
-					case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png");
-					default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png");
+					case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png"); break;
+					case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png"); break;
+					case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
+					default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
 				}
 				ImageView priority = new ImageView(new Image(input));
 				taskButton.setGraphic(priority);
