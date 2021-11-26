@@ -52,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
@@ -443,6 +444,26 @@ public class Overview extends Application {
     	final ObjectProperty<YearMonth> month = new SimpleObjectProperty<>();
     	final ObjectProperty<Locale> locale = new SimpleObjectProperty<>(Locale.getDefault());
     	
+    	// for testing tasks
+    	LocalDate today = LocalDate.now();
+    	LocalDate tomorrow = today.plusDays(1);
+    	Task physCh1 = new Task("Physics Chapter 1", today, sManager.getSpaceList().get(0));
+    	physCh1.setCurrent(Status.progress.DONE);
+    	physCh1.setDescription("Ask professor about problem 7");
+    	Task calcCh1 = new Task("Calculus Chapter 1", today, sManager.getSpaceList().get(0));
+    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
+    	calcCh1.setDescription("Help!");
+    	Task calcCh2 = new Task("Calculus Chapter 2", tomorrow, sManager.getSpaceList().get(0));
+    	calcCh2.setCurrent(Status.progress.IN_PROGRESS);
+    	calcCh2.setDescription("Help!");
+    	
+    	ArrayList<Task> tasks = new ArrayList<Task>();
+    	for (int i = 0; i < 3; i++) {
+    		tasks.add(calcCh1);
+    	}
+    	tasks.add(calcCh2);
+    	tasks.add(physCh1);
+    	
     	// set month to now
     	month.setValue(YearMonth.now());
     	
@@ -478,14 +499,14 @@ public class Overview extends Application {
     		calGrid.getChildren().clear();
     		calGrid.add(prevMonth, 0, 0, 1, 1);
         	calGrid.add(nextMonth, 6, 0, 1, 1);
-    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
     	});
     	nextMonth.setOnAction(e -> {
     		month.set(month.get().plusMonths(1));
     		calGrid.getChildren().clear();
     		calGrid.add(prevMonth, 0, 0, 1, 1);
         	calGrid.add(nextMonth, 6, 0, 1, 1);
-    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
     	});
     	
     	// add buttons to the calendar grid
@@ -497,7 +518,7 @@ public class Overview extends Application {
     	nextMonth.setPrefSize(CELL_WIDTH, 25);
     	
     	// draw starting calendar
-    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT);
+    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
     	
     	// place calendar in the anchor pane
     	monthPane.getChildren().add(calGrid);
@@ -516,7 +537,7 @@ public class Overview extends Application {
      * @param CELL_WIDTH, width of cell
      * @param CELL_HEIGHT, height of cell
      */
-    private void drawCalendar(ObjectProperty<YearMonth> month, ObjectProperty<Locale> locale, GridPane calGrid, final int CELL_WIDTH, final int CELL_HEIGHT) {
+    private void drawCalendar(ObjectProperty<YearMonth> month, ObjectProperty<Locale> locale, GridPane calGrid, final int CELL_WIDTH, final int CELL_HEIGHT, ArrayList<Task> taskList) {
     	
     	// positioning variables
     	final int HEAD_WIDTH = CELL_WIDTH;
@@ -528,7 +549,8 @@ public class Overview extends Application {
     	final int CELL_MARGIN = 2;
     	
     	// month and date label
-    	Label monthLabel = new Label(month.get().toString());
+    	LocalDate currentMonth = month.get().atDay(1);
+    	Label monthLabel = new Label(currentMonth.getMonth().toString() + " " + currentMonth.getYear());
     	monthLabel.setFont(new Font("Arial Bold", 24));
     	monthLabel.setAlignment(Pos.CENTER);
     	monthLabel.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -585,8 +607,24 @@ public class Overview extends Application {
     			dayNum.setPrefSize(CELL_WIDTH - CELL_PADDING, HEAD_HEIGHT);
     			
     			// task contents based on day
-    			Label tasks = new Label("Tasks would go here");
-    			tasks.setPrefSize(CELL_WIDTH, CELL_HEIGHT - HEAD_HEIGHT);
+    			Label tasks;
+    			int numTasks = 0;
+    			
+    			// show task information
+    			for (int i = 0; i < taskList.size(); i++) {
+    				if (taskList.get(i).getDate().equals(date) && numTasks < 4) {
+    					numTasks++;
+    					tasks = new Label(taskList.get(i).toString());
+    					tasks.setFont(new Font("Arial", 12));
+    					cellGrid.add(tasks, 0, numTasks);
+    				}
+    				else if (taskList.get(i).getDate().equals(date) && numTasks >= 4) {
+    					tasks = new Label("[...]");
+    					tasks.setFont(new Font("Arial", 12));
+    					cellGrid.add(tasks, 0, numTasks+1);
+    				}
+    			}
+    			
     			
     			// variables for placement in the calendar grid
     			int dayOfWeek = date.get(weekFields.dayOfWeek()); // gets the column+1 to place the contents into
@@ -598,10 +636,13 @@ public class Overview extends Application {
     				cellGrid.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
     			}
     			
+    			if (date.isEqual(currentDay)) {
+    				cellGrid.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+    			}
+    			
     			// place contents into cell
-    			cellGrid.setAlignment(Pos.CENTER);
+    			cellGrid.setAlignment(Pos.TOP_LEFT);
     			cellGrid.add(dayNum, 0, 0);
-    			cellGrid.add(tasks, 0, 1);
     			calGrid.add(cellGrid, dayOfWeek - 1, weeksSinceFirstDisplayed + 2);
     	}
     }
