@@ -67,8 +67,6 @@ import java.util.Optional;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 
-import com.sun.javafx.geom.Rectangle;
-
 public class Overview extends Application {
 	
     public static void main(String[] args) {
@@ -117,10 +115,12 @@ public class Overview extends Application {
         
         // create space manager
         SpaceManager spaceManager = new SpaceManager();
+        TaskManager taskManager = new TaskManager();
         
         // Space selection drop-down
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
     	ArrayList<Space> spaceList = spaceManager.getSpaceList();
+    	ArrayList<Task> taskList = taskManager.getTaskList(spaceList.get(0));
         spaceFilter.getItems().addAll(spaceList);
         spaceFilter.getSelectionModel().selectFirst();
         spaceFilter.setPrefHeight(40);
@@ -212,6 +212,16 @@ public class Overview extends Application {
         		// delete task method
             }
          });
+        
+        // filter by spaces when the current space is changed
+        spaceFilter.setOnAction(new EventHandler<ActionEvent> () {
+        	
+        	@Override
+        	public void handle(ActionEvent event) {
+        		// somehow need to filter the tasks that we want by the parent space
+        		ArrayList<Task> filteredTasks = taskManager.getTaskList(spaceFilter.getSelectionModel().getSelectedItem());
+        	}
+        });
         
         // Overview toggle buttons
         Button homeToggle = new Button("Home");
@@ -430,15 +440,16 @@ public class Overview extends Application {
     }
     
     /**
-     * @author Tom Teper
+     * Method to display the calendar overview
      * 
      * @param b
      * @param sManager
      */
     private void toggleMonthly(BorderPane b, SpaceManager sManager) {
     	
-    	// Some based on https://gist.github.com/james-d/ee8a5c216fb3c6e027ea 
-    	// However, the majority of it is modified to fit the purposes of this project, which is to display tasks
+    	// Note for reader:
+    	// Some code based on https://gist.github.com/james-d/ee8a5c216fb3c6e027ea 
+    	// However, 95% of it is modified to fit the purposes of this project, which is to display tasks and much is original; still, will credit
     	
     	// variables for the month and the current locale
     	final ObjectProperty<YearMonth> month = new SimpleObjectProperty<>();
@@ -527,8 +538,6 @@ public class Overview extends Application {
     }
     
     /**
-     * @author Tom Teper
-     * 
      * Helper method to redraw the calendar when button is pressed to advance/go back to next/prev month
      * 
      * @param month, YearMonth object that passes current selected month
