@@ -1,0 +1,14 @@
+
+
+.cal-button {
+	-fx-border-radius: 1;
+	-fx-border-color: #708090;
+	-fx-padding: 1;
+    -fx-border-insets: 1;
+    -fx-background-insets: 1;
+}
+
+.cal-button:hover {
+	-fx-text-fill: #FFF;
+    -fx-background-color: #508090;
+}

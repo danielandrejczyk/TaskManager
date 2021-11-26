@@ -89,6 +89,7 @@ public class Overview extends Application {
     	// Set the title
         primaryStage.setTitle("Task Manager");
         primaryStage.centerOnScreen();
+       
         
         // Create a border pane to lay out all the items
         BorderPane border = new BorderPane();
@@ -254,8 +255,9 @@ public class Overview extends Application {
         border.setTop(topSection);
         border.setLeft(leftSection);
         
-        
-        primaryStage.setScene(new Scene(border));
+        Scene scene = new Scene(border);
+        scene.getStylesheets().add("/tmStyle.css");
+        primaryStage.setScene(scene);
         primaryStage.setMinHeight(800);
         primaryStage.setMinWidth(1000);
         // Show the scene
@@ -460,20 +462,21 @@ public class Overview extends Application {
     	LocalDate tomorrow = today.plusDays(1);
     	Task physCh1 = new Task("Physics Chapter 1", today, sManager.getSpaceList().get(0));
     	physCh1.setCurrent(Status.progress.DONE);
+    	physCh1.setPriority(Task.Priority.HIGH);
     	physCh1.setDescription("Ask professor about problem 7");
     	Task calcCh1 = new Task("Calculus Chapter 1", today, sManager.getSpaceList().get(0));
     	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh1.setDescription("Help!");
+    	calcCh1.setPriority(Task.Priority.MEDIUM);
     	Task calcCh2 = new Task("Calculus Chapter 2", tomorrow, sManager.getSpaceList().get(0));
     	calcCh2.setCurrent(Status.progress.IN_PROGRESS);
     	calcCh2.setDescription("Help!");
+    	calcCh2.setPriority(Task.Priority.LOW);
     	
     	ArrayList<Task> tasks = new ArrayList<Task>();
-    	for (int i = 0; i < 3; i++) {
-    		tasks.add(calcCh1);
-    	}
-    	tasks.add(calcCh2);
     	tasks.add(physCh1);
+    	tasks.add(calcCh2);
+    	tasks.add(calcCh1);
     	
     	// set month to now
     	month.setValue(YearMonth.now());
@@ -616,21 +619,60 @@ public class Overview extends Application {
     			dayNum.setPrefSize(CELL_WIDTH - CELL_PADDING, HEAD_HEIGHT);
     			
     			// task contents based on day
-    			Label tasks;
     			int numTasks = 0;
+    			String tasks;
     			
     			// show task information
-    			for (int i = 0; i < taskList.size(); i++) {
-    				if (taskList.get(i).getDate().equals(date) && numTasks < 4) {
+    			for (Task t : taskList) {
+    				if (t.getDate().equals(date) && numTasks < 4) {
     					numTasks++;
-    					tasks = new Label(taskList.get(i).toString());
-    					tasks.setFont(new Font("Arial", 12));
-    					cellGrid.add(tasks, 0, numTasks);
+    					tasks = t.toString();
+    					
+    					FileInputStream input;
+    	    			try {
+    	    				String userDirectory = System.getProperty("user.dir");
+    	    				switch(t.getPriority())
+    	    				{
+    	    					case HIGH:	
+    	    						input = new FileInputStream(userDirectory + "/images/HighPriority.png");
+    								break;
+    	    					case MEDIUM:
+    	    						input = new FileInputStream(userDirectory + "/images/MediumPriority.png");
+    	    						break;
+    	    					case LOW:	
+    	    						input = new FileInputStream(userDirectory + "/images/LowPriority.png");
+    	    						break;
+    	    					default:	
+    	    						input = new FileInputStream(userDirectory + "/images/LowPriority.png");
+    	    						break;
+    	    				}
+    	    				ImageView priority = new ImageView(new Image(input));
+    	    				Button priorityBtn = new Button();
+    	    				
+    	    				priorityBtn.setOnAction(e -> {
+    	    					System.out.println(t.getPriority());
+    	    					// in future, do a pop up or something
+    	    				});
+    	    				
+    	    				priority.setFitHeight(25);
+    	    				priority.setFitWidth(5);
+    	    				
+    	    				// button styling
+    	    				priorityBtn.getStyleClass().add("cal-button");
+    	    				priorityBtn.setText(tasks);
+    	    				priorityBtn.setGraphic(priority);
+    	    				priorityBtn.setAlignment(Pos.CENTER_LEFT);
+    	    				priorityBtn.setPrefHeight(10);
+    	    				priorityBtn.setPrefWidth(CELL_WIDTH);
+    	    				cellGrid.add(priorityBtn, 0, numTasks);
+    	    			} 
+	    				catch (FileNotFoundException e) {
+    	    				System.out.println("Unable to find priority graphic for button!");
+    	    			}
     				}
-    				else if (taskList.get(i).getDate().equals(date) && numTasks >= 4) {
-    					tasks = new Label("[...]");
-    					tasks.setFont(new Font("Arial", 12));
-    					cellGrid.add(tasks, 0, numTasks+1);
+    				else if (t.getDate().equals(date) && numTasks >= 4) {
+    					tasks = "[...]";
+    					cellGrid.add(new Label(tasks), 0, numTasks+1);
     				}
     			}
     			
