@@ -22,14 +22,36 @@ public class TaskManager {
 	
 	/**
 	 * Method to add a task to the task list
-	 * @param aTask the task that will be added
+	 * @param n String that is the task name
+	 * @param dd LocalDate that is the task due date
+	 * @param aSpace Space that is the parent space
+	 * @param statusDesc String that is the description of the task
+	 * @param currentStatus Status.progress value that indicates task progress
+	 * @param priority Task.priority value that indicates task priority
 	 */
-	public void addTask(String n, LocalDate dd, Space aSpace, String statusDesc, Status.progress currentStatus, Task.Priority priority) {
-		Task newTask = new Task(n, dd, aSpace);
-		newTask.setPriority(priority);
-		newTask.setCurrent(currentStatus);
-		newTask.setDescription(statusDesc);
-		taskList.add(newTask);
+	public void addTask(String n, LocalDate dd, Space aSpace, String statusDesc,
+			Status.progress currentStatus, Task.Priority priority) throws Exception {
+		
+		boolean nameExists = false;
+		
+		// check that name isn't already used by another task
+		for (Task t: taskList) {
+			if (t.toString().equals(n)) {
+				nameExists = true;
+			}
+		}
+		
+		// add task only if the name is unique
+		if (!nameExists) {
+			Task newTask = new Task(n, dd, aSpace);
+			newTask.setPriority(priority);
+			newTask.setCurrent(currentStatus);
+			newTask.setDescription(statusDesc);
+			taskList.add(newTask);
+		}
+		else 
+			throw new Exception("Must give new space a unique name");
+		
 	}
 	
 	/**
