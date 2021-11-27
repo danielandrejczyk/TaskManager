@@ -23,6 +23,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
@@ -877,9 +878,7 @@ public class Overview extends Application {
     	ComboBox<Space> pSpace = new ComboBox<Space>();
         ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
         ComboBox<progress> tProgress = new ComboBox<progress>();
-        
-        tFilter.getItems().clear();
-        tFilter.getItems().addAll(tManager.getTaskList(sFilter.getSelectionModel().getSelectedItem()));
+       
     
     	// naming
     	switch (type) {
@@ -926,12 +925,14 @@ public class Overview extends Application {
     	tPriority.getItems().add(Task.Priority.LOW);
     	tPriority.getItems().add(Task.Priority.MEDIUM);
     	tPriority.getItems().add(Task.Priority.HIGH);
+    	tPriority.setValue(Task.Priority.MEDIUM);
     	
     	int z = tProgress.getSelectionModel().getSelectedIndex();
     	tProgress.getItems().clear();
     	tProgress.getItems().add(progress.TO_DO);
     	tProgress.getItems().add(progress.IN_PROGRESS);
     	tProgress.getItems().add(progress.DONE);
+    	tProgress.setValue(progress.TO_DO);
     	
     	
     	// positioning
