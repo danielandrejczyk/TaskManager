@@ -26,6 +26,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -67,9 +70,6 @@ import java.util.Optional;
 
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-
-import Task.Priority;
-
 
 public class Overview extends Application {
 	
@@ -135,12 +135,6 @@ public class Overview extends Application {
         taskFilter.getSelectionModel().selectFirst();
         taskFilter.setPrefHeight(40);
         taskFilter.setPrefWidth(200);
-        
-        
-       
-      
-    	
- 
         
 //        Text progName = new Text("TASK MANAGER");
 //        progName.setFont(new Font("Arial Bold", 20));
@@ -818,6 +812,7 @@ public class Overview extends Application {
             case 0:	// Add Space
             	try {
             		sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            		systemSuccess(0, spcStr);
             	}
             	catch (Exception e) {
             		systemAlert(e);
@@ -826,6 +821,7 @@ public class Overview extends Application {
             case 1: // Edit Space
             	try {
             		sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            		systemSuccess(1, spcStr);
             	}
             	catch (Exception e) {
             		systemAlert(e);
@@ -1035,5 +1031,29 @@ public class Overview extends Application {
     	Alert badName = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
         badName.setTitle("Alert");
         badName.showAndWait();
+    }
+    
+    /**
+     * Helper method to notify user of actions that are not permitted
+     * 
+     * @param e, the exception message thrown by the calling method
+     */
+    private void systemSuccess(int type, String n) {
+        Alert success;
+    	switch (type ) {
+        	case 0: // create
+        		success = new Alert(AlertType.INFORMATION, n + " created successfully!", ButtonType.OK);
+        		success.setTitle("Space / Task Creation Confirmation");
+        		break;
+        	case 1: // edit
+        		success = new Alert(AlertType.INFORMATION, n + " edited successfully!", ButtonType.OK);
+        		success.setTitle("Edit Confirmation");
+        		break;
+    		default: 
+    			success = new Alert(AlertType.INFORMATION, n, ButtonType.OK);
+    			success.setTitle("Success!");
+    			break;
+        }
+        success.showAndWait();
     }
 }
