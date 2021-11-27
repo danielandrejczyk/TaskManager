@@ -123,22 +123,17 @@ public class Overview extends Application {
         
         // Space selection drop-down
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
-        
+        ComboBox<Task> taskFilter = new ComboBox<Task>();
     	ArrayList<Space> spaceList = spaceManager.getSpaceList();
-//    	ArrayList<Task> taskList = taskManager.getTaskList(spaceList.get(0));
-//    	try {
-//	    	spaceManager.addSpace(spaceList.get(0), "Physics");
-//	    	spaceManager.addSpace(spaceList.get(0), "Chemistry");
-//	    	spaceManager.addSpace(spaceList.get(0), "Statics");
-//    	}
-//    	catch (Exception e) {
-//    		systemAlert(e);
-//    	}
-    	
+    	ArrayList<Task> taskList = taskManager.getTaskList(spaceList.get(0));
         spaceFilter.getItems().addAll(spaceList);
         spaceFilter.getSelectionModel().selectFirst();
         spaceFilter.setPrefHeight(40);
         spaceFilter.setPrefWidth(200);
+        taskFilter.getItems().addAll(taskList);
+        taskFilter.getSelectionModel().selectFirst();
+        taskFilter.setPrefHeight(40);
+        taskFilter.setPrefWidth(200);
         
 //        Text progName = new Text("TASK MANAGER");
 //        progName.setFont(new Font("Arial Bold", 20));
@@ -154,7 +149,7 @@ public class Overview extends Application {
         Button deleteTask = new Button("Delete Task");
         deleteTask.setPrefSize(100, 40);
         
-        topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, editTask, deleteTask);
+        topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
         
         //
         // Left panel
@@ -205,25 +200,28 @@ public class Overview extends Application {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		// add task method
+        		taskDialog(0, spaceList, spaceFilter, spaceManager,
+        				taskManager, taskList, taskFilter);
         	}
         });
         
-        // Edit Space
+        // Edit Task
         editTask.setOnAction(new EventHandler<ActionEvent>() {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		// edit task method
+        		taskDialog(1, spaceList, spaceFilter, spaceManager,
+        				taskManager, taskList, taskFilter);
         	}
         });
         
-        // Delete space action
+        // Delete Task action
         deleteTask.setOnAction(new EventHandler<ActionEvent>() {
             
         	@Override
             public void handle(ActionEvent event) {
-        		// delete task method
+        		taskDialog(2, spaceList, spaceFilter, spaceManager,
+        				taskManager, taskList, taskFilter);
             }
          });
         
@@ -843,6 +841,14 @@ public class Overview extends Application {
         return;
     }
     
+
+    
+   /* public static enum Priority
+	{
+		LOW, MEDIUM, HIGH;
+	}*/
+    
+	public static enum progress { TO_DO, IN_PROGRESS , DONE };
     /**
      * Helper method to create space dialogs for adding, editing, and deleting spaces
      * 
@@ -853,14 +859,23 @@ public class Overview extends Application {
      * @param tManager, the task manager object from overview
      * @param tList, the list of spaces from overview
      */
-    private void taskDialog(int type, ArrayList<Space> sList, ComboBox<Space> sFilter, SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList) {
+    private void taskDialog(int type, ArrayList<Space> sList, ComboBox<Space> sFilter, 
+    		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList, ComboBox<Task> tFilter) {
     	
     	// create dialog and naming
     	Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
     	GridPane sGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
     	TextField sName = new TextField();
+    	TextField dd = new TextField();
+    	TextField desc = new TextField();
+    	
     	ComboBox<Space> pSpace = new ComboBox<Space>();
+        ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
+        ComboBox<progress> tProgress = new ComboBox<progress>();
+        
+        tFilter.getItems().clear();
+        tFilter.getItems().addAll(tManager.getTaskList(sFilter.getSelectionModel().getSelectedItem()));
     
     	// naming
     	switch (type) {
@@ -875,7 +890,7 @@ public class Overview extends Application {
     		// add stuff
     		//
     		break;
-    	case 2: // Delete Space + custom alert execution
+    	case 2: // Delete Task + custom alert execution
     		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
             deleteSD.setTitle("Delete Task");
             deleteSD.setHeaderText("Delete task: " + sFilter.getSelectionModel().getSelectedItem().toString());
@@ -899,17 +914,38 @@ public class Overview extends Application {
     	// parent space
     	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
     	pSpace.getItems().clear();
-    	pSpace.getItems().addAll(sList);
+    	pSpace.getItems().addAll(sManager.getSpaceList());
     	pSpace.getSelectionModel().select(pIndex);
+    	
+    	int y = tPriority.getSelectionModel().getSelectedIndex();
+    	tPriority.getItems().clear();
+    	tPriority.getItems().add(Task.Priority.LOW);
+    	tPriority.getItems().add(Task.Priority.MEDIUM);
+    	tPriority.getItems().add(Task.Priority.HIGH);
+    	
+    	int z = tProgress.getSelectionModel().getSelectedIndex();
+    	tProgress.getItems().clear();
+    	tProgress.getItems().add(progress.TO_DO);
+    	tProgress.getItems().add(progress.IN_PROGRESS);
+    	tProgress.getItems().add(progress.DONE);
+    	
     	
     	// positioning
     	sGrid.setHgap(10);
     	sGrid.setVgap(10);
     	sGrid.setPadding(new Insets(20, 150, 10, 10));
-    	sGrid.add(new Label("Space Name"), 0, 0);
-    	sGrid.add(sName, 0, 1);
-    	sGrid.add(new Label("Parent Space"), 1, 0);
+    	sGrid.add(new Label("Task Name"), 0, 0);
+    	sGrid.add(sName, 1, 0);
+    	sGrid.add(new Label("Parent Space"), 0, 1);
     	sGrid.add(pSpace, 1, 1);
+    	sGrid.add(new Label("Due Date"), 0, 2);
+    	sGrid.add(dd, 1, 2);
+    	sGrid.add(new Label("Description"), 0, 3);
+    	sGrid.add(desc, 1, 3);
+    	sGrid.add(new Label("Priority"), 0, 4);
+    	sGrid.add(tPriority, 1, 4);
+    	sGrid.add(new Label("Progress"), 0, 5);
+    	sGrid.add(tProgress, 1, 5);
     	
     	// disable confirm button until information is entered
     	Node confirmBtn = sDialog.getDialogPane().lookupButton(confirmBtnType);
@@ -918,7 +954,12 @@ public class Overview extends Application {
     	sName.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
-    	sName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
+    	dd.textProperty().addListener((observable, oldValue, newValue) -> {
+    	    confirmBtn.setDisable(newValue.trim().isEmpty());
+    	});
+    	desc.textProperty().addListener((observable, oldValue, newValue) -> {
+    	    confirmBtn.setDisable(newValue.trim().isEmpty());
+    	});
     	
     	// return sDialog contents as Pair once confirmBtn is pressed
     	sDialog.setResultConverter(sDialogBtn -> {
@@ -944,7 +985,9 @@ public class Overview extends Application {
             switch(type) {
             case 0:	// Add task
             	try {
-            		//sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            		tManager.addTask(sName.getText(), LocalDate.parse(dd.getText()), 
+            				sManager.getSpaceList().get(newPIndex), desc.getText(), 
+            				 Status.progress.values()[z], Task.Priority.values()[y]);
             	}
             	catch (Exception e) {
             		//systemAlert(e)
@@ -966,8 +1009,9 @@ public class Overview extends Application {
             
             // update space filter list
             sFilter.getItems().clear();
-            sFilter.getItems().addAll(sList);
+            sFilter.getItems().addAll(sManager.getSpaceList());
             sFilter.getSelectionModel().selectLast();
+            
         });
         
         // reset text and null values in textfield
