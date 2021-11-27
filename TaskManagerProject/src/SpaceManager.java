@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class SpaceManager {
 	
 	private ArrayList<Space> spaceList;
+	private int selectedSpaceIndex;
 	
 	/**
 	 * Default constructor for SpaceManager class
@@ -136,5 +137,27 @@ public class SpaceManager {
 	 */
 	public ArrayList<Space> getSpaceList() {
 		return new ArrayList<Space>(spaceList);
+	}
+	
+	/**
+	 * Returns the index of the currently selected spacee in
+	 * the list of all spaces.
+	 * 
+	 * @return	Index of the selected space in spaceList.
+	 */
+	public int getSelectedSpaceIndex()
+	{
+		return selectedSpaceIndex;
+	}
+	
+	/*
+	 * Sets the index of a newly selected space within
+	 * the space list.
+	 * 
+	 * @param	newIndex	The index of the newly selected space.
+	 */
+	public void setSelectedSpaceIndex(int newIndex)
+	{
+		selectedSpaceIndex = newIndex;
 	}
 }

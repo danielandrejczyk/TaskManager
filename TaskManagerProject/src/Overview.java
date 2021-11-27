@@ -72,7 +72,19 @@ import javax.swing.GroupLayout.Alignment;
 
 public class Overview extends Application {
 	
+	private TaskManager taskManager;
+	private SpaceManager spaceManager;
+	
+	public Overview()
+	{
+		taskManager = new TaskManager();
+    	spaceManager = new SpaceManager();
+	}
+	
     public static void main(String[] args) {
+    	
+    	Overview overview = new Overview();
+    	
         launch(args);
     }
     
@@ -118,8 +130,9 @@ public class Overview extends Application {
         deleteSpace.setPrefSize(100, 40);
         
         // create space manager
-        SpaceManager spaceManager = new SpaceManager();
-        TaskManager taskManager = new TaskManager();
+        // * Commented out by Daniel *
+        //SpaceManager spaceManager = new SpaceManager();
+        //TaskManager taskManager = new TaskManager();
         
         // Space selection drop-down
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
@@ -231,7 +244,9 @@ public class Overview extends Application {
         	@Override
         	public void handle(ActionEvent event) {
         		// somehow need to filter the tasks that we want by the parent space
-        		ArrayList<Task> filteredTasks = taskManager.getTaskList(spaceFilter.getSelectionModel().getSelectedItem());
+        		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
+        		//ArrayList<Task> filteredTasks = taskManager.getTaskList(spaceFilter.getSelectionModel().getSelectedItem());
+        		// * Make a call to refresh overview *
         	}
         });
         
@@ -247,7 +262,7 @@ public class Overview extends Application {
         
         // Connect overview toggle buttons to their
         // MouseClick event handlers
-        homeToggle.setOnMouseClicked(e -> toggleHome(border, spaceManager));
+        homeToggle.setOnMouseClicked(e -> toggleHome(border));
         dailyToggle.setOnMouseClicked(e -> toggleDaily(border, spaceManager));
         //weeklyToggle
         monthlyToggle.setOnMouseClicked(e -> toggleMonthly(border, spaceManager));
@@ -260,7 +275,7 @@ public class Overview extends Application {
         leftSection.getChildren().addAll(toggleLabel, homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
         
         // Set up the default overview (home overview)
-        toggleHome(border, spaceManager);
+        toggleHome(border);
         
         // Set sections to borderpane
         border.setTop(topSection);
@@ -283,7 +298,7 @@ public class Overview extends Application {
      * 
      * @param	b	The borderpane to anchor the home overview to
      */
-    private void toggleHome(BorderPane b, SpaceManager m)
+    private void toggleHome(BorderPane b)
     {
     	
     	AnchorPane homePane = new AnchorPane();
@@ -292,16 +307,9 @@ public class Overview extends Application {
     	Calendar newCalendar = Calendar.getInstance();
     	LocalDate today = LocalDate.now();
     	
-    	Space myTasks = m.getSpaceList().get(0);
+    	Space myTasks = spaceManager.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", today, myTasks);
-    	physCh1.setCurrent(Status.progress.DONE);
-    	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today, myTasks);
-    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
-    	calcCh1.setDescription("Help!");
-    	
-    	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
     	listView.setPrefWidth(450);
@@ -403,14 +411,7 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now(), myTasks);
-    	physCh1.setCurrent(Status.progress.DONE);
-    	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1",  LocalDate.now(), myTasks);
-    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
-    	calcCh1.setDescription("Help!");
-    	
-    	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(myTasks));
     	
     	// Cycle through each task and create a box for each one
     	for(Task task: tasks) 
@@ -874,8 +875,8 @@ public class Overview extends Application {
         ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
         ComboBox<progress> tProgress = new ComboBox<progress>();
         
-        tFilter.getItems().clear();
-        tFilter.getItems().addAll(tManager.getTaskList(sFilter.getSelectionModel().getSelectedItem()));
+        //tFilter.getItems().clear();
+        //tFilter.getItems().addAll(tManager.getTaskList(sFilter.getSelectionModel().getSelectedItem()));
     
     	// naming
     	switch (type) {
@@ -984,15 +985,18 @@ public class Overview extends Application {
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add task
-            	try {
-            		tManager.addTask(sName.getText(), LocalDate.parse(dd.getText()), 
-            				sManager.getSpaceList().get(newPIndex), desc.getText(), 
-            				 Status.progress.values()[z], Task.Priority.values()[y]);
-            	}
-            	catch (Exception e) {
-            		//systemAlert(e)
-            	}
-            	break;
+            	//try {
+            		//taskManager.addTask(sName.getText(), LocalDate.parse(dd.getText()), 
+            				//sManager.getSpaceList().get(newPIndex), desc.getText(), 
+            				 //Status.progress.DONE, Task.Priority.MEDIUM);
+            		taskManager.addTask("Physics Hw", LocalDate.parse("2021-11-27"), 
+            				sManager.getSpaceList().get(1), "some desc", 
+            				 Status.progress.DONE, Task.Priority.MEDIUM);
+            	//}
+            	//catch (Exception e) {
+            		//e.printStackTrace();
+            	//}
+            	//break;
             case 1: // Edit task
             	//sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
             	try {
