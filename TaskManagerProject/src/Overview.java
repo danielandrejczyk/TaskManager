@@ -25,6 +25,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -120,8 +123,18 @@ public class Overview extends Application {
         
         // Space selection drop-down
         ComboBox<Space> spaceFilter = new ComboBox<Space>();
+        
     	ArrayList<Space> spaceList = spaceManager.getSpaceList();
-    	ArrayList<Task> taskList = taskManager.getTaskList(spaceList.get(0));
+//    	ArrayList<Task> taskList = taskManager.getTaskList(spaceList.get(0));
+//    	try {
+//	    	spaceManager.addSpace(spaceList.get(0), "Physics");
+//	    	spaceManager.addSpace(spaceList.get(0), "Chemistry");
+//	    	spaceManager.addSpace(spaceList.get(0), "Statics");
+//    	}
+//    	catch (Exception e) {
+//    		systemAlert(e);
+//    	}
+    	
         spaceFilter.getItems().addAll(spaceList);
         spaceFilter.getSelectionModel().selectFirst();
         spaceFilter.setPrefHeight(40);
@@ -141,7 +154,7 @@ public class Overview extends Application {
         Button deleteTask = new Button("Delete Task");
         deleteTask.setPrefSize(100, 40);
         
-        topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
+        topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, editTask, deleteTask);
         
         //
         // Left panel
@@ -800,6 +813,7 @@ public class Overview extends Application {
             case 0:	// Add Space
             	try {
             		sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            		systemSuccess(0, spcStr);
             	}
             	catch (Exception e) {
             		systemAlert(e);
@@ -808,6 +822,7 @@ public class Overview extends Application {
             case 1: // Edit Space
             	try {
             		sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            		systemSuccess(1, spcStr);
             	}
             	catch (Exception e) {
             		systemAlert(e);
@@ -971,5 +986,29 @@ public class Overview extends Application {
     	Alert badName = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
         badName.setTitle("Alert");
         badName.showAndWait();
+    }
+    
+    /**
+     * Helper method to notify user of actions that are not permitted
+     * 
+     * @param e, the exception message thrown by the calling method
+     */
+    private void systemSuccess(int type, String n) {
+        Alert success;
+    	switch (type ) {
+        	case 0: // create
+        		success = new Alert(AlertType.INFORMATION, n + " created successfully!", ButtonType.OK);
+        		success.setTitle("Space / Task Creation Confirmation");
+        		break;
+        	case 1: // edit
+        		success = new Alert(AlertType.INFORMATION, n + " edited successfully!", ButtonType.OK);
+        		success.setTitle("Edit Confirmation");
+        		break;
+    		default: 
+    			success = new Alert(AlertType.INFORMATION, n, ButtonType.OK);
+    			success.setTitle("Success!");
+    			break;
+        }
+        success.showAndWait();
     }
 }
