@@ -12,6 +12,7 @@ import java.util.Date;
 public class TaskManager {
 	
 	private ArrayList<Task> taskList;
+	private int selectedTaskIndex;
 	
 	/**
 	 * Default constructor
@@ -30,7 +31,9 @@ public class TaskManager {
 	 * @param priority Task.priority value that indicates task priority
 	 */
 	public void addTask(String n, LocalDate dd, Space aSpace, String statusDesc,
-			Status.progress currentStatus, Task.Priority priority) throws Exception {
+			Status.progress currentStatus, Task.Priority priority) {
+		
+		// throws Exception
 		
 		boolean nameExists = false;
 		
@@ -48,9 +51,10 @@ public class TaskManager {
 			newTask.setCurrent(currentStatus);
 			newTask.setDescription(statusDesc);
 			taskList.add(newTask);
+			System.out.println(newTask.toString());
 		}
-		else 
-			throw new Exception("Must give new space a unique name");
+		//else 
+			//throw new Exception("Must give new space a unique name");
 		
 	}
 	
@@ -95,10 +99,6 @@ public class TaskManager {
 		ArrayList<Task> filteredList = new ArrayList<Task>();
 		
 		for (Task t : taskList) {
-<<<<<<< HEAD
-			if (t.getParentName().equals(aParent.toString())) {
-				filteredList.add(t);
-=======
 			Space tempPSpace = t.getParentSpace();
 			while (tempPSpace != null) {
 				if (tempPSpace.toString().equals(selectedSpace.toString())) {
@@ -108,10 +108,31 @@ public class TaskManager {
 				else {
 					tempPSpace = tempPSpace.getParentSpace();
 				}
->>>>>>> branch 'master' of https://github.com/danielandrejczyk/TaskManager.git
 			}
 		}
 		
 		return filteredList;
+	}
+	
+	/**
+	 * Returns the index of the currently selected task in
+	 * the list of all tasks.
+	 * 
+	 * @return	Index of the selected task in taskList.
+	 */
+	public int getSelectedTaskIndex()
+	{
+		return selectedTaskIndex;
+	}
+	
+	/*
+	 * Sets the index of a newly selected task within
+	 * the task list.
+	 * 
+	 * @param	newIndex	The index of the newly selected task.
+	 */
+	public void setSelectedTaskIndex(int newIndex)
+	{
+		selectedTaskIndex = newIndex;
 	}
 }
