@@ -74,11 +74,13 @@ public class Overview extends Application {
 	
 	private TaskManager taskManager;
 	private SpaceManager spaceManager;
+	private int currentView;
 	
 	public Overview()
 	{
 		taskManager = new TaskManager();
     	spaceManager = new SpaceManager();
+    	currentView = 1; // default to home
 	}
 	
     public static void main(String[] args) {
@@ -183,7 +185,7 @@ public class Overview extends Application {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		spaceDialog(0, spaceList, spaceFilter, spaceManager);
+        		spaceDialog(0, spaceFilter);
         	}
         });
         
@@ -192,7 +194,7 @@ public class Overview extends Application {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		spaceDialog(1, spaceList, spaceFilter, spaceManager);
+        		spaceDialog(1, spaceFilter);
         	}
         });
         
@@ -202,7 +204,7 @@ public class Overview extends Application {
         	@Override
             public void handle(ActionEvent event) {
                
-        		spaceDialog(2, spaceList, spaceFilter, spaceManager);
+        		spaceDialog(2, spaceFilter);
             }
          });
         
@@ -245,7 +247,20 @@ public class Overview extends Application {
         	public void handle(ActionEvent event) {
         		// somehow need to filter the tasks that we want by the parent space
         		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
-        		//toggleDaily(border, spaceManager);
+        		switch (currentView) {
+        		case 1:
+        			toggleHome(border);
+        			break;
+        		case 2:
+        			toggleDaily(border);
+        			break;
+        		case 3:
+        			toggleWeekly(border);
+        			break;
+        		case 4:
+        			toggleMonthly(border);
+        			break;
+        		}
         	}
         });
         
@@ -261,10 +276,22 @@ public class Overview extends Application {
         
         // Connect overview toggle buttons to their
         // MouseClick event handlers
-        homeToggle.setOnMouseClicked(e -> toggleHome(border));
-        dailyToggle.setOnMouseClicked(e -> toggleDaily(border, spaceManager));
-        //weeklyToggle
-        monthlyToggle.setOnMouseClicked(e -> toggleMonthly(border, spaceManager));
+        homeToggle.setOnMouseClicked(e -> {
+        	toggleHome(border);
+        	currentView = 1;
+        });
+        dailyToggle.setOnMouseClicked(e -> {
+        	toggleDaily(border);
+        	currentView = 2;
+        });
+        weeklyToggle.setOnMouseClicked(e -> {
+        	toggleWeekly(border);
+        	currentView = 3;
+        });
+        monthlyToggle.setOnMouseClicked(e -> {
+        	toggleMonthly(border);
+        	currentView = 4;
+        });
         
         Text toggleLabel = new Text("View");
         toggleLabel.setFill(Color.WHITE);
@@ -377,7 +404,7 @@ public class Overview extends Application {
     	
     }
     
-    private void toggleDaily(BorderPane b, SpaceManager m)
+    private void toggleDaily(BorderPane b)
     {
     	
     	AnchorPane dailyPane = new AnchorPane();
@@ -408,7 +435,7 @@ public class Overview extends Application {
     	
     	gc.strokeRect(10, 10, 230, 40);
     	
-    	Space myTasks = m.getSpaceList().get(0);
+    	Space myTasks = spaceManager.getSpaceList().get(0);
     	
     	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	
@@ -448,7 +475,7 @@ public class Overview extends Application {
     	
     }
     
-    private void toggleWeekly() {
+    private void toggleWeekly(BorderPane b) {
     	
     }
     
@@ -458,7 +485,7 @@ public class Overview extends Application {
      * @param b
      * @param sManager
      */
-    private void toggleMonthly(BorderPane b, SpaceManager sManager) {
+    private void toggleMonthly(BorderPane b) {
     	
     	// Note for reader:
     	// Some code based on https://gist.github.com/james-d/ee8a5c216fb3c6e027ea 
@@ -703,7 +730,7 @@ public class Overview extends Application {
      * @param sFilter, the combobox of spaces from overview
      * @param sManager, the space manager object from overview
      */
-    private void spaceDialog(int type, ArrayList<Space> sList, ComboBox<Space> sFilter, SpaceManager sManager) {
+    private void spaceDialog(int type, ComboBox<Space> sFilter) {
     	
     	// create dialog and naming
     	Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
@@ -720,23 +747,23 @@ public class Overview extends Application {
     		break;
     	case 1: // Edit Space
     		sDialog.setTitle("Edit Space");
-    		sDialog.setHeaderText("Edit space: " + sFilter.getSelectionModel().getSelectedItem().toString());
-    		sDialog.setContentText("Parent space: " + sFilter.getSelectionModel().getSelectedItem().getParentName());
+    		sDialog.setHeaderText("Edit space: " + spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).toString());
+    		sDialog.setContentText("Parent space: " + spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).getParentName());
     		break;
     	case 2: // Delete Space + custom alert execution
     		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this space?", ButtonType.YES, ButtonType.CANCEL);
             deleteSD.setTitle("Delete Space");
-            deleteSD.setHeaderText("Delete space: " + sFilter.getSelectionModel().getSelectedItem().toString());
+            deleteSD.setHeaderText("Delete space: " + spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).toString());
             deleteSD.showAndWait();
 
             if (deleteSD.getResult() == ButtonType.YES) {
             	try {
-            		sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
+            		spaceManager.deleteSpace(spaceManager.getSelectedSpaceIndex());
             	} catch (Exception e) {
             		systemAlert(e);
             	}
                 sFilter.getItems().clear();
-                sFilter.getItems().addAll(sManager.getSpaceList());
+                sFilter.getItems().addAll(spaceManager.getSpaceList());
                 sFilter.getSelectionModel().selectFirst();
             }
             return; 
@@ -749,9 +776,9 @@ public class Overview extends Application {
     	sDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
     	
     	// parent space
-    	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
+    	int pIndex = spaceManager.getParentIndex(spaceManager.getSelectedSpaceIndex());
     	pSpace.getItems().clear();
-    	pSpace.getItems().addAll(sManager.getSpaceList());
+    	pSpace.getItems().addAll(spaceManager.getSpaceList());
     	pSpace.getSelectionModel().select(pIndex);
     	
     	// positioning
@@ -796,7 +823,7 @@ public class Overview extends Application {
             switch(type) {
             case 0:	// Add Space
             	try {
-            		sManager.addSpace(sManager.getSpaceList().get(newPIndex), spcStr);
+            		spaceManager.addSpace(spaceManager.getSpaceList().get(newPIndex), spcStr);
             		systemSuccess(0, spcStr);
             	}
             	catch (Exception e) {
@@ -805,7 +832,7 @@ public class Overview extends Application {
             	break;
             case 1: // Edit Space
             	try {
-            		sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            		spaceManager.editSpace(spaceManager.getSpaceList().get(newPIndex), i, spcStr);
             		systemSuccess(1, spcStr);
             	}
             	catch (Exception e) {
@@ -816,7 +843,7 @@ public class Overview extends Application {
             
             // update space filter list
             sFilter.getItems().clear();
-            sFilter.getItems().addAll(sManager.getSpaceList());
+            sFilter.getItems().addAll(spaceManager.getSpaceList());
             sFilter.getSelectionModel().selectLast();
         });
         

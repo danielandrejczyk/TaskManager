@@ -147,7 +147,10 @@ public class SpaceManager {
 	 */
 	public int getSelectedSpaceIndex()
 	{
-		return selectedSpaceIndex;
+		if (selectedSpaceIndex < 0)
+			return 0;
+		else
+			return selectedSpaceIndex;
 	}
 	
 	/*
