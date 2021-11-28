@@ -66,4 +66,10 @@ public class Space {
 		}
 		return parentSpace.toString();
 	}
+	
+	public Space getParentSpace() {
+//		Space tPSpace = new Space(parentSpace.parentSpace, parentSpace.toString());
+//		return tPSpace; // def breaks encap
+		return parentSpace;
+	}
 }

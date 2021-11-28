@@ -19,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -72,6 +73,9 @@ import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 
 public class Overview extends Application {
+	
+	private TaskManager taskManager;
+	private SpaceManager spaceManager;
 	
     public static void main(String[] args) {
         launch(args);
@@ -232,7 +236,12 @@ public class Overview extends Application {
         	@Override
         	public void handle(ActionEvent event) {
         		// somehow need to filter the tasks that we want by the parent space
+<<<<<<< HEAD
         		ArrayList<Task> filteredTasks = taskManager.getTaskList(spaceFilter.getSelectionModel().getSelectedItem());
+=======
+        		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
+        		//toggleDaily(border, spaceManager);
+>>>>>>> branch 'master' of https://github.com/danielandrejczyk/TaskManager.git
         	}
         });
         
@@ -404,6 +413,7 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
+<<<<<<< HEAD
     	Task physCh1 = new Task("Physics Chapter 1", LocalDate.now(), myTasks);
     	physCh1.setCurrent(Status.progress.DONE);
     	physCh1.setDescription("Ask professor about problem 7");
@@ -412,6 +422,9 @@ public class Overview extends Application {
     	calcCh1.setDescription("Help!");
     	
     	ObservableList<Task> tasks = FXCollections.observableArrayList(physCh1, calcCh1);
+=======
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
+>>>>>>> branch 'master' of https://github.com/danielandrejczyk/TaskManager.git
     	
     	// Cycle through each task and create a box for each one
     	for(Task task: tasks) 
@@ -470,25 +483,11 @@ public class Overview extends Application {
     	final ObjectProperty<Locale> locale = new SimpleObjectProperty<>(Locale.getDefault());
     	
     	// for testing tasks
-    	LocalDate today = LocalDate.now();
-    	LocalDate tomorrow = today.plusDays(1);
-    	Task physCh1 = new Task("Physics Chapter 1", today, sManager.getSpaceList().get(0));
-    	physCh1.setCurrent(Status.progress.DONE);
-    	physCh1.setPriority(Task.Priority.HIGH);
-    	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today, sManager.getSpaceList().get(0));
-    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
-    	calcCh1.setDescription("Help!");
-    	calcCh1.setPriority(Task.Priority.MEDIUM);
-    	Task calcCh2 = new Task("Calculus Chapter 2", tomorrow, sManager.getSpaceList().get(0));
-    	calcCh2.setCurrent(Status.progress.IN_PROGRESS);
-    	calcCh2.setDescription("Help!");
-    	calcCh2.setPriority(Task.Priority.LOW);
     	
-    	ArrayList<Task> tasks = new ArrayList<Task>();
-    	tasks.add(physCh1);
-    	tasks.add(calcCh2);
-    	tasks.add(calcCh1);
+    	ArrayList<Task> fList = new ArrayList<Task>();
+    	fList = taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()));
+    	for (Task t : fList)
+    		System.out.println(t.toString() + " + P: " + t.getParentName());
     	
     	// set month to now
     	month.setValue(YearMonth.now());
@@ -525,14 +524,14 @@ public class Overview extends Application {
     		calGrid.getChildren().clear();
     		calGrid.add(prevMonth, 0, 0, 1, 1);
         	calGrid.add(nextMonth, 6, 0, 1, 1);
-    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	});
     	nextMonth.setOnAction(e -> {
     		month.set(month.get().plusMonths(1));
     		calGrid.getChildren().clear();
     		calGrid.add(prevMonth, 0, 0, 1, 1);
         	calGrid.add(nextMonth, 6, 0, 1, 1);
-    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	});
     	
     	// add buttons to the calendar grid
@@ -544,7 +543,7 @@ public class Overview extends Application {
     	nextMonth.setPrefSize(CELL_WIDTH, 25);
     	
     	// draw starting calendar
-    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
+    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, fList);
     	
     	// place calendar in the anchor pane
     	monthPane.getChildren().add(calGrid);
@@ -864,16 +863,17 @@ public class Overview extends Application {
     		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList, ComboBox<Task> tFilter) {
     	
     	// create dialog and naming
-    	Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
+    	Dialog<Results> sDialog = new Dialog<>();
     	GridPane sGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
     	TextField sName = new TextField();
-    	TextField dd = new TextField();
+    	//TextField dd = new TextField();
+    	DatePicker datePicker = new DatePicker();
     	TextField desc = new TextField();
     	
     	ComboBox<Space> pSpace = new ComboBox<Space>();
         ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
-        ComboBox<progress> tProgress = new ComboBox<progress>();
+        ComboBox<Status.progress> tProgress = new ComboBox<Status.progress>();
        
     
     	// naming
@@ -915,20 +915,18 @@ public class Overview extends Application {
     	pSpace.getItems().clear();
     	pSpace.getItems().addAll(sManager.getSpaceList());
     	pSpace.getSelectionModel().select(pIndex);
-    	
-    	int y = tPriority.getSelectionModel().getSelectedIndex();
+    
     	tPriority.getItems().clear();
     	tPriority.getItems().add(Task.Priority.LOW);
     	tPriority.getItems().add(Task.Priority.MEDIUM);
     	tPriority.getItems().add(Task.Priority.HIGH);
     	tPriority.setValue(Task.Priority.MEDIUM);
     	
-    	int z = tProgress.getSelectionModel().getSelectedIndex();
     	tProgress.getItems().clear();
-    	tProgress.getItems().add(progress.TO_DO);
-    	tProgress.getItems().add(progress.IN_PROGRESS);
-    	tProgress.getItems().add(progress.DONE);
-    	tProgress.setValue(progress.TO_DO);
+    	tProgress.getItems().add(Status.progress.TO_DO);
+    	tProgress.getItems().add(Status.progress.IN_PROGRESS);
+    	tProgress.getItems().add(Status.progress.DONE);
+    	tProgress.setValue(Status.progress.TO_DO);
     	
     	
     	// positioning
@@ -940,7 +938,7 @@ public class Overview extends Application {
     	sGrid.add(new Label("Parent Space"), 0, 1);
     	sGrid.add(pSpace, 1, 1);
     	sGrid.add(new Label("Due Date"), 0, 2);
-    	sGrid.add(dd, 1, 2);
+    	sGrid.add(datePicker, 1, 2);
     	sGrid.add(new Label("Description"), 0, 3);
     	sGrid.add(desc, 1, 3);
     	sGrid.add(new Label("Priority"), 0, 4);
@@ -955,40 +953,51 @@ public class Overview extends Application {
     	sName.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
-    	dd.textProperty().addListener((observable, oldValue, newValue) -> {
+    	sName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
+
+    	/*dd.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
+    	dd.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());*/
+
     	desc.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
-    	
+    	desc.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
     	// return sDialog contents as Pair once confirmBtn is pressed
     	sDialog.setResultConverter(sDialogBtn -> {
             
 	        if (sDialogBtn == confirmBtnType) {
-	            return new Pair<>(sName.getText(), pSpace.getSelectionModel().getSelectedIndex());
+	        	return new Results(sName.getText(), datePicker.getValue(), 
+	        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
+	        			tProgress.getSelectionModel().getSelectedItem(), 
+	        			tPriority.getSelectionModel().getSelectedItem());
+
 	        }
 	            return null;
         });
         
     	// create not-null result object whose contents are the Pair of values
-        Optional<Pair<String, Integer>> result = sDialog.showAndWait();
+    	Optional<Results> result = sDialog.showAndWait();
         
         // execute once sDialog is completed and result is not null
-        result.ifPresent(spaceValue -> {
+        result.ifPresent((Results results) -> {
             
         	// pull variables from pair object
-        	String spcStr = spaceValue.getKey();
-            int newPIndex = spaceValue.getValue();
-            int i = sFilter.getSelectionModel().getSelectedIndex();
+        	String name = results.n;
+        	LocalDate d = results.dd;
+        	Space aSpace = results.pSpace;
+        	String description = results.desc;
+        	Status.progress taskProgress = results.tProgress;
+        	Task.Priority taskPriority = results.tPriority;
+        	// int newPIndex = spaceValue.getValue();
+        	//  int i = sFilter.getSelectionModel().getSelectedIndex();
             
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add task
             	try {
-            		tManager.addTask(sName.getText(), LocalDate.parse(dd.getText()), 
-            				sManager.getSpaceList().get(newPIndex), desc.getText(), 
-            				 Status.progress.values()[z], Task.Priority.values()[y]);
+            		tManager.addTask(name, d, aSpace, description, taskProgress, taskPriority);
             	}
             	catch (Exception e) {
             		//systemAlert(e)
@@ -1018,6 +1027,9 @@ public class Overview extends Application {
         // reset text and null values in textfield
         sName.setText("");
         sName.setPromptText("");
+        desc.setText("");
+        desc.setPromptText("");
+     
      
         return;
     }
@@ -1055,5 +1067,26 @@ public class Overview extends Application {
     			break;
         }
         success.showAndWait();
+    }
+    
+    public static class Results {
+
+        String n;
+        Space pSpace;
+        LocalDate dd;
+        String desc;
+        Task.Priority tPriority;
+        Status.progress tProgress;
+
+        public Results(String n, LocalDate dd, Space pSpace, String desc, 
+        		Status.progress tProgress, Task.Priority tPriority) {
+            this.n = n;
+            this.pSpace = pSpace;
+            this.dd = dd;
+            this.desc = desc;
+            this.tProgress = tProgress;
+            this.tPriority = tPriority;
+           
+        }
     }
 }

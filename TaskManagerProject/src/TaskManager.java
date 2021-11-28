@@ -89,14 +89,26 @@ public class TaskManager {
 	 * @param aParent
 	 * @return filteredList and array list
 	 */
-	public ArrayList<Task> getTaskList(Space aParent) {
+	public ArrayList<Task> getTaskList(Space selectedSpace) {
 		
 		// implement all tasks that have a particular parent
 		ArrayList<Task> filteredList = new ArrayList<Task>();
 		
 		for (Task t : taskList) {
+<<<<<<< HEAD
 			if (t.getParentName().equals(aParent.toString())) {
 				filteredList.add(t);
+=======
+			Space tempPSpace = t.getParentSpace();
+			while (tempPSpace != null) {
+				if (tempPSpace.toString().equals(selectedSpace.toString())) {
+					filteredList.add(t);
+					tempPSpace = null;
+				}
+				else {
+					tempPSpace = tempPSpace.getParentSpace();
+				}
+>>>>>>> branch 'master' of https://github.com/danielandrejczyk/TaskManager.git
 			}
 		}
 		
