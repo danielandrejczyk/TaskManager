@@ -245,8 +245,7 @@ public class Overview extends Application {
         	public void handle(ActionEvent event) {
         		// somehow need to filter the tasks that we want by the parent space
         		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
-        		//ArrayList<Task> filteredTasks = taskManager.getTaskList(spaceFilter.getSelectionModel().getSelectedItem());
-        		// * Make a call to refresh overview *
+        		//toggleDaily(border, spaceManager);
         	}
         });
         
@@ -411,7 +410,7 @@ public class Overview extends Application {
     	
     	Space myTasks = m.getSpaceList().get(0);
     	
-    	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(myTasks));
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	
     	// Cycle through each task and create a box for each one
     	for(Task task: tasks) 
@@ -470,25 +469,11 @@ public class Overview extends Application {
     	final ObjectProperty<Locale> locale = new SimpleObjectProperty<>(Locale.getDefault());
     	
     	// for testing tasks
-    	LocalDate today = LocalDate.now();
-    	LocalDate tomorrow = today.plusDays(1);
-    	Task physCh1 = new Task("Physics Chapter 1", today, sManager.getSpaceList().get(0));
-    	physCh1.setCurrent(Status.progress.DONE);
-    	physCh1.setPriority(Task.Priority.HIGH);
-    	physCh1.setDescription("Ask professor about problem 7");
-    	Task calcCh1 = new Task("Calculus Chapter 1", today, sManager.getSpaceList().get(0));
-    	calcCh1.setCurrent(Status.progress.IN_PROGRESS);
-    	calcCh1.setDescription("Help!");
-    	calcCh1.setPriority(Task.Priority.MEDIUM);
-    	Task calcCh2 = new Task("Calculus Chapter 2", tomorrow, sManager.getSpaceList().get(0));
-    	calcCh2.setCurrent(Status.progress.IN_PROGRESS);
-    	calcCh2.setDescription("Help!");
-    	calcCh2.setPriority(Task.Priority.LOW);
     	
-    	ArrayList<Task> tasks = new ArrayList<Task>();
-    	tasks.add(physCh1);
-    	tasks.add(calcCh2);
-    	tasks.add(calcCh1);
+    	ArrayList<Task> fList = new ArrayList<Task>();
+    	fList = taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()));
+    	for (Task t : fList)
+    		System.out.println(t.toString() + " + P: " + t.getParentName());
     	
     	// set month to now
     	month.setValue(YearMonth.now());
@@ -525,14 +510,14 @@ public class Overview extends Application {
     		calGrid.getChildren().clear();
     		calGrid.add(prevMonth, 0, 0, 1, 1);
         	calGrid.add(nextMonth, 6, 0, 1, 1);
-    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	});
     	nextMonth.setOnAction(e -> {
     		month.set(month.get().plusMonths(1));
     		calGrid.getChildren().clear();
     		calGrid.add(prevMonth, 0, 0, 1, 1);
         	calGrid.add(nextMonth, 6, 0, 1, 1);
-    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
+    		drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	});
     	
     	// add buttons to the calendar grid
@@ -544,7 +529,7 @@ public class Overview extends Application {
     	nextMonth.setPrefSize(CELL_WIDTH, 25);
     	
     	// draw starting calendar
-    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, tasks);
+    	drawCalendar(month, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, fList);
     	
     	// place calendar in the anchor pane
     	monthPane.getChildren().add(calGrid);

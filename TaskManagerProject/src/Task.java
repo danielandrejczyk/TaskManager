@@ -164,5 +164,11 @@ public class Task {
 	public String getDescription() {
 		return status.getDescription();
 	}
+	
+	public Space getParentSpace() {
+//		Space tPSpace = new Space(parentSpace.getParentSpace(), parentSpace.toString());
+//		return tPSpace;
+		return parentSpace;
+	}
 
 }
