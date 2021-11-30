@@ -68,12 +68,16 @@ public class TaskManager {
 		for (Task t : taskList) {
 			// assume name exists
 			if (t.equals(oldTask)) {
-				t = newTask;
+				// t = newTask;
 				// or
-				/*
-				 * t.setName(newTask.toString())
-				 * [...]
-				 */
+				
+				 t.setName(newTask.toString());
+				 t.setDate(newTask.getDate());
+				 t.setCurrent(newTask.getCurrent());
+				 t.setDescription(newTask.getDescription());
+				 t.setPriority(newTask.getPriority());
+				 t.moveTo(newTask.getParentSpace());
+				 
 			}	
 		}
 	

@@ -1131,6 +1131,8 @@ public class Overview extends Application {
         ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
         ComboBox<Status.progress> tProgress = new ComboBox<Status.progress>();
         
+        Task dummyTask = new Task("null", LocalDate.now(), spaceManager.getSpaceList().get(0));
+        
         //tFilter.getItems().clear();
         //tFilter.getItems().addAll(tManager.getTaskList(sFilter.getSelectionModel().getSelectedItem()));
     
@@ -1184,23 +1186,28 @@ public class Overview extends Application {
     	tProgress.getItems().add(Status.progress.IN_PROGRESS);
     	tProgress.getItems().add(Status.progress.DONE);
     	
-    	
+    	int i = 0;
+    	if (type == 1) {
+    		i = 1;
+    		sGrid.add(new Label("Choose task to edit"), 0, 0);
+    		sGrid.add(tFilter, 1, 0);
+    	}
     	// positioning
     	sGrid.setHgap(10);
     	sGrid.setVgap(10);
     	sGrid.setPadding(new Insets(20, 150, 10, 10));
-    	sGrid.add(new Label("Task Name"), 0, 0);
-    	sGrid.add(sName, 1, 0);
-    	sGrid.add(new Label("Parent Space"), 0, 1);
-    	sGrid.add(pSpace, 1, 1);
-    	sGrid.add(new Label("Due Date"), 0, 2);
-    	sGrid.add(datePicker, 1, 2);
-    	sGrid.add(new Label("Description"), 0, 3);
-    	sGrid.add(desc, 1, 3);
-    	sGrid.add(new Label("Priority"), 0, 4);
-    	sGrid.add(tPriority, 1, 4);
-    	sGrid.add(new Label("Progress"), 0, 5);
-    	sGrid.add(tProgress, 1, 5);
+    	sGrid.add(new Label("Task Name"), 0, 0 + i);
+    	sGrid.add(sName, 1, 0+ i);
+    	sGrid.add(new Label("Parent Space"), 0, 1+ i);
+    	sGrid.add(pSpace, 1, 1+ i);
+    	sGrid.add(new Label("Due Date"), 0, 2+ i);
+    	sGrid.add(datePicker, 1, 2+ i);
+    	sGrid.add(new Label("Description"), 0, 3+ i);
+    	sGrid.add(desc, 1, 3+ i);
+    	sGrid.add(new Label("Priority"), 0, 4+ i);
+    	sGrid.add(tPriority, 1, 4+ i);
+    	sGrid.add(new Label("Progress"), 0, 5+ i);
+    	sGrid.add(tProgress, 1, 5+ i);
     	
     	// disable confirm button until information is entered
     	Node confirmBtn = sDialog.getDialogPane().lookupButton(confirmBtnType);
@@ -1225,10 +1232,19 @@ public class Overview extends Application {
     	sDialog.setResultConverter(sDialogBtn -> {
             
 	        if (sDialogBtn == confirmBtnType) {
+	        	if (type == 0) {
 	        	return new Results(sName.getText(), datePicker.getValue(), 
 	        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
 	        			tProgress.getSelectionModel().getSelectedItem(), 
-	        			tPriority.getSelectionModel().getSelectedItem());
+	        			tPriority.getSelectionModel().getSelectedItem(), dummyTask);
+	        	}
+	        	else if (type == 1) {
+	        		return new Results(sName.getText(), datePicker.getValue(), 
+		        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
+		        			tProgress.getSelectionModel().getSelectedItem(), 
+		        			tPriority.getSelectionModel().getSelectedItem(), 
+		        			tFilter.getSelectionModel().getSelectedItem());
+	        	}
 
 	        }
 	            return null;
@@ -1247,6 +1263,7 @@ public class Overview extends Application {
         	String description = results.desc;
         	Status.progress taskProgress = results.tProgress;
         	Task.Priority taskPriority = results.tPriority;
+        	Task oTask = results.task;
         	// int newPIndex = spaceValue.getValue();
         	//  int i = sFilter.getSelectionModel().getSelectedIndex();
             
@@ -1265,6 +1282,11 @@ public class Overview extends Application {
             	//break;
             case 1: // Edit task
             	//sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+            	Task nTask = new Task(name, d, aSpace);
+                nTask.setCurrent(taskProgress);
+                nTask.setDescription(description);
+                nTask.setPriority(taskPriority);
+            	taskManager.EditTask(oTask, nTask);
             	try {
             		// do something
             	}
@@ -1281,6 +1303,10 @@ public class Overview extends Application {
             sFilter.getItems().clear();
             sFilter.getItems().addAll(sManager.getSpaceList());
             sFilter.getSelectionModel().selectLast();
+            
+            tFilter.getItems().clear();
+            tFilter.getItems().addAll(tManager.getTaskList(spaceManager.getSpaceList().get(0)));
+            tFilter.getSelectionModel().selectLast();
             
         });
         
@@ -1334,15 +1360,17 @@ public class Overview extends Application {
         String desc;
         Task.Priority tPriority;
         Status.progress tProgress;
+        Task task;
 
         public Results(String n, LocalDate dd, Space pSpace, String desc, 
-        		Status.progress tProgress, Task.Priority tPriority) {
+        		Status.progress tProgress, Task.Priority tPriority, Task task) {
             this.n = n;
             this.pSpace = pSpace;
             this.dd = dd;
             this.desc = desc;
             this.tProgress = tProgress;
             this.tPriority = tPriority;
+            this.task = task;
            
         }
     }
