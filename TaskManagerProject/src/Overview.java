@@ -1119,11 +1119,10 @@ public class Overview extends Application {
     		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList, ComboBox<Task> tFilter) {
     	
     	// create dialog and naming
-    	Dialog<Results> sDialog = new Dialog<>();
-    	GridPane sGrid = new GridPane();
+    	Dialog<Results> tDialog = new Dialog<>();
+    	GridPane tGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
-    	TextField sName = new TextField();
-    	// TextField dd = new TextField();
+    	TextField tName = new TextField();
     	DatePicker datePicker = new DatePicker();
     	TextField desc = new TextField();
     	
@@ -1132,20 +1131,17 @@ public class Overview extends Application {
         ComboBox<Status.progress> tProgress = new ComboBox<Status.progress>();
         
         Task dummyTask = new Task("null", LocalDate.now(), spaceManager.getSpaceList().get(0));
-        
-        //tFilter.getItems().clear();
-        //tFilter.getItems().addAll(tManager.getTaskList(sFilter.getSelectionModel().getSelectedItem()));
     
     	// naming
     	switch (type) {
     	case 0:	// Add Task 
-    		sDialog.setTitle("Add Task");
-    		sDialog.setHeaderText("Add a new task");
+    		tDialog.setTitle("Add Task");
+    		tDialog.setHeaderText("Add a new task");
     		break;
     	case 1: // Edit Task
-    		sDialog.setTitle("Edit Task");
-    		sDialog.setHeaderText("Edit task: " + sFilter.getSelectionModel().getSelectedItem().toString());
-    		sDialog.setContentText("Parent space: " + sFilter.getSelectionModel().getSelectedItem().getParentName());
+    		tDialog.setTitle("Edit Task");
+    		tDialog.setHeaderText("Edit task: " + sFilter.getSelectionModel().getSelectedItem().toString());
+    		tDialog.setContentText("Parent space: " + sFilter.getSelectionModel().getSelectedItem().getParentName());
     		// add stuff
     		//
     		break;
@@ -1168,7 +1164,7 @@ public class Overview extends Application {
     	}
     	
     	// add buttons
-    	sDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
+    	tDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
     	
     	// parent space
     	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
@@ -1189,34 +1185,34 @@ public class Overview extends Application {
     	int i = 0;
     	if (type == 1) {
     		i = 1;
-    		sGrid.add(new Label("Choose task to edit"), 0, 0);
-    		sGrid.add(tFilter, 1, 0);
+    		tGrid.add(new Label("Choose task to edit"), 0, 0);
+    		tGrid.add(tFilter, 1, 0);
     	}
     	// positioning
-    	sGrid.setHgap(10);
-    	sGrid.setVgap(10);
-    	sGrid.setPadding(new Insets(20, 150, 10, 10));
-    	sGrid.add(new Label("Task Name"), 0, 0 + i);
-    	sGrid.add(sName, 1, 0+ i);
-    	sGrid.add(new Label("Parent Space"), 0, 1+ i);
-    	sGrid.add(pSpace, 1, 1+ i);
-    	sGrid.add(new Label("Due Date"), 0, 2+ i);
-    	sGrid.add(datePicker, 1, 2+ i);
-    	sGrid.add(new Label("Description"), 0, 3+ i);
-    	sGrid.add(desc, 1, 3+ i);
-    	sGrid.add(new Label("Priority"), 0, 4+ i);
-    	sGrid.add(tPriority, 1, 4+ i);
-    	sGrid.add(new Label("Progress"), 0, 5+ i);
-    	sGrid.add(tProgress, 1, 5+ i);
+    	tGrid.setHgap(10);
+    	tGrid.setVgap(10);
+    	tGrid.setPadding(new Insets(20, 150, 10, 10));
+    	tGrid.add(new Label("Task Name"), 0, 0 + i);
+    	tGrid.add(tName, 1, 0+ i);
+    	tGrid.add(new Label("Parent Space"), 0, 1+ i);
+    	tGrid.add(pSpace, 1, 1+ i);
+    	tGrid.add(new Label("Due Date"), 0, 2+ i);
+    	tGrid.add(datePicker, 1, 2+ i);
+    	tGrid.add(new Label("Description"), 0, 3+ i);
+    	tGrid.add(desc, 1, 3+ i);
+    	tGrid.add(new Label("Priority"), 0, 4+ i);
+    	tGrid.add(tPriority, 1, 4+ i);
+    	tGrid.add(new Label("Progress"), 0, 5+ i);
+    	tGrid.add(tProgress, 1, 5+ i);
     	
     	// disable confirm button until information is entered
-    	Node confirmBtn = sDialog.getDialogPane().lookupButton(confirmBtnType);
+    	Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
     	confirmBtn.setDisable(true);
-    	sDialog.getDialogPane().setContent(sGrid);
-    	sName.textProperty().addListener((observable, oldValue, newValue) -> {
+    	tDialog.getDialogPane().setContent(tGrid);
+    	tName.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
-    	sName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
+    	tName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
 
     	/*dd.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
@@ -1228,18 +1224,18 @@ public class Overview extends Application {
     	});
     	desc.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
     	
-    	// return sDialog contents as Pair once confirmBtn is pressed
-    	sDialog.setResultConverter(sDialogBtn -> {
+    	// return tDialog contents as Pair once confirmBtn is pressed
+    	tDialog.setResultConverter(tDialogBtn -> {
             
-	        if (sDialogBtn == confirmBtnType) {
+	        if (tDialogBtn == confirmBtnType) {
 	        	if (type == 0) {
-	        	return new Results(sName.getText(), datePicker.getValue(), 
+	        	return new Results(tName.getText(), datePicker.getValue(), 
 	        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
 	        			tProgress.getSelectionModel().getSelectedItem(), 
 	        			tPriority.getSelectionModel().getSelectedItem(), dummyTask);
 	        	}
 	        	else if (type == 1) {
-	        		return new Results(sName.getText(), datePicker.getValue(), 
+	        		return new Results(tName.getText(), datePicker.getValue(), 
 		        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
 		        			tProgress.getSelectionModel().getSelectedItem(), 
 		        			tPriority.getSelectionModel().getSelectedItem(), 
@@ -1251,9 +1247,9 @@ public class Overview extends Application {
         });
         
     	// create not-null result object whose contents are the Pair of values
-    	Optional<Results> result = sDialog.showAndWait();
+    	Optional<Results> result = tDialog.showAndWait();
         
-        // execute once sDialog is completed and result is not null
+        // execute once tDialog is completed and result is not null
         result.ifPresent((Results results) -> {
             
         	// pull variables from pair object
@@ -1264,16 +1260,11 @@ public class Overview extends Application {
         	Status.progress taskProgress = results.tProgress;
         	Task.Priority taskPriority = results.tPriority;
         	Task oTask = results.task;
-        	// int newPIndex = spaceValue.getValue();
-        	//  int i = sFilter.getSelectionModel().getSelectedIndex();
             
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add task
             	//try {
-            		//taskManager.addTask(sName.getText(), LocalDate.parse(dd.getText()), 
-            				//sManager.getSpaceList().get(newPIndex), desc.getText(), 
-            				 //Status.progress.DONE, Task.Priority.MEDIUM);
             	tManager.addTask(name, d, aSpace, description, taskProgress, taskPriority);
             	//}
             	//catch (Exception e) {
@@ -1281,11 +1272,12 @@ public class Overview extends Application {
             	//}
             	//break;
             case 1: // Edit task
-            	//sManager.editSpace(sManager.getSpaceList().get(newPIndex), i, spcStr);
+
             	Task nTask = new Task(name, d, aSpace);
                 nTask.setCurrent(taskProgress);
                 nTask.setDescription(description);
                 nTask.setPriority(taskPriority);
+                
             	taskManager.EditTask(oTask, nTask);
             	try {
             		// do something
@@ -1295,8 +1287,6 @@ public class Overview extends Application {
             	}
             	break;
             	
-            	// copy and change
-            	// add stuff for edit task
             }
             
             // update space filter list
@@ -1311,9 +1301,11 @@ public class Overview extends Application {
         });
         
         // reset text and null values in textfield
-        sName.setText("");
-        sName.setPromptText("");
+        tName.setText("");
+        tName.setPromptText("");
      
+        desc.setText("");
+        desc.setPromptText("");
         return;
     }
     
