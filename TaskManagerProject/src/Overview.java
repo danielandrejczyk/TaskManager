@@ -1098,13 +1098,6 @@ public class Overview extends Application {
     }
     
 
-    
-   /* public static enum Priority
-	{
-		LOW, MEDIUM, HIGH;
-	}*/
-    
-	public static enum progress { TO_DO, IN_PROGRESS , DONE };
     /**
      * Helper method to create space dialogs for adding, editing, and deleting spaces
      * 
@@ -1140,10 +1133,7 @@ public class Overview extends Application {
     		break;
     	case 1: // Edit Task
     		tDialog.setTitle("Edit Task");
-    		tDialog.setHeaderText("Edit task: " + sFilter.getSelectionModel().getSelectedItem().toString());
-    		tDialog.setContentText("Parent space: " + sFilter.getSelectionModel().getSelectedItem().getParentName());
-    		// add stuff
-    		//
+    		tDialog.setHeaderText("Choose a task and edit its properties: ");
     		break;
     	case 2: // Delete Task + custom alert execution
     		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
