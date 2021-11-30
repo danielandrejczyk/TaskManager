@@ -5,10 +5,13 @@
  */
 import java.util.ArrayList;
 
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+
 public class SpaceManager {
 	
-	private ArrayList<Space> spaceList;
 	private int selectedSpaceIndex;
+	private ArrayList<Space> spaceList;
 	
 	/**
 	 * Default constructor for SpaceManager class
@@ -30,8 +33,9 @@ public class SpaceManager {
 	public void addSpace(Space aParent, String n) throws Exception {
 		
 		boolean nameExists = false;
-		
-		// check that name isn't already used by another space
+		int parentIndex = 0;
+		String prefix = "";
+		//check that name isn't already used by another space
 		for (Space s: spaceList) {
 			if (s.toString().equals(n)) {
 				nameExists = true;
@@ -44,9 +48,23 @@ public class SpaceManager {
 			aParent = spaceList.get(0);
 		}
 		
+		for (Space s : spaceList) {
+			if (s.equals(aParent) && parentIndex == 0) {
+				//prefix = "-";
+				break;
+			}
+			else if (s.equals(aParent)) {
+				//prefix = aParent.toString().substring(0, aParent.toString().lastIndexOf("-") + 1) + "-";
+				break;
+			}
+			else
+				parentIndex++;
+		}
+		
 		// add space only if the name is unique
-		if (!nameExists)
-			spaceList.add(new Space(aParent, n));
+		if (!nameExists) {
+			spaceList.add(parentIndex + 1, new Space(aParent, n));
+		}
 		else 
 			throw new Exception("Must give new space a unique name");
 		
@@ -62,8 +80,11 @@ public class SpaceManager {
 	 * @throws Exception, thrown when user performs action that is not permitted
 	 */
 	public void editSpace(Space aParent, int position, String n) throws Exception{
+		
 		Space tempSpace = spaceList.get(position);
 		boolean nameExists = false;
+		int parentIndex = 0;
+		String prefix = "";
 		
 		// My Tasks
 		if (position == 0) {
@@ -76,9 +97,22 @@ public class SpaceManager {
 				nameExists = true;
 		}
 		
+		for (Space s : spaceList) {
+			if (s.equals(aParent) && parentIndex == 0) {
+				//prefix = "-";
+				break;
+			}
+			else if (s.equals(aParent)) {
+				//prefix = aParent.toString().substring(0, aParent.toString().lastIndexOf("-") + 1) + "-";
+				break;
+			}
+			else
+				parentIndex++;
+		}
+		
 		// if name is unique, update space in space list
 		if (!nameExists) {
-			tempSpace.setName(n);
+			tempSpace.setName(prefix + n);
 			tempSpace.moveTo(aParent);
 			spaceList.set(position, tempSpace);
 		}
@@ -140,7 +174,7 @@ public class SpaceManager {
 	}
 	
 	/**
-	 * Returns the index of the currently selected spacee in
+	 * Returns the index of the currently selected space in
 	 * the list of all spaces.
 	 * 
 	 * @return	Index of the selected space in spaceList.
@@ -153,11 +187,11 @@ public class SpaceManager {
 			return selectedSpaceIndex;
 	}
 	
-	/*
+	/**
 	 * Sets the index of a newly selected space within
 	 * the space list.
 	 * 
-	 * @param	newIndex	The index of the newly selected space.
+	 * @param newIndex, The index of the newly selected space.
 	 */
 	public void setSelectedSpaceIndex(int newIndex)
 	{
