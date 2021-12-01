@@ -1,3 +1,4 @@
+package Main;
 // Author: Daniel Andrejczyk
 
 import javafx.application.Application;
