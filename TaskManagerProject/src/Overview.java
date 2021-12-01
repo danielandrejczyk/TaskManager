@@ -1192,6 +1192,7 @@ public class Overview extends Application {
     	tGrid.add(pSpace, 1, 1+ i);
     	tGrid.add(new Label("Due Date"), 0, 2+ i);
     	tGrid.add(datePicker, 1, 2+ i);
+    	// datePicker.setValue(LocalDate.now());
     	tGrid.add(new Label("Description"), 0, 3+ i);
     	tGrid.add(desc, 1, 3+ i);
     	tGrid.add(new Label("Priority"), 0, 4+ i);
@@ -1249,6 +1250,9 @@ public class Overview extends Application {
         	// pull variables from pair object
         	String name = results.n;
         	LocalDate d = results.dd;
+        	if (d == null) {
+        		d = LocalDate.now();
+        	}
         	Space aSpace = results.pSpace;
         	String description = results.desc;
         	Status.progress taskProgress = results.tProgress;
