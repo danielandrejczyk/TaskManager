@@ -31,9 +31,7 @@ public class TaskManager {
 	 * @param priority Task.priority value that indicates task priority
 	 */
 	public void addTask(String n, LocalDate dd, Space aSpace, String statusDesc,
-			Status.progress currentStatus, Task.Priority priority) {
-		
-		// throws Exception
+			Status.progress currentStatus, Task.Priority priority) throws Exception {
 		
 		boolean nameExists = false;
 		
@@ -53,8 +51,8 @@ public class TaskManager {
 			taskList.add(newTask);
 			System.out.println(newTask.toString());
 		}
-		//else 
-			//throw new Exception("Must give new space a unique name");
+		else 
+			throw new Exception("Must give new task a unique name");
 		
 	}
 	

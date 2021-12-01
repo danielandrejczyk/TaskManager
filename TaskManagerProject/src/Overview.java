@@ -1022,6 +1022,7 @@ public class Overview extends Application {
             	}
                 sFilter.getItems().clear();
                 sFilter.getItems().addAll(spaceManager.getSpaceList());
+                sFilterUpdated = true;
                 sFilter.getSelectionModel().selectFirst();
             }
             return; 
@@ -1275,12 +1276,12 @@ public class Overview extends Application {
             // execute based on current dialog type
             switch(type) {
             case 0:	// Add task
-            	//try {
+            	try {
             	tManager.addTask(name, d, aSpace, description, taskProgress, taskPriority);
-            	//}
-            	//catch (Exception e) {
-            		//e.printStackTrace();
-            	//}
+            	}
+            	catch (Exception e) {
+            		systemAlert(e);
+            	}
             	break;
             case 1: // Edit task
 
