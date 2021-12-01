@@ -72,6 +72,8 @@ import java.util.Optional;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 
+import Task.Priority;
+
 public class Overview extends Application {
 	
 	private TaskManager taskManager;
@@ -1141,18 +1143,43 @@ public class Overview extends Application {
     		tDialog.setHeaderText("Choose a task and edit its properties: ");
     		break;
     	case 2: // Delete Task + custom alert execution
-    		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
-            deleteSD.setTitle("Delete Task");
-            deleteSD.setHeaderText("Delete task: " + sFilter.getSelectionModel().getSelectedItem().toString());
-            deleteSD.showAndWait();
-
-            if (deleteSD.getResult() == ButtonType.YES) {
-            	//sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
-                sFilter.getItems().clear();
-                sFilter.getItems().addAll(sList);
-                sFilter.getSelectionModel().selectFirst();
-            }
-            return; 
+    		tDialog.setTitle("Delete Task");
+    		tDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
+    		tGrid.setHgap(10);
+        	tGrid.setVgap(10);
+        	tGrid.setPadding(new Insets(20, 150, 10, 10));
+            tGrid.add(new Label("Choose task to delete"), 0, 0);
+    		tGrid.add(tFilter, 1, 0);
+    		
+    		Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
+        	// confirmBtn.setDisable(true);
+        	tDialog.getDialogPane().setContent(tGrid);
+    		
+    		tDialog.setResultConverter(tDialogBtn -> {
+    		    if (tDialogBtn == confirmBtnType) {
+    		    	return new Results("dummyString", LocalDate.now(), 
+    		    			spaceManager.getSpaceList().get(0), "dummyDescription", 
+		        			Status.progress.IN_PROGRESS, 
+		        			Task.Priority.MEDIUM, 
+		        			tFilter.getSelectionModel().getSelectedItem());
+    		    }
+    		    return null;
+    		});
+    		
+    		Optional<Results> result = tDialog.showAndWait();
+    		
+    		 result.ifPresent((Results results) -> {
+    			 Task dTask = results.task;
+    			 
+    			 tManager.deleteTask(dTask);
+    			 
+    		 });
+	 
+    		 tFilter.getItems().clear();
+             tFilter.getItems().addAll(tManager.getTaskList(spaceManager.getSpaceList().get(0)));
+             tFilter.getSelectionModel().selectLast();
+          
+            return;
     	default:
     		System.out.println("No type");
     		break;
@@ -1171,11 +1198,13 @@ public class Overview extends Application {
     	tPriority.getItems().add(Task.Priority.LOW);
     	tPriority.getItems().add(Task.Priority.MEDIUM);
     	tPriority.getItems().add(Task.Priority.HIGH);
+    	tPriority.getSelectionModel().select(Task.Priority.MEDIUM);
     
     	tProgress.getItems().clear();
     	tProgress.getItems().add(Status.progress.TO_DO);
     	tProgress.getItems().add(Status.progress.IN_PROGRESS);
     	tProgress.getItems().add(Status.progress.DONE);
+    	tProgress.getSelectionModel().select(Status.progress.IN_PROGRESS);
     	
     	int i = 0;
     	if (type == 1) {
@@ -1204,15 +1233,11 @@ public class Overview extends Application {
     	Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
     	confirmBtn.setDisable(true);
     	tDialog.getDialogPane().setContent(tGrid);
+    	
     	tName.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
     	tName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
-
-    	/*dd.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    confirmBtn.setDisable(newValue.trim().isEmpty());
-    	});
-    	dd.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());*/
 
     	desc.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
@@ -1250,6 +1275,9 @@ public class Overview extends Application {
         	// pull variables from pair object
         	String name = results.n;
         	LocalDate d = results.dd;
+        	if (d == null) {
+        		d = LocalDate.now();
+        	}
         	Space aSpace = results.pSpace;
         	String description = results.desc;
         	Status.progress taskProgress = results.tProgress;
@@ -1311,7 +1339,7 @@ public class Overview extends Application {
      * @param e, the exception message thrown by the calling method
      */
     private void systemAlert(Exception e) {
-    	Alert badName = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
+    	Alert badName = new Alert(AlertType.ERROR, e.getMessage(), ButtonType.OK); 
         badName.setTitle("Alert");
         badName.showAndWait();
     }
