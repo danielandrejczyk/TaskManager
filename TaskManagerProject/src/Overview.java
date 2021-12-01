@@ -1139,6 +1139,8 @@ public class Overview extends Application {
     		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
             deleteSD.setTitle("Delete Task");
             deleteSD.setHeaderText("Delete task: " + sFilter.getSelectionModel().getSelectedItem().toString());
+            tGrid.add(new Label("Choose task to delete"), 0, 0);
+    		tGrid.add(tFilter, 1, 0);
             deleteSD.showAndWait();
 
             if (deleteSD.getResult() == ButtonType.YES) {
@@ -1166,11 +1168,13 @@ public class Overview extends Application {
     	tPriority.getItems().add(Task.Priority.LOW);
     	tPriority.getItems().add(Task.Priority.MEDIUM);
     	tPriority.getItems().add(Task.Priority.HIGH);
+    	tPriority.getSelectionModel().select(Task.Priority.MEDIUM);
     
     	tProgress.getItems().clear();
     	tProgress.getItems().add(Status.progress.TO_DO);
     	tProgress.getItems().add(Status.progress.IN_PROGRESS);
     	tProgress.getItems().add(Status.progress.DONE);
+    	tProgress.getSelectionModel().select(Status.progress.IN_PROGRESS);
     	
     	int i = 0;
     	if (type == 1) {
