@@ -72,6 +72,8 @@ import java.util.Optional;
 import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
 
+import Task.Priority;
+
 public class Overview extends Application {
 	
 	private TaskManager taskManager;
@@ -1136,20 +1138,43 @@ public class Overview extends Application {
     		tDialog.setHeaderText("Choose a task and edit its properties: ");
     		break;
     	case 2: // Delete Task + custom alert execution
-    		Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
-            deleteSD.setTitle("Delete Task");
-            deleteSD.setHeaderText("Delete task: " + sFilter.getSelectionModel().getSelectedItem().toString());
+    		tDialog.setTitle("Delete Task");
+    		tDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
+    		tGrid.setHgap(10);
+        	tGrid.setVgap(10);
+        	tGrid.setPadding(new Insets(20, 150, 10, 10));
             tGrid.add(new Label("Choose task to delete"), 0, 0);
     		tGrid.add(tFilter, 1, 0);
-            deleteSD.showAndWait();
-
-            if (deleteSD.getResult() == ButtonType.YES) {
-            	//sManager.deleteSpace(sFilter.getSelectionModel().getSelectedIndex());
-                sFilter.getItems().clear();
-                sFilter.getItems().addAll(sList);
-                sFilter.getSelectionModel().selectFirst();
-            }
-            return; 
+    		
+    		Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
+        	// confirmBtn.setDisable(true);
+        	tDialog.getDialogPane().setContent(tGrid);
+    		
+    		tDialog.setResultConverter(tDialogBtn -> {
+    		    if (tDialogBtn == confirmBtnType) {
+    		    	return new Results("dummyString", LocalDate.now(), 
+    		    			spaceManager.getSpaceList().get(0), "dummyDescription", 
+		        			Status.progress.IN_PROGRESS, 
+		        			Task.Priority.MEDIUM, 
+		        			tFilter.getSelectionModel().getSelectedItem());
+    		    }
+    		    return null;
+    		});
+    		
+    		Optional<Results> result = tDialog.showAndWait();
+    		
+    		 result.ifPresent((Results results) -> {
+    			 Task dTask = results.task;
+    			 
+    			 tManager.deleteTask(dTask);
+    			 
+    		 });
+	 
+    		 tFilter.getItems().clear();
+             tFilter.getItems().addAll(tManager.getTaskList(spaceManager.getSpaceList().get(0)));
+             tFilter.getSelectionModel().selectLast();
+          
+            return;
     	default:
     		System.out.println("No type");
     		break;
@@ -1192,7 +1217,6 @@ public class Overview extends Application {
     	tGrid.add(pSpace, 1, 1+ i);
     	tGrid.add(new Label("Due Date"), 0, 2+ i);
     	tGrid.add(datePicker, 1, 2+ i);
-    	// datePicker.setValue(LocalDate.now());
     	tGrid.add(new Label("Description"), 0, 3+ i);
     	tGrid.add(desc, 1, 3+ i);
     	tGrid.add(new Label("Priority"), 0, 4+ i);
@@ -1204,15 +1228,11 @@ public class Overview extends Application {
     	Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
     	confirmBtn.setDisable(true);
     	tDialog.getDialogPane().setContent(tGrid);
+    	
     	tName.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
     	});
     	tName.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());
-
-    	/*dd.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    confirmBtn.setDisable(newValue.trim().isEmpty());
-    	});
-    	dd.setPromptText(sFilter.getSelectionModel().getSelectedItem().toString());*/
 
     	desc.textProperty().addListener((observable, oldValue, newValue) -> {
     	    confirmBtn.setDisable(newValue.trim().isEmpty());
