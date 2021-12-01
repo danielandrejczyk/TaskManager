@@ -48,22 +48,22 @@ public class SpaceManager {
 			aParent = spaceList.get(0);
 		}
 		
-		for (Space s : spaceList) {
-			if (s.equals(aParent) && parentIndex == 0) {
-				//prefix = "-";
-				break;
-			}
-			else if (s.equals(aParent)) {
-				//prefix = aParent.toString().substring(0, aParent.toString().lastIndexOf("-") + 1) + "-";
-				break;
-			}
-			else
-				parentIndex++;
-		}
+//		for (Space s : spaceList) {
+//			if (s.equals(aParent) && parentIndex == 0) {
+//				//prefix = "-";
+//				break;
+//			}
+//			else if (s.equals(aParent)) {
+//				//prefix = aParent.toString().substring(0, aParent.toString().lastIndexOf("-") + 1) + "-";
+//				break;
+//			}
+//			else
+//				parentIndex++;
+//		}
 		
 		// add space only if the name is unique
 		if (!nameExists) {
-			spaceList.add(parentIndex + 1, new Space(aParent, n));
+			spaceList.add(new Space(aParent, n));
 		}
 		else 
 			throw new Exception("Must give new space a unique name");

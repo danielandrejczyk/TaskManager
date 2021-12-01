@@ -9,6 +9,22 @@
 }
 
 .cal-button:hover {
-	-fx-text-fill: #FFF;
-    -fx-background-color: #508090;
+	-fx-text-fill: #000;
+    -fx-background-color: #F0F8FF;
 }
+
+.month-btn {
+	-fx-background-color: #708090;
+	-fx-border-color: #708090;
+	-fx-border-style: none;
+	-fx-border-width: 1;
+	-fx-border-radius: 0;
+}
+
+.month-btn:hover {
+	-fx-background-color: #F0F8FF;
+	-fx-text-fill: #000;
+}
+
+
+

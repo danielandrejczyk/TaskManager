@@ -77,12 +77,14 @@ public class Overview extends Application {
 	private TaskManager taskManager;
 	private SpaceManager spaceManager;
 	private int currentView;
+	private boolean changed;
 	
 	public Overview()
 	{
 		taskManager = new TaskManager();
     	spaceManager = new SpaceManager();
     	currentView = 1; // default to home
+    	changed = false;
 	}
 	
     public static void main(String[] args) {
@@ -108,11 +110,9 @@ public class Overview extends Application {
     	// Set the title
         primaryStage.setTitle("Task Manager");
         primaryStage.centerOnScreen();
-       
         
         // Create a border pane to lay out all the items
         BorderPane border = new BorderPane();
-        
         //
         // Top panel
         //
@@ -205,7 +205,6 @@ public class Overview extends Application {
             
         	@Override
             public void handle(ActionEvent event) {
-               
         		spaceDialog(2, spaceFilter);
             }
          });
@@ -243,25 +242,28 @@ public class Overview extends Application {
          });
         
         // filter by spaces when the current space is changed
-        spaceFilter.setOnAction(new EventHandler<ActionEvent> () {
+        spaceFilter.setOnAction(new EventHandler<ActionEvent>() {
         	
         	@Override
         	public void handle(ActionEvent event) {
-        		// somehow need to filter the tasks that we want by the parent space
-        		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
-        		switch (currentView) {
-        		case 1:
-        			toggleHome(border);
-        			break;
-        		case 2:
-        			toggleDaily(border);
-        			break;
-        		case 3:
-        			toggleWeekly(border);
-        			break;
-        		case 4:
-        			toggleMonthly(border);
-        			break;
+        		
+        		if (!changed) {
+	        		// somehow need to filter the tasks that we want by the parent space
+	        		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
+	        		switch (currentView) {
+	        		case 1:
+	        			toggleHome(border);
+	        			break;
+	        		case 2:
+	        			toggleDaily(border);
+	        			break;
+	        		case 3:
+	        			toggleWeekly(border);
+	        			break;
+	        		case 4:
+	        			toggleMonthly(border);
+	        			break;
+	        		}
         		}
         	}
         });
@@ -294,6 +296,8 @@ public class Overview extends Application {
         	toggleMonthly(border);
         	currentView = 4;
         });
+        
+        
         
         Text toggleLabel = new Text("View");
         toggleLabel.setFill(Color.WHITE);
@@ -522,8 +526,8 @@ public class Overview extends Application {
     	Button nextWeek = new Button(">");
     	prevWeek.setBackground(new Background(new BackgroundFill(Color.SLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
     	nextWeek.setBackground(new Background(new BackgroundFill(Color.SLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
-    	prevWeek.setStyle("-fx-border-color: #708090");
-    	nextWeek.setStyle("-fx-border-color: #708090");
+    	prevWeek.getStyleClass().add("month-btn");
+    	nextWeek.getStyleClass().add("month-btn");
     	prevWeek.setFont(new Font("Arial Bold", 14));
     	nextWeek.setFont(new Font("Arial Bold", 14));
     	prevWeek.setTextFill(Color.WHITE);
@@ -583,8 +587,6 @@ public class Overview extends Application {
     	
     	ArrayList<Task> fList = new ArrayList<Task>();
     	fList = taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()));
-    	for (Task t : fList)
-    		System.out.println(t.toString() + " + P: " + t.getParentName());
     	
     	// set month to now
     	month.setValue(YearMonth.now());
@@ -608,8 +610,8 @@ public class Overview extends Application {
     	Button nextMonth = new Button(">");
     	prevMonth.setBackground(new Background(new BackgroundFill(Color.SLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
     	nextMonth.setBackground(new Background(new BackgroundFill(Color.SLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
-    	prevMonth.setStyle("-fx-border-color: #708090");
-    	nextMonth.setStyle("-fx-border-color: #708090");
+    	prevMonth.getStyleClass().add("month-btn");
+    	nextMonth.getStyleClass().add("month-btn");
     	prevMonth.setFont(new Font("Arial Bold", 14));
     	nextMonth.setFont(new Font("Arial Bold", 14));
     	prevMonth.setTextFill(Color.WHITE);
@@ -678,7 +680,7 @@ public class Overview extends Application {
     	weekLabel.setFont(new Font("Arial Bold", 24));
     	weekLabel.setAlignment(Pos.CENTER);
     	weekLabel.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGREY, CornerRadii.EMPTY, Insets.EMPTY)));
-    	weekLabel.setPrefSize(HEAD_WIDTH * 5, HEAD_HEIGHT);
+    	weekLabel.setMinSize(HEAD_WIDTH * 5, HEAD_HEIGHT);
     	weekLabel.setTextFill(Color.WHITE);
     	
     	// adding a header and setting its position and styling
@@ -976,6 +978,7 @@ public class Overview extends Application {
     private void spaceDialog(int type, ComboBox<Space> sFilter) {
     	
     	// create dialog and naming
+    	changed = false;
     	Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
     	GridPane sGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
@@ -1087,6 +1090,7 @@ public class Overview extends Application {
             // update space filter list
             sFilter.getItems().clear();
             sFilter.getItems().addAll(spaceManager.getSpaceList());
+            changed = true;
             sFilter.getSelectionModel().selectLast();
         });
         
@@ -1112,6 +1116,7 @@ public class Overview extends Application {
     		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList, ComboBox<Task> tFilter) {
     	
     	// create dialog and naming
+    	changed = false;
     	Dialog<Results> tDialog = new Dialog<>();
     	GridPane tGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
@@ -1282,6 +1287,7 @@ public class Overview extends Application {
             // update space filter list
             sFilter.getItems().clear();
             sFilter.getItems().addAll(sManager.getSpaceList());
+            changed = true;
             sFilter.getSelectionModel().selectLast();
             
             tFilter.getItems().clear();
