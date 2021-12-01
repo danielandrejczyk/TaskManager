@@ -13,6 +13,10 @@
     -fx-background-color: #F0F8FF;
 }
 
+.cal-button:pressed {
+	-fx-base: light-blue;
+}
+
 .month-btn {
 	-fx-background-color: #708090;
 	-fx-border-color: #708090;

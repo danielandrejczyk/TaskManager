@@ -26,6 +26,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.ComboBoxTreeCell;
@@ -79,14 +80,14 @@ public class Overview extends Application {
 	private TaskManager taskManager;
 	private SpaceManager spaceManager;
 	private int currentView;
-	private boolean changed;
+	private boolean sFilterUpdated;
 	
 	public Overview()
 	{
 		taskManager = new TaskManager();
     	spaceManager = new SpaceManager();
     	currentView = 1; // default to home
-    	changed = false;
+    	sFilterUpdated = false;
 	}
 	
     public static void main(String[] args) {
@@ -190,6 +191,7 @@ public class Overview extends Application {
         	@Override
         	public void handle(ActionEvent event) {
         		spaceDialog(0, spaceFilter);
+        		sFilterUpdated = false;
         	}
         });
         
@@ -199,6 +201,7 @@ public class Overview extends Application {
         	@Override
         	public void handle(ActionEvent event) {
         		spaceDialog(1, spaceFilter);
+        		sFilterUpdated = false;
         	}
         });
         
@@ -208,6 +211,7 @@ public class Overview extends Application {
         	@Override
             public void handle(ActionEvent event) {
         		spaceDialog(2, spaceFilter);
+        		sFilterUpdated = false;
             }
          });
         
@@ -220,6 +224,7 @@ public class Overview extends Application {
         	public void handle(ActionEvent event) {
         		taskDialog(0, spaceList, spaceFilter, spaceManager,
         				taskManager, taskList, taskFilter);
+        		sFilterUpdated = false;
         	}
         });
         
@@ -230,6 +235,7 @@ public class Overview extends Application {
         	public void handle(ActionEvent event) {
         		taskDialog(1, spaceList, spaceFilter, spaceManager,
         				taskManager, taskList, taskFilter);
+        		sFilterUpdated = false;
         	}
         });
         
@@ -240,16 +246,17 @@ public class Overview extends Application {
             public void handle(ActionEvent event) {
         		taskDialog(2, spaceList, spaceFilter, spaceManager,
         				taskManager, taskList, taskFilter);
+        		sFilterUpdated = true;
             }
          });
         
-        // filter by spaces when the current space is changed
+        // filter by spaces when the current space is sFilterUpdated
         spaceFilter.setOnAction(new EventHandler<ActionEvent>() {
         	
         	@Override
         	public void handle(ActionEvent event) {
         		
-        		if (!changed) {
+        		if (!sFilterUpdated) {
 	        		// somehow need to filter the tasks that we want by the parent space
 	        		spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
 	        		switch (currentView) {
@@ -762,9 +769,10 @@ public class Overview extends Application {
     	    				ImageView priority = new ImageView(new Image(input));
     	    				Button priorityBtn = new Button();
     	    				
-    	    				priorityBtn.setOnAction(e -> {
-    	    					System.out.println(t.getPriority());
-    	    					// in future, do a pop up or something
+    	    				priorityBtn.setOnMouseClicked(e -> {
+    	    					int setIndex = taskManager.getTaskIndexByName(t.toString());
+    	    					if (setIndex != -1)
+    	    						taskManager.setSelectedTaskIndex(setIndex);
     	    				});
     	    				
     	    				priority.setFitHeight(25);
@@ -920,9 +928,11 @@ public class Overview extends Application {
     	    				ImageView priority = new ImageView(new Image(input));
     	    				Button priorityBtn = new Button();
     	    				
-    	    				priorityBtn.setOnAction(e -> {
-    	    					System.out.println(t.getPriority());
-    	    					// in future, do a pop up or something
+    	    				// when task button is selected, allow you to edit or delete by setting current selected task index
+    	    				priorityBtn.setOnMouseClicked(e -> {
+    	    					int setIndex = taskManager.getTaskIndexByName(t.toString());
+    	    					if (setIndex != -1)
+    	    						taskManager.setSelectedTaskIndex(setIndex);
     	    				});
     	    				
     	    				priority.setFitHeight(25);
@@ -980,7 +990,7 @@ public class Overview extends Application {
     private void spaceDialog(int type, ComboBox<Space> sFilter) {
     	
     	// create dialog and naming
-    	changed = false;
+    	sFilterUpdated = false;
     	Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
     	GridPane sGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
@@ -1092,7 +1102,7 @@ public class Overview extends Application {
             // update space filter list
             sFilter.getItems().clear();
             sFilter.getItems().addAll(spaceManager.getSpaceList());
-            changed = true;
+            sFilterUpdated = true;
             sFilter.getSelectionModel().selectLast();
         });
         
@@ -1118,7 +1128,7 @@ public class Overview extends Application {
     		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList, ComboBox<Task> tFilter) {
     	
     	// create dialog and naming
-    	changed = false;
+    	sFilterUpdated = false;
     	Dialog<Results> tDialog = new Dialog<>();
     	GridPane tGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
@@ -1130,7 +1140,7 @@ public class Overview extends Application {
         ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
         ComboBox<Status.progress> tProgress = new ComboBox<Status.progress>();
         
-        Task dummyTask = new Task("null", LocalDate.now(), spaceManager.getSpaceList().get(0));
+        //Task dummyTask = new Task("null", LocalDate.now(), spaceManager.getSpaceList().get(0));
     
     	// naming
     	switch (type) {
@@ -1143,43 +1153,23 @@ public class Overview extends Application {
     		tDialog.setHeaderText("Choose a task and edit its properties: ");
     		break;
     	case 2: // Delete Task + custom alert execution
-    		tDialog.setTitle("Delete Task");
-    		tDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
-    		tGrid.setHgap(10);
-        	tGrid.setVgap(10);
-        	tGrid.setPadding(new Insets(20, 150, 10, 10));
-            tGrid.add(new Label("Choose task to delete"), 0, 0);
-    		tGrid.add(tFilter, 1, 0);
-    		
-    		Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
-        	// confirmBtn.setDisable(true);
-        	tDialog.getDialogPane().setContent(tGrid);
-    		
-    		tDialog.setResultConverter(tDialogBtn -> {
-    		    if (tDialogBtn == confirmBtnType) {
-    		    	return new Results("dummyString", LocalDate.now(), 
-    		    			spaceManager.getSpaceList().get(0), "dummyDescription", 
-		        			Status.progress.IN_PROGRESS, 
-		        			Task.Priority.MEDIUM, 
-		        			tFilter.getSelectionModel().getSelectedItem());
-    		    }
-    		    return null;
-    		});
-    		
-    		Optional<Results> result = tDialog.showAndWait();
-    		
-    		 result.ifPresent((Results results) -> {
-    			 Task dTask = results.task;
-    			 
-    			 tManager.deleteTask(dTask);
-    			 
-    		 });
-	 
-    		 tFilter.getItems().clear();
-             tFilter.getItems().addAll(tManager.getTaskList(spaceManager.getSpaceList().get(0)));
-             tFilter.getSelectionModel().selectLast();
-          
-            return;
+    		Alert deleteTD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
+            deleteTD.setTitle("Delete Task");
+            deleteTD.setHeaderText("Delete task: " + taskManager.getTaskList(spaceManager.getSpaceList().get(0)).get(taskManager.getSelectedTaskIndex()));
+            deleteTD.showAndWait();
+
+            if (deleteTD.getResult() == ButtonType.YES) {
+            	try {
+            		taskManager.deleteTask(taskManager.getTaskList(spaceManager.getSpaceList().get(0)).get(taskManager.getSelectedTaskIndex()));
+            	} catch (Exception e) {
+            		systemAlert(e);
+            	}
+                sFilter.getItems().clear();
+                sFilterUpdated = true;
+                sFilter.getItems().addAll(spaceManager.getSpaceList());
+                sFilter.getSelectionModel().selectFirst();
+            }
+            return; 
     	default:
     		System.out.println("No type");
     		break;
@@ -1210,7 +1200,7 @@ public class Overview extends Application {
     	if (type == 1) {
     		i = 1;
     		tGrid.add(new Label("Choose task to edit"), 0, 0);
-    		tGrid.add(tFilter, 1, 0);
+    		//tGrid.add(tFilter, 1, 0);
     	}
     	// positioning
     	tGrid.setHgap(10);
@@ -1252,14 +1242,13 @@ public class Overview extends Application {
 	        	return new Results(tName.getText(), datePicker.getValue(), 
 	        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
 	        			tProgress.getSelectionModel().getSelectedItem(), 
-	        			tPriority.getSelectionModel().getSelectedItem(), dummyTask);
+	        			tPriority.getSelectionModel().getSelectedItem());
 	        	}
 	        	else if (type == 1) {
 	        		return new Results(tName.getText(), datePicker.getValue(), 
 		        			pSpace.getSelectionModel().getSelectedItem(), desc.getText(), 
 		        			tProgress.getSelectionModel().getSelectedItem(), 
-		        			tPriority.getSelectionModel().getSelectedItem(), 
-		        			tFilter.getSelectionModel().getSelectedItem());
+		        			tPriority.getSelectionModel().getSelectedItem());
 	        	}
 
 	        }
@@ -1282,7 +1271,6 @@ public class Overview extends Application {
         	String description = results.desc;
         	Status.progress taskProgress = results.tProgress;
         	Task.Priority taskPriority = results.tPriority;
-        	Task oTask = results.task;
             
             // execute based on current dialog type
             switch(type) {
@@ -1293,7 +1281,7 @@ public class Overview extends Application {
             	//catch (Exception e) {
             		//e.printStackTrace();
             	//}
-            	//break;
+            	break;
             case 1: // Edit task
 
             	Task nTask = new Task(name, d, aSpace);
@@ -1301,7 +1289,7 @@ public class Overview extends Application {
                 nTask.setDescription(description);
                 nTask.setPriority(taskPriority);
                 
-            	taskManager.EditTask(oTask, nTask);
+            	taskManager.EditTask(taskManager.getTaskList(spaceManager.getSpaceList().get(0)).get(taskManager.getSelectedTaskIndex()), nTask);
             	try {
             		// do something
             	}
@@ -1315,7 +1303,7 @@ public class Overview extends Application {
             // update space filter list
             sFilter.getItems().clear();
             sFilter.getItems().addAll(sManager.getSpaceList());
-            changed = true;
+            sFilterUpdated = true;
             sFilter.getSelectionModel().selectLast();
             
             tFilter.getItems().clear();
@@ -1376,17 +1364,15 @@ public class Overview extends Application {
         String desc;
         Task.Priority tPriority;
         Status.progress tProgress;
-        Task task;
 
         public Results(String n, LocalDate dd, Space pSpace, String desc, 
-        		Status.progress tProgress, Task.Priority tPriority, Task task) {
+        		Status.progress tProgress, Task.Priority tPriority) {
             this.n = n;
             this.pSpace = pSpace;
             this.dd = dd;
             this.desc = desc;
             this.tProgress = tProgress;
             this.tPriority = tPriority;
-            this.task = task;
            
         }
     }

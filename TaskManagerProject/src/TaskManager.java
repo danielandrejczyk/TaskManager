@@ -124,8 +124,16 @@ public class TaskManager {
 	 * 
 	 * @return	Index of the selected task in taskList.
 	 */
-	public int getSelectedTaskIndex()
+	public int getTaskIndexByName(String tName)
 	{
+		for (int i = 0; i < taskList.size(); i++) {
+			if (taskList.get(i).toString().equals(tName))
+				return i;
+		}
+		return -1;
+	}
+	
+	public int getSelectedTaskIndex() {
 		return selectedTaskIndex;
 	}
 	
