@@ -1313,7 +1313,7 @@ public class Overview extends Application {
      * @param e, the exception message thrown by the calling method
      */
     private void systemAlert(Exception e) {
-    	Alert badName = new Alert(AlertType.ERROR, e.toString(), ButtonType.OK);
+    	Alert badName = new Alert(AlertType.ERROR, e.getMessage(), ButtonType.OK);
         badName.setTitle("Alert");
         badName.showAndWait();
     }
