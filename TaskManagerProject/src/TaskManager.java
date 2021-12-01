@@ -1,4 +1,10 @@
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +25,36 @@ public class TaskManager {
 	 */
 	public TaskManager() {
 		taskList = new ArrayList<Task>();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void loadTasks()
+	{
+		try {
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream("tasks.dat"));
+			taskList = (ArrayList<Task>) in.readObject();
+			in.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Unable to find file!");
+		} catch (IOException e) {
+			System.out.println("Error writing out task objects!");
+		} catch (ClassNotFoundException e) {
+			System.out.println("File not in the right format!");
+		}
+	}
+	
+	public void storeTasks()
+	{
+		try {
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("tasks.dat"));
+			out.writeObject(taskList);
+			out.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Unable to find file!");
+		} catch (IOException e) {
+			System.out.println("Error writing out task objects!");
+			e.printStackTrace();
+		}
 	}
 	
 	/**

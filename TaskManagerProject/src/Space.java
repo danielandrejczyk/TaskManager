@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 /**
  * 
  * @author tteper
@@ -5,7 +7,8 @@
  * TaskManager Space class
  *
  */
-public class Space {
+@SuppressWarnings("serial")
+public class Space implements Serializable {
 	
 	private Space parentSpace;
 	private String name;

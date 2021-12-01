@@ -3,6 +3,12 @@
  * 
  * This class is for Space Manager
  */
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javafx.scene.control.TreeItem;
@@ -21,6 +27,36 @@ public class SpaceManager {
 	public SpaceManager() {
 		spaceList = new ArrayList<Space>();
 		spaceList.add(new Space("My Tasks"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void loadSpaces()
+	{
+		try {
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream("spaces.dat"));
+			spaceList = (ArrayList<Space>) in.readObject();
+			in.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Unable to find file!");
+		} catch (IOException e) {
+			System.out.println("Error writing out task objects!");
+		} catch (ClassNotFoundException e) {
+			System.out.println("File not in the right format!");
+		}
+	}
+	
+	public void storeSpaces()
+	{
+		try {
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("spaces.dat"));
+			out.writeObject(spaceList);
+			out.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Unable to find file!");
+		} catch (IOException e) {
+			System.out.println("Error writing out task objects!");
+			e.printStackTrace();
+		}
 	}
 	
 	/**

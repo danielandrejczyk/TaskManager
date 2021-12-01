@@ -1,10 +1,13 @@
+import java.io.Serializable;
+
 /**
  * @author: Justin
  * 
  *  TaskManager Status Class
 */
 
-public class Status{
+@SuppressWarnings("serial")
+public class Status implements Serializable {
 	
 	// Variables
 	public static enum progress { TO_DO, IN_PROGRESS , DONE };

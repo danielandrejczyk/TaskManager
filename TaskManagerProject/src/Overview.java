@@ -23,57 +23,35 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import javafx.stage.Popup;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.YearMonth;
-import java.time.chrono.ChronoLocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
-
-import javax.swing.*;
-import javax.swing.GroupLayout.Alignment;
-
-import Task.Priority;
 
 public class Overview extends Application {
 	
@@ -82,10 +60,15 @@ public class Overview extends Application {
 	private int currentView;
 	private boolean sFilterUpdated;
 	
+	/**
+	 * Constructor for Overview class
+	 */
 	public Overview()
 	{
 		taskManager = new TaskManager();
-    	spaceManager = new SpaceManager();
+		taskManager.loadTasks();
+		spaceManager = new SpaceManager();
+		spaceManager.loadSpaces();
     	currentView = 1; // default to home
     	sFilterUpdated = false;
 	}
@@ -95,6 +78,18 @@ public class Overview extends Application {
     	Overview overview = new Overview();
     	
         launch(args);
+    }
+    
+    /**
+     * Saves tasks and spaces before closing application
+     */
+    @Override
+    public void stop(){
+        System.out.println("Stage is closing");
+        
+        taskManager.storeTasks();
+        spaceManager.storeSpaces();
+        
     }
     
     /**

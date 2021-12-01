@@ -1,4 +1,5 @@
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -9,7 +10,8 @@ import java.time.LocalDate;
  * @author Calen
  * @author justin
  */
-public class Task {
+@SuppressWarnings("serial")
+public class Task implements Serializable {
 
 
 	/*
