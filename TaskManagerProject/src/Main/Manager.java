@@ -43,15 +43,12 @@ import javafx.util.Pair;
 public class Manager extends Application {
 
 	/* Class Variables */
-	private static TaskManager taskManager;
-	private static SpaceManager spaceManager;
-	private static Overview overview;
+	private TaskManager taskManager;
+	private SpaceManager spaceManager;
+	private int currentView;
 	private static boolean sFilterUpdated;
 
 	public static void main(String[] args) {
-
-		taskManager = new TaskManager();
-		spaceManager = new SpaceManager();
 		
 		sFilterUpdated = false;
 		launch(args);
@@ -81,7 +78,14 @@ public class Manager extends Application {
 		////////////////////////////
 		//	Initial Scene Set-up  //
 		////////////////////////////
-
+		
+		taskManager = new TaskManager();
+		spaceManager = new SpaceManager();
+		taskManager.loadTasks();
+		spaceManager.loadSpaces();
+		
+		currentView = 1;
+		
 		// Set the title
 		primaryStage.setTitle("Task Manager");
 		primaryStage.centerOnScreen();
@@ -111,8 +115,8 @@ public class Manager extends Application {
 		// Space selection drop-down
 		ComboBox<Space> spaceFilter = new ComboBox<Space>();
 		ComboBox<Task> taskFilter = new ComboBox<Task>();
-		ArrayList<Space> spaceList = spaceManager.getSpaceList();
-		ArrayList<Task> taskList = taskManager.getTaskList(spaceList.get(0));
+		ArrayList<Space> spaceList = SpaceManager.getSpaceList();
+		ArrayList<Task> taskList = TaskManager.getTaskList(spaceList.get(0));
 		spaceFilter.getItems().addAll(spaceList);
 		spaceFilter.getSelectionModel().selectFirst();
 		spaceFilter.setPrefHeight(40);
@@ -221,8 +225,11 @@ public class Manager extends Application {
 
 				if (!sFilterUpdated) {
 					// somehow need to filter the tasks that we want by the parent space
-					spaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
+					SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
 					
+					Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
+							border.getCenter().getBoundsInLocal().getMaxY());
+					border.setCenter(newOverview);
 				}
 			}
 		});
@@ -243,23 +250,26 @@ public class Manager extends Application {
 			Pane newOverview = Overview.toggleOverview(1, border.getCenter().getBoundsInLocal().getMaxX(), 
 					border.getCenter().getBoundsInLocal().getMaxY());
 			border.setCenter(newOverview);
+			currentView = 1;
 		});
 		dailyToggle.setOnMouseClicked(e -> {
 			Pane newOverview = Overview.toggleOverview(2, border.getCenter().getBoundsInLocal().getMaxX(), 
 					border.getCenter().getBoundsInLocal().getMaxY());
 			border.setCenter(newOverview);
+			currentView = 2;
 		});
 		weeklyToggle.setOnMouseClicked(e -> {
 			Pane newOverview = Overview.toggleOverview(3, border.getCenter().getBoundsInLocal().getMaxX(), 
 					border.getCenter().getBoundsInLocal().getMaxY());
 			border.setCenter(newOverview);
+			currentView = 3;
 		});
 		monthlyToggle.setOnMouseClicked(e -> {
 			Pane newOverview = Overview.toggleOverview(4, border.getCenter().getBoundsInLocal().getMaxX(), 
 					border.getCenter().getBoundsInLocal().getMaxY());
 			border.setCenter(newOverview);
+			currentView = 4;
 		});
-
 
 
 		Text toggleLabel = new Text("View");
@@ -335,18 +345,18 @@ public class Manager extends Application {
     	case 2: // Delete Task + custom alert execution
     		Alert deleteTD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
             deleteTD.setTitle("Delete Task");
-            deleteTD.setHeaderText("Delete task: " + taskManager.getTaskList(spaceManager.getSpaceList().get(0)).get(taskManager.getSelectedTaskIndex()));
+            deleteTD.setHeaderText("Delete task: " + TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()));
             deleteTD.showAndWait();
 
             if (deleteTD.getResult() == ButtonType.YES) {
             	try {
-            		taskManager.deleteTask(taskManager.getTaskList(spaceManager.getSpaceList().get(0)).get(taskManager.getSelectedTaskIndex()));
+            		taskManager.deleteTask(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()));
             	} catch (Exception e) {
             		systemAlert(e);
             	}
                 sFilter.getItems().clear();
                 sFilterUpdated = true;
-                sFilter.getItems().addAll(spaceManager.getSpaceList());
+                sFilter.getItems().addAll(SpaceManager.getSpaceList());
                 sFilter.getSelectionModel().selectFirst();
             }
             return; 
@@ -359,9 +369,9 @@ public class Manager extends Application {
     	tDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
     	
     	// parent space
-    	int pIndex = sManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
+    	int pIndex = spaceManager.getParentIndex(sFilter.getSelectionModel().getSelectedIndex());
     	pSpace.getItems().clear();
-    	pSpace.getItems().addAll(sManager.getSpaceList());
+    	pSpace.getItems().addAll(SpaceManager.getSpaceList());
     	pSpace.getSelectionModel().select(pIndex);
     	
     	tPriority.getItems().clear();
@@ -469,7 +479,7 @@ public class Manager extends Application {
                 nTask.setDescription(description);
                 nTask.setPriority(taskPriority);
                 
-            	taskManager.EditTask(taskManager.getTaskList(spaceManager.getSpaceList().get(0)).get(taskManager.getSelectedTaskIndex()), nTask);
+            	taskManager.EditTask(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()), nTask);
             	try {
             		// do something
             	}
@@ -482,12 +492,12 @@ public class Manager extends Application {
             
             // update space filter list
             sFilter.getItems().clear();
-            sFilter.getItems().addAll(sManager.getSpaceList());
+            sFilter.getItems().addAll(SpaceManager.getSpaceList());
             sFilterUpdated = true;
             sFilter.getSelectionModel().selectLast();
             
             tFilter.getItems().clear();
-            tFilter.getItems().addAll(tManager.getTaskList(spaceManager.getSpaceList().get(0)));
+            tFilter.getItems().addAll(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)));
             tFilter.getSelectionModel().selectLast();
             
         });
@@ -527,23 +537,23 @@ public class Manager extends Application {
 			break;
 		case 1: // Edit Space
 			sDialog.setTitle("Edit Space");
-			sDialog.setHeaderText("Edit space: " + spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).toString());
-			sDialog.setContentText("Parent space: " + spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).getParentName());
+			sDialog.setHeaderText("Edit space: " + SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex()).toString());
+			sDialog.setContentText("Parent space: " + SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex()).getParentName());
 			break;
 		case 2: // Delete Space + custom alert execution
 			Alert deleteSD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this space?", ButtonType.YES, ButtonType.CANCEL);
 			deleteSD.setTitle("Delete Space");
-			deleteSD.setHeaderText("Delete space: " + spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).toString());
+			deleteSD.setHeaderText("Delete space: " + SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex()).toString());
 			deleteSD.showAndWait();
 
 			if (deleteSD.getResult() == ButtonType.YES) {
 				try {
-					spaceManager.deleteSpace(spaceManager.getSelectedSpaceIndex());
+					spaceManager.deleteSpace(SpaceManager.getSelectedSpaceIndex());
 				} catch (Exception e) {
 					systemAlert(e);
 				}
 				sFilter.getItems().clear();
-				sFilter.getItems().addAll(spaceManager.getSpaceList());
+				sFilter.getItems().addAll(SpaceManager.getSpaceList());
 				sFilterUpdated = true;
 				sFilter.getSelectionModel().selectFirst();
 			}
@@ -557,9 +567,9 @@ public class Manager extends Application {
 		sDialog.getDialogPane().getButtonTypes().addAll(confirmBtnType, ButtonType.CANCEL);
 
 		// parent space
-		int pIndex = spaceManager.getParentIndex(spaceManager.getSelectedSpaceIndex());
+		int pIndex = spaceManager.getParentIndex(SpaceManager.getSelectedSpaceIndex());
 		pSpace.getItems().clear();
-		pSpace.getItems().addAll(spaceManager.getSpaceList());
+		pSpace.getItems().addAll(SpaceManager.getSpaceList());
 		pSpace.getSelectionModel().select(pIndex);
 
 		// positioning
@@ -604,7 +614,7 @@ public class Manager extends Application {
 			switch(type) {
 			case 0:	// Add Space
 				try {
-					spaceManager.addSpace(spaceManager.getSpaceList().get(newPIndex), spcStr);
+					spaceManager.addSpace(SpaceManager.getSpaceList().get(newPIndex), spcStr);
 					systemSuccess(0, spcStr);
 				}
 				catch (Exception e) {
@@ -613,7 +623,7 @@ public class Manager extends Application {
 				break;
 			case 1: // Edit Space
 				try {
-					spaceManager.editSpace(spaceManager.getSpaceList().get(newPIndex), i, spcStr);
+					spaceManager.editSpace(SpaceManager.getSpaceList().get(newPIndex), i, spcStr);
 					systemSuccess(1, spcStr);
 				}
 				catch (Exception e) {
@@ -624,7 +634,7 @@ public class Manager extends Application {
 
 			// update space filter list
 			sFilter.getItems().clear();
-			sFilter.getItems().addAll(spaceManager.getSpaceList());
+			sFilter.getItems().addAll(SpaceManager.getSpaceList());
 			sFilterUpdated = true;
 			sFilter.getSelectionModel().selectLast();
 		});
