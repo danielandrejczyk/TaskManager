@@ -412,16 +412,6 @@ public class Manager extends Application {
     	tGrid.add(new Label("Progress"), 0, 5+ i);
     	tGrid.add(tProgress, 1, 5+ i);
     	
-    	// pre-fill fields
-    	if (type == 1) {
-    		tName.setText(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).toString());
-    		desc.setText(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getDescription());
-    		pSpace.getSelectionModel().select(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getParentSpace());
-    		datePicker.setValue(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getDate());
-    		tPriority.setValue(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getPriority());
-    		tProgress.setValue(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getCurrent());
-    	}
-    	
     	// disable confirm button until information is entered
     	Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
     	confirmBtn.setDisable(true);
