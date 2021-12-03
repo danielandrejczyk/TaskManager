@@ -2,7 +2,7 @@ package Main;
 /**
  * @author: Tom
  * 
- * This class is for Space Manager
+ * SpaceManager Class for managing spaces
  */
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,6 +30,9 @@ public class SpaceManager {
 		spaceList.add(new Space("My Tasks"));
 	}
 	
+	/**
+	 * Method to load space data into TaskManager program
+	 */
 	@SuppressWarnings("unchecked")
 	public void loadSpaces()
 	{
@@ -46,6 +49,9 @@ public class SpaceManager {
 		}
 	}
 	
+	/**
+	 * Method to save space data into TaskManager program
+	 */
 	public void storeSpaces()
 	{
 		try {
@@ -61,7 +67,7 @@ public class SpaceManager {
 	}
 	
 	/**
-	 * Add space to space list
+	 * Method to add space to space list
 	 * 
 	 * @param aParent, the parent class of the new space
 	 * @param n, the name of the new space
@@ -69,10 +75,10 @@ public class SpaceManager {
 	 */
 	public void addSpace(Space aParent, String n) throws Exception {
 		
+		// true if parent space name already exists, false otherwise
 		boolean nameExists = false;
-		int parentIndex = 0;
-		String prefix = "";
-		//check that name isn't already used by another space
+
+		// check that name isn't already used by another space
 		for (Space s: spaceList) {
 			if (s.toString().equals(n)) {
 				nameExists = true;
@@ -85,20 +91,7 @@ public class SpaceManager {
 			aParent = spaceList.get(0);
 		}
 		
-//		for (Space s : spaceList) {
-//			if (s.equals(aParent) && parentIndex == 0) {
-//				//prefix = "-";
-//				break;
-//			}
-//			else if (s.equals(aParent)) {
-//				//prefix = aParent.toString().substring(0, aParent.toString().lastIndexOf("-") + 1) + "-";
-//				break;
-//			}
-//			else
-//				parentIndex++;
-//		}
-		
-		// add space only if the name is unique
+		// add space only if the name is unique, else throw message to user
 		if (!nameExists) {
 			spaceList.add(new Space(aParent, n));
 		}
@@ -120,8 +113,6 @@ public class SpaceManager {
 		
 		Space tempSpace = spaceList.get(position);
 		boolean nameExists = false;
-		int parentIndex = 0;
-		String prefix = "";
 		
 		// My Tasks
 		if (position == 0) {
@@ -134,22 +125,9 @@ public class SpaceManager {
 				nameExists = true;
 		}
 		
-		for (Space s : spaceList) {
-			if (s.equals(aParent) && parentIndex == 0) {
-				//prefix = "-";
-				break;
-			}
-			else if (s.equals(aParent)) {
-				//prefix = aParent.toString().substring(0, aParent.toString().lastIndexOf("-") + 1) + "-";
-				break;
-			}
-			else
-				parentIndex++;
-		}
-		
-		// if name is unique, update space in space list
+		// if name is unique, update space in space list; else throw message
 		if (!nameExists) {
-			tempSpace.setName(prefix + n);
+			tempSpace.setName(n);
 			tempSpace.moveTo(aParent);
 			spaceList.set(position, tempSpace);
 		}
@@ -160,19 +138,19 @@ public class SpaceManager {
 	}
 	
 	/**
-	 * Delete space in space list
+	 * Deletes space in space list
 	 * 
 	 * @param position, the position of the target deleted space in spaceList
 	 * @throws Exception, thrown when user performs action that is not permitted
 	 */
 	public void deleteSpace(int position) throws Exception {
 		
+		// if user tries to delete My Tasks, don't let them
 		if (position == 0)
 			throw new Exception("My Tasks cannot be deleted! Try deleting a different space");
 		else {
 			// check that there are no sub-spaces
 			for (Space s : spaceList) {
-				
 				// if current space has target space as parent
 				if (s.getParentName().equals(spaceList.get(position).toString())) {
 					s.moveTo(spaceList.get(0)); // by default, reassign subspaces to have parent space My Tasks
@@ -184,11 +162,10 @@ public class SpaceManager {
 		return;
 	}
 	
-	
 	/**
-	 * Method to return the parent index of a particular space
+	 * Returns the parent index of a particular space
 	 * @param position, the location of the target space in spaceList
-	 * @return int, the index of the parent space of the target space
+	 * @return the index of the parent space of the target space
 	 */
 	public int getParentIndex(int position) { 
 		
@@ -204,7 +181,7 @@ public class SpaceManager {
 	
 	/**
 	 * Returns a copy of the current task spaces
-	 * @return ArrayList, a copy of the spaces in the task application
+	 * @return a copy of the spaces in the task application
 	 */
 	public ArrayList<Space> getSpaceList() {
 		return new ArrayList<Space>(spaceList);
@@ -212,9 +189,9 @@ public class SpaceManager {
 	
 	/**
 	 * Returns the index of the currently selected space in
-	 * the list of all spaces.
+	 * the list of all spaces
 	 * 
-	 * @return	Index of the selected space in spaceList.
+	 * @return index of the selected space in spaceList.
 	 */
 	public int getSelectedSpaceIndex()
 	{
@@ -226,9 +203,9 @@ public class SpaceManager {
 	
 	/**
 	 * Sets the index of a newly selected space within
-	 * the space list.
+	 * the space list
 	 * 
-	 * @param newIndex, The index of the newly selected space.
+	 * @param newIndex, The index of the newly selected space
 	 */
 	public void setSelectedSpaceIndex(int newIndex)
 	{

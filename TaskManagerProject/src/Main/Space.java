@@ -5,7 +5,7 @@ import java.io.Serializable;
  * 
  * @author tteper
  * 
- * TaskManager Space class
+ * Space class for creating space objects
  *
  */
 @SuppressWarnings("serial")
@@ -25,7 +25,7 @@ public class Space implements Serializable {
 	}
 	
 	/**
-	 * Special constructor
+	 * Special constructor with parent space
 	 * @param parent the name of the target parent space
 	 * @param name the name of space to be created
 	 */
@@ -35,7 +35,7 @@ public class Space implements Serializable {
 	}
 	
 	/**
-	 * Setter method for modifying Space name
+	 * Modifies space name
 	 * @param n the name of the space to be modified
 	 */
 	public void setName(String n) {
@@ -43,8 +43,8 @@ public class Space implements Serializable {
 	}
 	
 	/**
-	 * Getter method for retrieving Space name
-	 * @return String name of space
+	 * Retrieves space name
+	 * @return name of space
 	 */
 	@Override
 	public String toString() {
@@ -52,16 +52,16 @@ public class Space implements Serializable {
 	}
 	 
 	/**
-	 * Method to change the parent space of this space
-	 * @param aSpace the target space
+	 * Changes the parent space of this space
+	 * @param aSpace, the target space
 	 */
 	public void moveTo(Space aSpace) {
 		parentSpace = aSpace;
 	}
 	
 	/**
-	 * Getter method for retrieving parent Space name
-	 * @return String name of parent space
+	 * Retrieves parent space name
+	 * @return name of parent space
 	 */
 	public String getParentName() {
 		if(parentSpace == null)
@@ -71,9 +71,11 @@ public class Space implements Serializable {
 		return parentSpace.toString();
 	}
 	
+	/**
+	 * Getter method for retrieving parent space object
+	 * @return the parents space of the space
+	 */
 	public Space getParentSpace() {
-//		Space tPSpace = new Space(parentSpace.parentSpace, parentSpace.toString());
-//		return tPSpace; // def breaks encap
 		return parentSpace;
 	}
 }
