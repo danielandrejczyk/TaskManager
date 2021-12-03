@@ -441,7 +441,7 @@ public class Overview {
     			
     			// show task information
     			for (Task t : taskList) {
-    				if (t.getDate().equals(date) && numTasks < 4) {
+    				if (t.getDate().equals(date) && numTasks < 10) {
     					numTasks++;
     					tasks = t.toString();
     					
@@ -488,7 +488,7 @@ public class Overview {
     	    				System.out.println("Unable to find priority graphic for button!");
     	    			}
     				}
-    				else if (t.getDate().equals(date) && numTasks >= 4) {
+    				else if (t.getDate().equals(date) && numTasks >= 10) {
     					tasks = "[...]";
     					cellGrid.add(new Label(tasks), 0, numTasks+1);
     				}
