@@ -18,8 +18,8 @@ import java.util.Date;
  */
 public class TaskManager {
 	
-	private ArrayList<Task> taskList;
-	private int selectedTaskIndex;
+	private static ArrayList<Task> taskList;
+	private static int selectedTaskIndex;
 	
 	/**
 	 * Default constructor
@@ -132,7 +132,7 @@ public class TaskManager {
 	 * @param aParent
 	 * @return filteredList and array list
 	 */
-	public ArrayList<Task> getTaskList(Space selectedSpace) {
+	public static ArrayList<Task> getTaskList(Space selectedSpace) {
 		
 		// implement all tasks that have a particular parent
 		ArrayList<Task> filteredList = new ArrayList<Task>();
@@ -159,7 +159,7 @@ public class TaskManager {
 	 * 
 	 * @return	Index of the selected task in taskList.
 	 */
-	public int getTaskIndexByName(String tName)
+	public static int getTaskIndexByName(String tName)
 	{
 		for (int i = 0; i < taskList.size(); i++) {
 			if (taskList.get(i).toString().equals(tName))
@@ -168,7 +168,7 @@ public class TaskManager {
 		return -1;
 	}
 	
-	public int getSelectedTaskIndex() {
+	public static int getSelectedTaskIndex() {
 		return selectedTaskIndex;
 	}
 	
@@ -178,7 +178,7 @@ public class TaskManager {
 	 * 
 	 * @param	newIndex	The index of the newly selected task.
 	 */
-	public void setSelectedTaskIndex(int newIndex)
+	public static void setSelectedTaskIndex(int newIndex)
 	{
 		selectedTaskIndex = newIndex;
 	}

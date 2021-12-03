@@ -17,8 +17,8 @@ import javafx.scene.control.TreeView;
 
 public class SpaceManager {
 	
-	private int selectedSpaceIndex;
-	private ArrayList<Space> spaceList;
+	private static int selectedSpaceIndex;
+	private static ArrayList<Space> spaceList;
 	
 	/**
 	 * Default constructor for SpaceManager class
@@ -183,7 +183,8 @@ public class SpaceManager {
 	 * Returns a copy of the current task spaces
 	 * @return a copy of the spaces in the task application
 	 */
-	public ArrayList<Space> getSpaceList() {
+	public static ArrayList<Space> getSpaceList() {
+		
 		return new ArrayList<Space>(spaceList);
 	}
 	
@@ -193,7 +194,7 @@ public class SpaceManager {
 	 * 
 	 * @return index of the selected space in spaceList.
 	 */
-	public int getSelectedSpaceIndex()
+	public static int getSelectedSpaceIndex()
 	{
 		if (selectedSpaceIndex < 0)
 			return 0;
@@ -207,7 +208,7 @@ public class SpaceManager {
 	 * 
 	 * @param newIndex, The index of the newly selected space
 	 */
-	public void setSelectedSpaceIndex(int newIndex)
+	public static void setSelectedSpaceIndex(int newIndex)
 	{
 		selectedSpaceIndex = newIndex;
 	}
