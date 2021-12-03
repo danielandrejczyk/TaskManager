@@ -337,40 +337,47 @@ public class Overview extends Application {
      */
     private void toggleHome(BorderPane b)
     {
+    	GridPane homePane = new GridPane();
     	
-    	AnchorPane homePane = new AnchorPane();
-    	homePane.setPadding(new Insets(20, 20, 20, 20));
-    	
-    	Calendar newCalendar = Calendar.getInstance();
-    	LocalDate today = LocalDate.now();
-    	
-    	Space myTasks = spaceManager.getSpaceList().get(0);
+    	//AnchorPane homePane = new AnchorPane();
+    	homePane.setPadding(new Insets(20));
+    	GridPane.setMargin(homePane, new Insets(20));
+    	homePane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
     	
     	ObservableList<Task> tasks = FXCollections.observableArrayList(taskManager.getTaskList(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex())));
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
     	listView.setPrefWidth(450);
+    	listView.setPrefHeight(500);
+    	listView.getStyleClass().add("list-view");
+    	GridPane.setMargin(listView, new Insets(10));
     	
-    	Label taskLabel = new Label("Tasks");
+    	Label taskLabel = new Label(spaceManager.getSpaceList().get(spaceManager.getSelectedSpaceIndex()).toString());
     	taskLabel.setFont(new Font("Arial", 24));
     	taskLabel.setPrefWidth(450);
+    	GridPane.setMargin(taskLabel, new Insets(10));
     	
     	// current day
-    	String now = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH).format(new java.util.Date());
+    	String now = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(new java.util.Date());
     	
     	Label dateLabel = new Label(now);
     	dateLabel.setFont(new Font("Arial Bold", 24));
     	dateLabel.setPrefWidth(350);
+    	GridPane.setMargin(dateLabel, new Insets(10));
     	
     	// Task information text flow
     	VBox taskInformation = new VBox();
-    	taskInformation.setBackground(new Background(new BackgroundFill(Color.LIGHTGREY, CornerRadii.EMPTY, Insets.EMPTY)));
+    	taskInformation.setBackground(new Background(new BackgroundFill(Color.WHITESMOKE, CornerRadii.EMPTY, Insets.EMPTY)));
     	taskInformation.setSpacing(10);
-    	taskInformation.setMaxWidth(350); 
+    	taskInformation.setStyle("-fx-font-size: 16");
+    	taskInformation.setPrefWidth(350); 
+    	GridPane.setMargin(taskInformation, new Insets(10));
     	
     	Text noTaskSelected = new Text("Select a task from the right list to see more information");
+    	noTaskSelected.setWrappingWidth(300);
+    	noTaskSelected.minWidth(350);
+    	
     	taskInformation.getChildren().add(noTaskSelected);
-    	taskInformation.setPrefSize(350, 400);
 		taskInformation.setPadding(new Insets(20,20,20,20));
     		
     	// Get the selected task
@@ -384,9 +391,11 @@ public class Overview extends Application {
     		Text priority = new Text("Priority: " + selectedTask.getPriority());
     		Text status = new Text("Status: " + selectedTask.getCurrent());
     		Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
+    		statusDesc.setWrappingWidth(300);
     		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
+    		Text date = new Text("Due Date: " + selectedTask.getDate());
     		
-    		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace);
+    		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace, date);
     	});
     	
     	//
@@ -394,22 +403,26 @@ public class Overview extends Application {
     	//
     	
     	// Task Label 
-    	AnchorPane.setTopAnchor(taskLabel, 10.0);
-    	AnchorPane.setRightAnchor(taskLabel, 10.0);
+//    	AnchorPane.setTopAnchor(taskLabel, 10.0);
+//    	AnchorPane.setRightAnchor(taskLabel, 10.0);
+//    	
+//    	// Date Label
+//    	AnchorPane.setTopAnchor(dateLabel, 10.0);
+//    	AnchorPane.setLeftAnchor(dateLabel, 20.0);
+//    	
+//    	// Task List
+//    	AnchorPane.setRightAnchor(listView, 10.0);
+//    	AnchorPane.setTopAnchor(listView, 60.0);
+//    	
+//    	// Task Information
+//    	AnchorPane.setTopAnchor(taskInformation, 60.0);
+//    	AnchorPane.setLeftAnchor(taskInformation, 20.0);
     	
-    	// Date Label
-    	AnchorPane.setTopAnchor(dateLabel, 10.0);
-    	AnchorPane.setLeftAnchor(dateLabel, 20.0);
-    	
-    	// Task List
-    	AnchorPane.setRightAnchor(listView, 10.0);
-    	AnchorPane.setTopAnchor(listView, 60.0);
-    	
-    	// Task Information
-    	AnchorPane.setTopAnchor(taskInformation, 60.0);
-    	AnchorPane.setLeftAnchor(taskInformation, 20.0);
-    	
-    	homePane.getChildren().addAll(listView, taskLabel, dateLabel, taskInformation);
+    	//homePane.getChildren().addAll(listView, taskLabel, dateLabel, taskInformation);
+    	homePane.add(dateLabel, 0, 0);
+    	homePane.add(taskLabel, 1, 0);
+    	homePane.add(taskInformation, 0, 1);
+    	homePane.add(listView, 1, 1);
     	
     	b.setCenter(homePane);
     	

@@ -30,5 +30,36 @@
 	-fx-text-fill: #000;
 }
 
+.list-view {
+    -fx-background-color: #C3C3C3;
+}
+
+.list-cell {
+	-fx-min-height: 30;
+}
+
+.list-view .list-cell:hover {
+    -fx-background-color: #636363;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #434343;
+    -fx-text-fill: white;
+}
+
+.list-view .list-cell {
+    -fx-background-color: #C3C3C3;
+    -fx-text-fill: black;
+}
+
+.list-view .label {
+    -fx-text-fill: white;
+}
+
+.jfx-rippler {
+    -jfx-rippler-fill: red;
+}
+
+
 
 
