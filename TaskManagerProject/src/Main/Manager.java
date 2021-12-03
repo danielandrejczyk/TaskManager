@@ -494,10 +494,11 @@ public class Manager extends Application {
             }
             
             // update space filter list
+            int CurrentIndex = TaskManager.getSelectedTaskIndex();
             sFilter.getItems().clear();
             sFilter.getItems().addAll(SpaceManager.getSpaceList());
             sFilterUpdated = true;
-            sFilter.getSelectionModel().selectLast();
+            sFilter.getSelectionModel().select(CurrentIndex);
             
             tFilter.getItems().clear();
             tFilter.getItems().addAll(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)));
