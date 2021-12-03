@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -33,6 +34,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Pair;
 
 /**
@@ -92,6 +94,7 @@ public class Manager extends Application {
 
 		// Create a border pane to lay out all the items
 		BorderPane border = new BorderPane();
+		border.setPrefSize(1000, 600);
 		//
 		// Top panel
 		//
@@ -280,19 +283,19 @@ public class Manager extends Application {
 		leftSection.getChildren().addAll(toggleLabel, homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
 
 		// Set up the default overview (home overview)
-		Pane newOverview = Overview.toggleOverview(1, 0, 
-				0);
+		Pane newOverview = Overview.toggleOverview(1, border.getWidth(), border.getHeight());
 		border.setCenter(newOverview);
 		
 		// Set sections to borderpane
 		border.setTop(topSection);
 		border.setLeft(leftSection);
 
+		primaryStage.setHeight(700);
+		primaryStage.setWidth(1000);
 		Scene scene = new Scene(border);
 		scene.getStylesheets().add("/tmStyle.css");
 		primaryStage.setScene(scene);
-		primaryStage.setMinHeight(800);
-		primaryStage.setMinWidth(1000);
+		
 		
 		// Load stored data
 		taskManager.loadTasks();		
