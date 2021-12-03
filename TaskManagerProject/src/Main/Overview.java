@@ -44,7 +44,7 @@ public class Overview {
      * 
      * @param	b	The borderpane to anchor the home overview to
      */
-    private static GridPane toggleHome()
+    private static GridPane toggleHome(double centerWidth, double centerHeight)
     {
     	GridPane homePane = new GridPane();
     	
@@ -56,7 +56,7 @@ public class Overview {
     	ObservableList<Task> tasks = FXCollections.observableArrayList(TaskManager.getTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex())));
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
-    	listView.setPrefWidth(450);
+    	listView.setPrefWidth(centerWidth - 450 - 20);
     	listView.setPrefHeight(500);
     	listView.getStyleClass().add("list-view");
     	GridPane.setMargin(listView, new Insets(10));
@@ -694,7 +694,7 @@ public class Overview {
 		case 4:
 			return(toggleMonthly(centerWidth, centerHeight));
 		default:
-			return(toggleHome());
+			return(toggleHome(centerWidth, centerHeight));
 		}
 	}
     
