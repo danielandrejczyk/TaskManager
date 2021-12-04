@@ -9,9 +9,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -22,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import java.io.FileInputStream;
@@ -35,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Locale;
+
 
 public class Overview {
 	
@@ -171,6 +176,13 @@ public class Overview {
 				taskButton.setGraphic(priority);
 				taskButton.setMinWidth(200);
 				taskButton.setAlignment(Pos.CENTER_LEFT);
+				
+				// show task info
+				Rectangle rect = new Rectangle(0, 0, 100, 100);
+				Tooltip taskInfo = new Tooltip("Parent Space: " + task.getParentName() + "\nPriority: " + task.getPriority() + "\nStatus: " + task.getCurrent());
+				Tooltip.install(rect, taskInfo);
+				taskButton.setTooltip(taskInfo);
+				taskInfo.setShowDelay(null);
 			} catch (FileNotFoundException e) {
 				System.out.println("Unable to find priority graphic for button!");
 			}
@@ -466,11 +478,19 @@ public class Overview {
     	    				ImageView priority = new ImageView(new Image(input));
     	    				Button priorityBtn = new Button();
     	    				
+    	    				// select task
     	    				priorityBtn.setOnMouseClicked(e -> {
     	    					int setIndex = TaskManager.getTaskIndexByName(t.toString());
     	    					if (setIndex != -1)
     	    						TaskManager.setSelectedTaskIndex(setIndex);
     	    				});
+    	    				
+    	    				// show task info
+	    					Rectangle rect = new Rectangle(0, 0, 100, 100);
+	    					Tooltip taskInfo = new Tooltip("Parent Space: " + t.getParentName() + "\nPriority: " + t.getPriority() + "\nStatus: " + t.getCurrent());
+	    					Tooltip.install(rect, taskInfo);
+	    					priorityBtn.setTooltip(taskInfo);
+	    					taskInfo.setShowDelay(null);
     	    				
     	    				priority.setFitHeight(25);
     	    				priority.setFitWidth(5);
@@ -631,6 +651,13 @@ public class Overview {
     	    					if (setIndex != -1)
     	    						TaskManager.setSelectedTaskIndex(setIndex);
     	    				});
+    	    				
+    	    				// show task info
+	    					Rectangle rect = new Rectangle(0, 0, 100, 100);
+	    					Tooltip taskInfo = new Tooltip("Parent Space: " + t.getParentName() + "\nPriority: " + t.getPriority() + "\nStatus: " + t.getCurrent());
+	    					Tooltip.install(rect, taskInfo);
+	    					priorityBtn.setTooltip(taskInfo);
+	    					taskInfo.setShowDelay(null);
     	    				
     	    				priority.setFitHeight(25);
     	    				priority.setFitWidth(5);
