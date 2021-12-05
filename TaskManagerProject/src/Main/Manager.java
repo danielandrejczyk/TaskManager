@@ -372,7 +372,7 @@ public class Manager extends Application {
     		break;
     	case 1: // Edit Task
     		tDialog.setTitle("Edit Task");
-    		tDialog.setHeaderText("Choose a task and edit its properties: ");
+    		//tDialog.setHeaderText("Choose a task and edit its properties: ");
     		break;
     	case 2: // Delete Task + custom alert execution
     		Alert deleteTD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
@@ -422,7 +422,8 @@ public class Manager extends Application {
     	int i = 0;
     	if (type == 1) {
     		i = 1;
-    		tGrid.add(new Label("Choose task to edit"), 0, 0);
+    		tGrid.add(new Label("Editing task: " + 
+    		TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).toString()), 0, 0);
     	}
     	// positioning
     	tGrid.setHgap(10);
@@ -454,7 +455,9 @@ public class Manager extends Application {
     	
     	// disable confirm button until information is entered
     	Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
-    	confirmBtn.setDisable(true);
+    	if (type == 0) {
+    		confirmBtn.setDisable(true);
+    	}
     	tDialog.getDialogPane().setContent(tGrid);
     	
     	tName.textProperty().addListener((observable, oldValue, newValue) -> {
