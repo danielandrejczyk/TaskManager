@@ -446,7 +446,7 @@ public class Manager extends Application {
     		tName.setText(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).toString());
     		pSpace.getSelectionModel().select((TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getParentSpace()));
     		datePicker.setValue(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getDate());
-    		desc.setText(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).toString());
+    		desc.setText(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getDescription());
     		tPriority.getSelectionModel().select((TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getPriority()));
     		tProgress.getSelectionModel().select((TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getCurrent()));
     		
