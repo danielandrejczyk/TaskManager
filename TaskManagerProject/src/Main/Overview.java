@@ -101,6 +101,7 @@ public class Overview {
     	
     	taskInformation.getChildren().add(noTaskSelected);
 		taskInformation.setPadding(new Insets(20,20,20,20));
+<<<<<<< HEAD
 
 		// Get the selected task
 		listView.setOnMouseClicked(event -> {
@@ -145,6 +146,47 @@ public class Overview {
 			}
 		});
 
+=======
+    		
+    	// Get the selected task
+    	listView.setOnMouseClicked(event -> {
+    		
+    		ObservableList<Task> selectedIndices = listView.getSelectionModel().getSelectedItems();
+    		
+    		Task selectedTask = selectedIndices.get(0);
+    		
+    		// select task
+				int setIndex = TaskManager.getTaskIndexByName(selectedTask.toString());
+				if (setIndex != -1)
+					TaskManager.setSelectedTaskIndex(setIndex);
+    		
+    		taskInformation.getChildren().clear();
+    		
+    		Text priority = new Text("Priority: " + selectedTask.getPriority());
+    		Rectangle priorityRect = new Rectangle(0, 0, 300, 20);
+    		switch(selectedTask.getPriority())
+    		{
+    		case HIGH:
+    			priorityRect.setFill(Color.INDIANRED); break;
+    		case MEDIUM:
+    			priorityRect.setFill(Color.ORANGE); break;
+    		case LOW:
+    			priorityRect.setFill(Color.LIGHTGOLDENRODYELLOW); break;
+			default:
+				priorityRect.setFill(Color.ORANGE);
+    				
+    		}
+    		//priorityCircle.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+    		Text status = new Text("Status: " + selectedTask.getCurrent());
+    		Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
+    		statusDesc.setWrappingWidth(300);
+    		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
+    		Text date = new Text("Due Date: " + selectedTask.getDate());
+    		
+    		taskInformation.getChildren().addAll(priorityRect, priority, status, statusDesc, parentSpace, date);
+    	});
+    	
+>>>>>>> branch 'master' of https://github.com/danielandrejczyk/TaskManager.git
     	homePane.add(dateLabel, 0, 0);
     	homePane.add(taskLabel, 1, 0);
     	homePane.add(taskInformation, 0, 1);
@@ -194,6 +236,14 @@ public class Overview {
     	{
     		// If task is due today...
     		Button taskButton = new Button(task.toString());
+    		
+    		// select task
+			taskButton.setOnMouseClicked(e -> {
+				int setIndex = TaskManager.getTaskIndexByName(task.toString());
+				if (setIndex != -1)
+					TaskManager.setSelectedTaskIndex(setIndex);
+			});
+			
     		FileInputStream input;
 			try {
 				String userDirectory = System.getProperty("user.dir");
