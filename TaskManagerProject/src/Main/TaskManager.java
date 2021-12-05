@@ -28,6 +28,10 @@ public class TaskManager {
 		taskList = new ArrayList<Task>();
 	}
 	
+	/**
+	 * Method to load task data into TaskManager program
+	 */
+	
 	@SuppressWarnings("unchecked")
 	public void loadTasks()
 	{
@@ -43,6 +47,10 @@ public class TaskManager {
 			System.out.println("File not in the right format!");
 		}
 	}
+	
+	/**
+	 * Method to save task data into TaskManager program
+	 */
 	
 	public void storeTasks()
 	{
