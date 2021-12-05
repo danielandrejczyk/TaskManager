@@ -6,9 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Comparator;
+import java.time.temporal.ChronoUnit;
 
 
 /**
@@ -28,10 +31,6 @@ public class TaskManager {
 		taskList = new ArrayList<Task>();
 	}
 	
-	/**
-	 * Method to load task data into TaskManager program
-	 */
-	
 	@SuppressWarnings("unchecked")
 	public void loadTasks()
 	{
@@ -47,10 +46,6 @@ public class TaskManager {
 			System.out.println("File not in the right format!");
 		}
 	}
-	
-	/**
-	 * Method to save task data into TaskManager program
-	 */
 	
 	public void storeTasks()
 	{
@@ -105,24 +100,32 @@ public class TaskManager {
 	 * Method to edit a task
 	 * @param aTask the task that will be edited
 	 */
-	public void EditTask(Task oldTask, Task newTask) {
+	public void EditTask(Task oldTask, Task newTask) throws Exception {
+		boolean nameExists = false;
 		
-		// breaks encap but works
-		for (Task t : taskList) {
-			// assume name exists
-			if (t.equals(oldTask)) {
-				// t = newTask;
-				// or
-				
-				 t.setName(newTask.toString());
-				 t.setDate(newTask.getDate());
-				 t.setCurrent(newTask.getCurrent());
-				 t.setDescription(newTask.getDescription());
-				 t.setPriority(newTask.getPriority());
-				 t.moveTo(newTask.getParentSpace());
-				 
-			}	
+		// check that name isn't already used by another task
+				for (Task t: taskList) {
+					if (t.toString().equals(newTask.toString()) & (t != oldTask)) {
+						nameExists = true;
+					}
+				}
+		
+		if (!nameExists) {
+			for (Task t : taskList) {
+				// assume name exists
+				if (t.equals(oldTask)) {
+					 t.setName(newTask.toString());
+					 t.setDate(newTask.getDate());
+					 t.setCurrent(newTask.getCurrent());
+					 t.setDescription(newTask.getDescription());
+					 t.setPriority(newTask.getPriority());
+					 t.moveTo(newTask.getParentSpace());
+					 
+				}	
+			}
 		}
+		else 
+			throw new Exception("Must give new task a unique name");
 	
 	}
 	
@@ -225,4 +228,6 @@ public class TaskManager {
 	{
 		selectedTaskIndex = newIndex;
 	}
+	
+
 }
