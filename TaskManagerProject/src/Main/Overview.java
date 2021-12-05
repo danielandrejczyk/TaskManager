@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -103,13 +104,27 @@ public class Overview {
     		taskInformation.getChildren().clear();
     		
     		Text priority = new Text("Priority: " + selectedTask.getPriority());
+    		Rectangle priorityRect = new Rectangle(0, 0, 300, 20);
+    		switch(selectedTask.getPriority())
+    		{
+    		case HIGH:
+    			priorityRect.setFill(Color.INDIANRED); break;
+    		case MEDIUM:
+    			priorityRect.setFill(Color.ORANGE); break;
+    		case LOW:
+    			priorityRect.setFill(Color.LIGHTGOLDENRODYELLOW); break;
+			default:
+				priorityRect.setFill(Color.ORANGE);
+    				
+    		}
+    		//priorityCircle.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
     		Text status = new Text("Status: " + selectedTask.getCurrent());
     		Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
     		statusDesc.setWrappingWidth(300);
     		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
     		Text date = new Text("Due Date: " + selectedTask.getDate());
     		
-    		taskInformation.getChildren().addAll(priority, status, statusDesc, parentSpace, date);
+    		taskInformation.getChildren().addAll(priorityRect, priority, status, statusDesc, parentSpace, date);
     	});
     	
     	homePane.add(dateLabel, 0, 0);
@@ -218,8 +233,6 @@ public class Overview {
     	
     	ArrayList<Task> fList = new ArrayList<Task>();
     	fList = TaskManager.getTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex()));
-    	//for (Task t : fList)
-    		//System.out.println(t.toString() + " + P: " + t.getParentName());
     	
     	// set week to previous Sunday
     	LocalDate now = LocalDate.now();
