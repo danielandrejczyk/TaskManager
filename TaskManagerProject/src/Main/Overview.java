@@ -88,45 +88,63 @@ public class Overview {
     	taskInformation.setPrefWidth(350); 
     	GridPane.setMargin(taskInformation, new Insets(10));
     	
-    	Text noTaskSelected = new Text("Select a task from the right list to see more information");
-    	noTaskSelected.setWrappingWidth(300);
-    	noTaskSelected.minWidth(350);
+    	Text noTaskSelected;
+    	if (listView.getItems().isEmpty()) {
+    		noTaskSelected = new Text("No tasks added yet. Add a task by clicking the \"Add Task\" button in the menu bar.");
+    		noTaskSelected.setWrappingWidth(300);
+        	noTaskSelected.minWidth(350);
+    	} else {
+    		noTaskSelected = new Text("Select a task from the right list to see more information");
+        	noTaskSelected.setWrappingWidth(300);
+        	noTaskSelected.minWidth(350);
+    	}
     	
     	taskInformation.getChildren().add(noTaskSelected);
 		taskInformation.setPadding(new Insets(20,20,20,20));
-    		
-    	// Get the selected task
-    	listView.setOnMouseClicked(event -> {
-    		ObservableList<Task> selectedIndices = listView.getSelectionModel().getSelectedItems();
-    		
-    		Task selectedTask = selectedIndices.get(0);
-    		
-    		taskInformation.getChildren().clear();
-    		
-    		Text priority = new Text("Priority: " + selectedTask.getPriority());
-    		Rectangle priorityRect = new Rectangle(0, 0, 300, 20);
-    		switch(selectedTask.getPriority())
-    		{
-    		case HIGH:
-    			priorityRect.setFill(Color.INDIANRED); break;
-    		case MEDIUM:
-    			priorityRect.setFill(Color.ORANGE); break;
-    		case LOW:
-    			priorityRect.setFill(Color.LIGHTGOLDENRODYELLOW); break;
-			default:
-				priorityRect.setFill(Color.ORANGE);
-    				
-    		}
-    		//priorityCircle.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-    		Text status = new Text("Status: " + selectedTask.getCurrent());
-    		Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
-    		statusDesc.setWrappingWidth(300);
-    		Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
-    		Text date = new Text("Due Date: " + selectedTask.getDate());
-    		
-    		taskInformation.getChildren().addAll(priorityRect, priority, status, statusDesc, parentSpace, date);
-    	});
-    	
+
+		// Get the selected task
+		listView.setOnMouseClicked(event -> {
+			ObservableList<Task> selectedIndices = listView.getSelectionModel().getSelectedItems();
+			Task selectedTask;
+			
+			// try-catch to check if any tasks exist (throws IndexOutOfBoundsException)
+			try {
+				selectedTask = selectedIndices.get(0);
+				
+				taskInformation.getChildren().clear();
+				
+				Text priority = new Text("Priority: " + selectedTask.getPriority());
+				Rectangle priorityRect = new Rectangle(0, 0, 300, 20);
+				switch(selectedTask.getPriority())
+				{
+					case HIGH:
+						priorityRect.setFill(Color.INDIANRED); break;
+					case MEDIUM:
+						priorityRect.setFill(Color.ORANGE); break;
+					case LOW:
+						priorityRect.setFill(Color.LIGHTGOLDENRODYELLOW); break;
+					default:
+						priorityRect.setFill(Color.ORANGE);	
+				}
+				//priorityCircle.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+				Text status = new Text("Status: " + selectedTask.getCurrent());
+				Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
+				statusDesc.setWrappingWidth(300);
+				Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
+				Text date = new Text("Due Date: " + selectedTask.getDate());
+				
+				taskInformation.getChildren().addAll(priorityRect, priority, status, statusDesc, parentSpace, date);
+			}
+			catch (IndexOutOfBoundsException e) {
+				selectedTask = null;
+				
+				Text noTaskExistsMessage = new Text("No tasks added yet. Add a task by clicking the \"Add Task\" button in the menu bar.");
+				noTaskExistsMessage.setWrappingWidth(300);
+				taskInformation.getChildren().clear();
+				taskInformation.getChildren().add(noTaskExistsMessage);
+			}
+		});
+
     	homePane.add(dateLabel, 0, 0);
     	homePane.add(taskLabel, 1, 0);
     	homePane.add(taskInformation, 0, 1);
@@ -236,7 +254,7 @@ public class Overview {
     	
     	// set week to previous Sunday
     	LocalDate now = LocalDate.now();
-    	weekStartDate.setValue(now.with(DayOfWeek.SUNDAY));
+    	weekStartDate.setValue(now.with(WeekFields.of(Locale.getDefault()).getFirstDayOfWeek())); // normally would uses WeekFields.SUNDAY, but locale can cause week to start on Monday and Sunday is last day
     	
     	// anchorpane for displaying calendar
     	AnchorPane weekPane = new AnchorPane();
@@ -266,7 +284,6 @@ public class Overview {
     	
     	// methods for moving forward and backward a month; calls drawCalendar(...) to redraw the calendar and populate with next/prev month's contents
     	prevWeek.setOnAction(e -> {
-    		System.out.println("Going back 1 week");
     		weekStartDate.set(weekStartDate.get().minusWeeks(1));
     		calGrid.getChildren().clear();
     		calGrid.add(prevWeek, 0, 0, 1, 1);
@@ -274,7 +291,6 @@ public class Overview {
     		drawWeeklyCalendar(weekStartDate, locale, calGrid, CELL_WIDTH, CELL_HEIGHT, TaskManager.getTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex())));
     	});
     	nextWeek.setOnAction(e -> {
-    		System.out.println("Going forward 1 week");
     		weekStartDate.set(weekStartDate.get().plusWeeks(1));
     		calGrid.getChildren().clear();
     		calGrid.add(prevWeek, 0, 0, 1, 1);
