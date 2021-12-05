@@ -307,6 +307,8 @@ public class Manager extends Application {
 	}
 	
 	/**
+     * @author Calen
+     * 
      * Helper method to create space dialogs for adding, editing, and deleting spaces
      * 
      * @param type, the type of space modification (0 = add, 1 = edit, 2 = delete)
@@ -521,6 +523,8 @@ public class Manager extends Application {
     }
 
 	/**
+	 * @author Thomas Teper
+	 * 
 	 * Helper method to create space dialogs for adding, editing, and deleting spaces
 	 * 
 	 * @param type, the type of space modification (0 = add, 1 = edit, 2 = delete)
@@ -656,6 +660,8 @@ public class Manager extends Application {
 	}
 
 	/**
+	 * @author Thomas Teper
+	 * 
 	 * Helper method to notify user of actions that are not permitted
 	 * 
 	 * @param e, the exception message thrown by the calling method
@@ -667,7 +673,9 @@ public class Manager extends Application {
 	}
 
 	/**
-	 * Helper method to notify user of actions that are not permitted
+	 * @author Thomas Teper
+	 * 
+	 * Helper method to notify user of success in certain event
 	 * 
 	 * @param e, the exception message thrown by the calling method
 	 */
@@ -690,6 +698,12 @@ public class Manager extends Application {
 		success.showAndWait();
 	}
 
+	/**
+	 * @author Calen
+	 * 
+	 * Class to load values from task dialog
+	 *
+	 */
 	public static class Results {
 
 		String n;

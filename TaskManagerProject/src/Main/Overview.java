@@ -46,6 +46,8 @@ import java.util.Locale;
 public class Overview {
 	
     /**
+     * @author Daniel A., Thomas T.
+     * 
      * Sets up the home task overview and sets it to the center
      * of the border pane that is passed in.
      * 
@@ -169,6 +171,16 @@ public class Overview {
     	
     }
     
+    /**
+     * @author Daniel A.
+     * 
+     * Sets up the daily task overview and sets it to the center
+     * of the border pane that is passed in.
+     * 
+     * @param centerWidth, the width of the drawable window
+     * @param centerHeight, the height of the drawable window
+     * @return the overview pane
+     */
     private static AnchorPane toggleDaily(double centerWidth, double centerHeight)
     {
     	
@@ -269,11 +281,13 @@ public class Overview {
     }
     
     /**
-     * Method to display the weekly overview
+     * @author Dan A., Thomas T.
      * 
-     * @param	b	The borderpane object to which
-     * 				the overview will be placed in the
-     * 				center of.
+     * Sets up the weekly task overview and returns the weekly pane.
+     * 
+     * @param centerWidth, the width of the drawable window
+     * @param centerHeight, the height of the drawable window
+     * @return the weekly pane
      */
     private static AnchorPane toggleWeekly(double centerWidth, double centerHeight) {
     	
@@ -352,15 +366,19 @@ public class Overview {
     }
     
     /**
-     * Method to display the calendar overview
+     * @author Thomas Teper
      * 
-     * @param b
+     * Sets up the monthly task overview and returns monthly pane
+     * 
+     * @param centerWidth, the width of the drawable window
+     * @param centerHeight, the height of the drawable window
+     * @return monthly pane
      */
     private static AnchorPane toggleMonthly(double centerWidth, double centerHeight) {
     	
     	// Note for reader:
-    	// Some code based on https://gist.github.com/james-d/ee8a5c216fb3c6e027ea 
-    	// However, 95% of it is modified to fit the purposes of this project, which is to display tasks and much is original; still, will credit
+    	// Calendar setup based on framework in https://gist.github.com/james-d/ee8a5c216fb3c6e027ea 
+    	// However, 95% of framework is modified to fit the purposes of this project, which is to display tasks and much is original; still, will credit
     	
     	// variables for the month and the current locale
     	final ObjectProperty<YearMonth> month = new SimpleObjectProperty<>();
@@ -434,6 +452,8 @@ public class Overview {
     }
     
     /**
+     * @author Daniel A.
+     * 
      * Helper method to redraw the weekly calendar when button is pressed to advance/go back to next/prev week
      * 
      * @param month, YearMonth object that passes current selected month
@@ -605,6 +625,8 @@ public class Overview {
     }
     
     /**
+     * @author Thomas Teper
+     * 
      * Helper method to redraw the calendar when button is pressed to advance/go back to next/prev month
      * 
      * @param month, YearMonth object that passes current selected month
@@ -774,11 +796,13 @@ public class Overview {
     	}
     }
 
-    /*
+    /**
+     * @author Daniel A.
+     * 
      * Refreshes the current overview or loads the newly toggled overview
      * depending on the int passed in. Default is home overview.
      * 
-     * @param	overviewType	Pass in 1 to view homeoverview, 2 for daily overview,
+     * @param overviewType	Pass in 1 to view homeoverview, 2 for daily overview,
      * 							3 for weekly overview, and 4 for monthly overview.
      * 							Toggles home overview if none of the above matches.
      */

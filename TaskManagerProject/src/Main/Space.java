@@ -2,11 +2,9 @@ package Main;
 import java.io.Serializable;
 
 /**
- * 
- * @author tteper
+ * @author Thomas Teper
  * 
  * Space class for creating space objects
- *
  */
 @SuppressWarnings("serial")
 public class Space implements Serializable {
@@ -73,7 +71,7 @@ public class Space implements Serializable {
 	
 	/**
 	 * Getter method for retrieving parent space object
-	 * @return the parents space of the space
+	 * @return the parent space of the space
 	 */
 	public Space getParentSpace() {
 		return parentSpace;

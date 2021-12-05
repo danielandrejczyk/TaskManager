@@ -1,6 +1,6 @@
 package Main;
 /**
- * @author: Tom
+ * @author: Thomas Teper
  * 
  * SpaceManager Class for managing spaces
  */
@@ -164,6 +164,7 @@ public class SpaceManager {
 	
 	/**
 	 * Returns the parent index of a particular space
+	 * 
 	 * @param position, the location of the target space in spaceList
 	 * @return the index of the parent space of the target space
 	 */
@@ -181,6 +182,7 @@ public class SpaceManager {
 	
 	/**
 	 * Returns a copy of the current task spaces
+	 * 
 	 * @return a copy of the spaces in the task application
 	 */
 	public static ArrayList<Space> getSpaceList() {
