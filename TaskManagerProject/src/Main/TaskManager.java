@@ -137,6 +137,7 @@ public class TaskManager {
 		// implement all tasks that have a particular parent
 		ArrayList<Task> filteredList = new ArrayList<Task>();
 		
+		// filter by space
 		for (Task t : taskList) {
 			Space tempPSpace = t.getParentSpace();
 			while (tempPSpace != null) {
@@ -154,8 +155,7 @@ public class TaskManager {
 	}
 	
 	/**
-	 * Returns the index of the currently selected task in
-	 * the list of all tasks.
+	 * Returns the index of the task by name
 	 * 
 	 * @return	Index of the selected task in taskList.
 	 */
@@ -168,11 +168,15 @@ public class TaskManager {
 		return -1;
 	}
 	
+	/**
+	 * Returns the selected task index out of the list of all tasks
+	 * @return the selected task index
+	 */
 	public static int getSelectedTaskIndex() {
 		return selectedTaskIndex;
 	}
 	
-	/*
+	/**
 	 * Sets the index of a newly selected task within
 	 * the task list.
 	 * 
