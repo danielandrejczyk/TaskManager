@@ -525,7 +525,12 @@ public class Manager extends Application {
                 nTask.setDescription(description);
                 nTask.setPriority(taskPriority);
                 
+                try {
             	taskManager.EditTask(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()), nTask);
+                }
+                catch (Exception e){
+                	systemAlert(e);
+                }
             	
             	break;
             	
