@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -34,7 +34,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Pair;
 
 /**
@@ -50,7 +49,7 @@ public class Manager extends Application {
 	private int currentView;
 	private static boolean sFilterUpdated;
 	private final double WIDTH = 1000;
-	private final double HEIGHT = 600;
+	private final double HEIGHT = 800;
 	// The base layout javafx component.
 	private BorderPane border;
 
@@ -106,23 +105,24 @@ public class Manager extends Application {
 		border.setCenter(newOverview);
 		
 		// Set sections to borderpane
-		border.setTop(createTopSection());
-		border.setLeft(createLeftSection());
+		createTopSection();
+		createLeftSection();
 
-		primaryStage.setHeight(700);
-		primaryStage.setWidth(1000);
+		primaryStage.setHeight(HEIGHT);
+		primaryStage.setWidth(WIDTH);
 		Scene scene = new Scene(border);
 		scene.getStylesheets().add("/tmStyle.css");
 		primaryStage.setScene(scene);
 		
-		
-		// Load stored data
-		taskManager.loadTasks();		
-		spaceManager.loadSpaces();
+		// Set icon.
+        try {
+        	primaryStage.getIcons().add(new Image("taskIcon.png"));
+        } catch (Exception e) {
+        	System.err.println("Error: Unable to load icon. Proceeding with program...");
+        }
 		
 		// Show the scene
 		primaryStage.show();
-
 
 	}
 	
@@ -132,11 +132,13 @@ public class Manager extends Application {
 	 * Sets up the top section of the application and returns the corresponding HBox component.
 	 * @return	An HBox component containing all the top section buttons and menus.
 	 */
-	//
-	// Top panel
-	//
-	public HBox createTopSection()
+	public void createTopSection()
 	{
+		
+		//
+		// Top panel
+		//
+		
 		// Top section will be a horizontal box component
 		HBox topSection = new HBox();
 		topSection.setBackground(new Background(new BackgroundFill(Color.LIGHTSTEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -156,17 +158,12 @@ public class Manager extends Application {
 	
 		// Space selection drop-down
 		ComboBox<Space> spaceFilter = new ComboBox<Space>();
-		ComboBox<Task> taskFilter = new ComboBox<Task>();
 		ArrayList<Space> spaceList = SpaceManager.getSpaceList();
 		ArrayList<Task> taskList = TaskManager.getTaskList(spaceList.get(0));
 		spaceFilter.getItems().addAll(spaceList);
 		spaceFilter.getSelectionModel().selectFirst();
 		spaceFilter.setPrefHeight(40);
 		spaceFilter.setPrefWidth(200);
-		taskFilter.getItems().addAll(taskList);
-		taskFilter.getSelectionModel().selectFirst();
-		taskFilter.setPrefHeight(40);
-		taskFilter.setPrefWidth(200);
 	
 		// Task manipulation buttons
 		Button addTask = new Button("Add Task");
@@ -220,7 +217,7 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				taskDialog(0, spaceList, spaceFilter, spaceManager,
-						taskManager, taskList, taskFilter);
+						taskManager, taskList);
 				sFilterUpdated = false;
 			}
 		});
@@ -231,7 +228,7 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				taskDialog(1, spaceList, spaceFilter, spaceManager,
-						taskManager, taskList, taskFilter);
+						taskManager, taskList);
 				sFilterUpdated = false;
 			}
 		});
@@ -242,8 +239,8 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				taskDialog(2, spaceList, spaceFilter, spaceManager,
-						taskManager, taskList, taskFilter);
-				sFilterUpdated = true;
+						taskManager, taskList);
+				sFilterUpdated = false;
 			}
 		});
 
@@ -255,19 +252,18 @@ public class Manager extends Application {
 				
 				SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
 				if (!sFilterUpdated) {
-					// somehow need to filter the tasks that we want by the parent space
-					Pane newOverview = Overview.toggleOverview(currentView, 800, 
-							600);
+					Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
+							border.getCenter().getBoundsInLocal().getMaxY());
 					border.setCenter(newOverview);
 				}
 			}
 		});
-	
+
 		// Add all of the above components to the HBox
 		topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
 		
 		// Return HBox
-		return topSection;
+		border.setTop(topSection);
 	}
 	
 	/**
@@ -279,7 +275,7 @@ public class Manager extends Application {
 	//
 	// Top panel
 	//
-	public VBox createLeftSection()
+	public void createLeftSection()
 	{
 		//
 		// Left panel
@@ -336,7 +332,7 @@ public class Manager extends Application {
 		// Add all the buttons to the VBox
 		leftSection.getChildren().addAll(toggleLabel, homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
 		
-		return leftSection;
+		border.setLeft(leftSection);
 
 	}
 	
@@ -353,7 +349,7 @@ public class Manager extends Application {
      * @param tList, the list of spaces from overview
      */
     private void taskDialog(int type, ArrayList<Space> sList, ComboBox<Space> sFilter, 
-    		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList, ComboBox<Task> tFilter) {
+    		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList) {
     	
     	// create dialog and naming
     	sFilterUpdated = false;
@@ -367,9 +363,7 @@ public class Manager extends Application {
     	ComboBox<Space> pSpace = new ComboBox<Space>();
         ComboBox<Task.Priority> tPriority = new ComboBox<Task.Priority>();
         ComboBox<Status.progress> tProgress = new ComboBox<Status.progress>();
-        
-        //Task dummyTask = new Task("null", LocalDate.now(), spaceManager.getSpaceList().get(0));
-    
+            
     	// naming
     	switch (type) {
     	case 0:	// Add Task 
@@ -392,6 +386,7 @@ public class Manager extends Application {
             	} catch (Exception e) {
             		systemAlert(e);
             	}
+            	// LOOK INTO THIS!
                 sFilter.getItems().clear();
                 sFilterUpdated = true;
                 sFilter.getItems().addAll(SpaceManager.getSpaceList());
@@ -422,7 +417,7 @@ public class Manager extends Application {
     	tProgress.getItems().add(Status.progress.TO_DO);
     	tProgress.getItems().add(Status.progress.IN_PROGRESS);
     	tProgress.getItems().add(Status.progress.DONE);
-    	tProgress.getSelectionModel().select(Status.progress.IN_PROGRESS);
+    	tProgress.getSelectionModel().select(Status.progress.TO_DO);
     	
     	int i = 0;
     	if (type == 1) {
@@ -456,7 +451,6 @@ public class Manager extends Application {
     		tProgress.getSelectionModel().select((TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()).getCurrent()));
     		
     	}
-    	
     	
     	// disable confirm button until information is entered
     	Node confirmBtn = tDialog.getDialogPane().lookupButton(confirmBtnType);
@@ -536,14 +530,8 @@ public class Manager extends Application {
             
             // update space filter list
             int CurrentIndex = SpaceManager.getSelectedSpaceIndex();
-            sFilter.getItems().clear();
-            sFilter.getItems().addAll(SpaceManager.getSpaceList());
-            sFilterUpdated = true;
+            sFilterUpdated = false;
             sFilter.getSelectionModel().select(CurrentIndex);
-            
-            tFilter.getItems().clear();
-            tFilter.getItems().addAll(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)));
-            tFilter.getSelectionModel().selectLast();
             
         });
         
@@ -701,9 +689,9 @@ public class Manager extends Application {
 	 * @param e, the exception message thrown by the calling method
 	 */
 	private void systemAlert(Exception e) {
-		Alert badName = new Alert(AlertType.ERROR, e.getMessage(), ButtonType.OK); 
-		badName.setTitle("Alert");
-		badName.showAndWait();
+		Alert invalidName = new Alert(AlertType.ERROR, e.getMessage(), ButtonType.OK); 
+		invalidName.setTitle("Alert");
+		invalidName.showAndWait();
 	}
 
 	/**

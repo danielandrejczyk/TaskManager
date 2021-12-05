@@ -38,7 +38,11 @@ import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Locale;
 
-
+/**
+ * 
+ * @author Daniel
+ *
+ */
 public class Overview {
 	
     /**
@@ -73,10 +77,10 @@ public class Overview {
     	// current day
     	String now = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(new java.util.Date());
     	
-    	Label dateLabel = new Label(now);
-    	dateLabel.setFont(new Font("Arial Bold", 24));
-    	dateLabel.setPrefWidth(350);
-    	GridPane.setMargin(dateLabel, new Insets(10));
+    	Label homeLabel = new Label("Home");
+    	homeLabel.setFont(new Font("Arial Bold", 24));
+    	homeLabel.setPrefWidth(350);
+    	GridPane.setMargin(homeLabel, new Insets(10));
     	
     	// Task information text flow
     	VBox taskInformation = new VBox();
@@ -121,11 +125,11 @@ public class Overview {
 				switch(selectedTask.getPriority())
 				{
 					case HIGH:
-						priorityRect.setFill(Color.INDIANRED); break;
+						priorityRect.setFill(Color.ORANGERED); break;
 					case MEDIUM:
 						priorityRect.setFill(Color.ORANGE); break;
 					case LOW:
-						priorityRect.setFill(Color.LIGHTGOLDENRODYELLOW); break;
+						priorityRect.setFill(Color.YELLOW); break;
 					default:
 						priorityRect.setFill(Color.ORANGE);	
 				}
@@ -157,7 +161,7 @@ public class Overview {
 			}
 		});
     	
-    	homePane.add(dateLabel, 0, 0);
+    	homePane.add(homeLabel, 0, 0);
     	homePane.add(taskLabel, 1, 0);
     	homePane.add(taskInformation, 0, 1);
     	homePane.add(listView, 1, 1);
@@ -180,6 +184,7 @@ public class Overview {
     {
     	
     	AnchorPane dailyPane = new AnchorPane();
+    	LocalDate today = LocalDate.now();
     	
     	VBox taskCol1 = new VBox();
     	taskCol1.setSpacing(10.0);
@@ -214,56 +219,59 @@ public class Overview {
     	// Cycle through each task and create a box for each one
     	for(Task task: tasks) 
     	{
-    		// If task is due today...
-    		Button taskButton = new Button(task.toString());
     		
-    		// select task
-			taskButton.setOnMouseClicked(e -> {
-				int setIndex = TaskManager.getTaskIndexByName(task.toString());
-				if (setIndex != -1)
-					TaskManager.setSelectedTaskIndex(setIndex);
-			});
-			
-    		FileInputStream input;
-			try {
-				String userDirectory = System.getProperty("user.dir");
-				System.out.println(userDirectory);
-				switch(task.getPriority())
-				{
-					case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png"); break;
-					case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png"); break;
-					case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
-					default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
-				}
-				ImageView priority = new ImageView(new Image(input));
-				
-				LocalDate today = LocalDate.now();
-				
-				// button styling
-				if (task.getDate().compareTo(today) < 0) {
-					taskButton.getStyleClass().add("overdue-cal-button");
-					taskButton.setText(task.toString() + " - OVERDUE");
-				}
-				else {
-					taskButton.getStyleClass().add("cal-button");
-					taskButton.setText(task.toString());
-				}
-				taskButton.setGraphic(priority);
-				taskButton.setAlignment(Pos.CENTER_LEFT);
-				taskButton.setPrefHeight(50);
-				taskButton.setPrefWidth(250);
-				
-				// show task info
-				Rectangle rect = new Rectangle(0, 0, 100, 100);
-				Tooltip taskInfo = new Tooltip("Parent Space: " + task.getParentName() + "\nPriority: " + task.getPriority() + "\nStatus: " + task.getCurrent());
-				Tooltip.install(rect, taskInfo);
-				taskButton.setTooltip(taskInfo);
-				taskInfo.setShowDelay(null);
-			} catch (FileNotFoundException e) {
-				System.out.println("Unable to find priority graphic for button!");
-			}
-    		taskCol1.getChildren().add(taskButton);
-    		
+    		// Add button
+    		if(task.getDate().equals(today))
+    		{
+    			Button taskButton = new Button(task.toString());
+
+    			// select task
+    			taskButton.setOnMouseClicked(e -> {
+    				int setIndex = TaskManager.getTaskIndexByName(task.toString());
+    				if (setIndex != -1)
+    					TaskManager.setSelectedTaskIndex(setIndex);
+    			});
+
+    			FileInputStream input;
+    			try {
+    				String userDirectory = System.getProperty("user.dir");
+    				System.out.println(userDirectory);
+    				switch(task.getPriority())
+    				{
+    				case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png"); break;
+    				case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png"); break;
+    				case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
+    				default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
+    				}
+    				ImageView priority = new ImageView(new Image(input));
+
+
+
+    				// button styling
+    				if (task.getDate().compareTo(today) < 0) {
+    					taskButton.getStyleClass().add("overdue-cal-button");
+    					taskButton.setText(task.toString() + " - OVERDUE");
+    				}
+    				else {
+    					taskButton.getStyleClass().add("cal-button");
+    					taskButton.setText(task.toString());
+    				}
+    				taskButton.setGraphic(priority);
+    				taskButton.setAlignment(Pos.CENTER_LEFT);
+    				taskButton.setPrefHeight(50);
+    				taskButton.setPrefWidth(250);
+
+    				// show task info
+    				Rectangle rect = new Rectangle(0, 0, 100, 100);
+    				Tooltip taskInfo = new Tooltip("Parent Space: " + task.getParentName() + "\nPriority: " + task.getPriority() + "\nStatus: " + task.getCurrent());
+    				Tooltip.install(rect, taskInfo);
+    				taskButton.setTooltip(taskInfo);
+    				taskInfo.setShowDelay(null);
+    			} catch (FileNotFoundException e) {
+    				System.out.println("Unable to find priority graphic for button!");
+    			}
+    			taskCol1.getChildren().add(taskButton);
+    		}
     	}
     	
     	AnchorPane.setTopAnchor(taskCol1, 70.0);
@@ -797,9 +805,11 @@ public class Overview {
      * Refreshes the current overview or loads the newly toggled overview
      * depending on the int passed in. Default is home overview.
      * 
-     * @param overviewType	Pass in 1 to view homeoverview, 2 for daily overview,
+     * @param overviewType	Pass in 1 to view home overview, 2 for daily overview,
      * 							3 for weekly overview, and 4 for monthly overview.
      * 							Toggles home overview if none of the above matches.
+     * @param centerWidth	Width of the center of the border pane.
+     * @param centerHeight  Height of the center of the border pane.
      */
 	public static Pane toggleOverview(int overviewType, double centerWidth, double centerHeight) {
 

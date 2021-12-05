@@ -12,9 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-
 public class SpaceManager {
 	
 	private static int selectedSpaceIndex;
