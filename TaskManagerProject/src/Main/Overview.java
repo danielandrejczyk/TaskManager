@@ -97,9 +97,15 @@ public class Overview {
     		
     	// Get the selected task
     	listView.setOnMouseClicked(event -> {
+    		
     		ObservableList<Task> selectedIndices = listView.getSelectionModel().getSelectedItems();
     		
     		Task selectedTask = selectedIndices.get(0);
+    		
+    		// select task
+				int setIndex = TaskManager.getTaskIndexByName(selectedTask.toString());
+				if (setIndex != -1)
+					TaskManager.setSelectedTaskIndex(setIndex);
     		
     		taskInformation.getChildren().clear();
     		
@@ -176,6 +182,14 @@ public class Overview {
     	{
     		// If task is due today...
     		Button taskButton = new Button(task.toString());
+    		
+    		// select task
+			taskButton.setOnMouseClicked(e -> {
+				int setIndex = TaskManager.getTaskIndexByName(task.toString());
+				if (setIndex != -1)
+					TaskManager.setSelectedTaskIndex(setIndex);
+			});
+			
     		FileInputStream input;
 			try {
 				String userDirectory = System.getProperty("user.dir");
