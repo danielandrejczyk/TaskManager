@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
@@ -131,14 +132,23 @@ public class Overview {
 					default:
 						priorityRect.setFill(Color.ORANGE);	
 				}
-				//priorityCircle.setBackground(new Background(new BackgroundFill(Color.ALICEBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 				Text status = new Text("Status: " + selectedTask.getCurrent());
 				Text statusDesc = new Text("Status Description: " + selectedTask.getDescription());
 				statusDesc.setWrappingWidth(300);
 				Text parentSpace = new Text("Parent Space: " + selectedTask.getParentName());
 				Text date = new Text("Due Date: " + selectedTask.getDate());
+				Text isOverdue;
+				if (selectedTask.getDate().compareTo(LocalDate.now()) < 0) {
+					isOverdue = new Text("OVERDUE");
+					isOverdue.setFont(new Font("Arial Bold", 16));
+					isOverdue.setFill(Color.RED);
+				}
+				else {
+					isOverdue = new Text(null);
+					isOverdue.setFill(Color.WHITE);
+				}
 				
-				taskInformation.getChildren().addAll(priorityRect, priority, status, statusDesc, parentSpace, date);
+				taskInformation.getChildren().addAll(priorityRect, priority, status, statusDesc, parentSpace, date, isOverdue);
 			}
 			catch (IndexOutOfBoundsException e) {
 				selectedTask = null;
@@ -219,9 +229,22 @@ public class Overview {
 					default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
 				}
 				ImageView priority = new ImageView(new Image(input));
+				
+				LocalDate today = LocalDate.now();
+				
+				// button styling
+				if (task.getDate().compareTo(today) < 0) {
+					taskButton.getStyleClass().add("overdue-cal-button");
+					taskButton.setText(task.toString() + " - OVERDUE");
+				}
+				else {
+					taskButton.getStyleClass().add("cal-button");
+					taskButton.setText(task.toString());
+				}
 				taskButton.setGraphic(priority);
-				taskButton.setMinWidth(200);
 				taskButton.setAlignment(Pos.CENTER_LEFT);
+				taskButton.setPrefHeight(50);
+				taskButton.setPrefWidth(250);
 				
 				// show task info
 				Rectangle rect = new Rectangle(0, 0, 100, 100);
@@ -518,10 +541,10 @@ public class Overview {
     	    						break;
     	    				}
     	    				ImageView priority = new ImageView(new Image(input));
-    	    				Button priorityBtn = new Button();
+    	    				Button taskButton = new Button();
     	    				
     	    				// select task
-    	    				priorityBtn.setOnMouseClicked(e -> {
+    	    				taskButton.setOnMouseClicked(e -> {
     	    					int setIndex = TaskManager.getTaskIndexByName(t.toString());
     	    					if (setIndex != -1)
     	    						TaskManager.setSelectedTaskIndex(setIndex);
@@ -531,20 +554,23 @@ public class Overview {
 	    					Rectangle rect = new Rectangle(0, 0, 100, 100);
 	    					Tooltip taskInfo = new Tooltip("Parent Space: " + t.getParentName() + "\nPriority: " + t.getPriority() + "\nStatus: " + t.getCurrent());
 	    					Tooltip.install(rect, taskInfo);
-	    					priorityBtn.setTooltip(taskInfo);
+	    					taskButton.setTooltip(taskInfo);
 	    					taskInfo.setShowDelay(null);
     	    				
     	    				priority.setFitHeight(25);
     	    				priority.setFitWidth(5);
     	    				
     	    				// button styling
-    	    				priorityBtn.getStyleClass().add("cal-button");
-    	    				priorityBtn.setText(tasks);
-    	    				priorityBtn.setGraphic(priority);
-    	    				priorityBtn.setAlignment(Pos.CENTER_LEFT);
-    	    				priorityBtn.setPrefHeight(10);
-    	    				priorityBtn.setPrefWidth(CELL_WIDTH);
-    	    				cellGrid.add(priorityBtn, 0, numTasks);
+    	    				if (t.getDate().compareTo(now) < 0)
+    	    					taskButton.getStyleClass().add("overdue-cal-button");
+    	    				else 
+    	    					taskButton.getStyleClass().add("cal-button");
+    	    				taskButton.setText(tasks);
+    	    				taskButton.setGraphic(priority);
+    	    				taskButton.setAlignment(Pos.CENTER_LEFT);
+    	    				taskButton.setPrefHeight(10);
+    	    				taskButton.setPrefWidth(CELL_WIDTH);
+    	    				cellGrid.add(taskButton, 0, numTasks);
     	    			} 
 	    				catch (FileNotFoundException e) {
     	    				System.out.println("Unable to find priority graphic for button!");
@@ -685,10 +711,10 @@ public class Overview {
     	    						break;
     	    				}
     	    				ImageView priority = new ImageView(new Image(input));
-    	    				Button priorityBtn = new Button();
+    	    				Button taskButton = new Button();
     	    				
     	    				// when task button is selected, allow you to edit or delete by setting current selected task index
-    	    				priorityBtn.setOnMouseClicked(e -> {
+    	    				taskButton.setOnMouseClicked(e -> {
     	    					int setIndex = TaskManager.getTaskIndexByName(t.toString());
     	    					if (setIndex != -1)
     	    						TaskManager.setSelectedTaskIndex(setIndex);
@@ -698,20 +724,23 @@ public class Overview {
 	    					Rectangle rect = new Rectangle(0, 0, 100, 100);
 	    					Tooltip taskInfo = new Tooltip("Parent Space: " + t.getParentName() + "\nPriority: " + t.getPriority() + "\nStatus: " + t.getCurrent());
 	    					Tooltip.install(rect, taskInfo);
-	    					priorityBtn.setTooltip(taskInfo);
+	    					taskButton.setTooltip(taskInfo);
 	    					taskInfo.setShowDelay(null);
     	    				
     	    				priority.setFitHeight(25);
     	    				priority.setFitWidth(5);
     	    				
     	    				// button styling
-    	    				priorityBtn.getStyleClass().add("cal-button");
-    	    				priorityBtn.setText(tasks);
-    	    				priorityBtn.setGraphic(priority);
-    	    				priorityBtn.setAlignment(Pos.CENTER_LEFT);
-    	    				priorityBtn.setPrefHeight(10);
-    	    				priorityBtn.setPrefWidth(CELL_WIDTH);
-    	    				cellGrid.add(priorityBtn, 0, numTasks);
+    	    				if (t.getDate().compareTo(currentDay) < 0)
+    	    					taskButton.getStyleClass().add("overdue-cal-button");
+    	    				else 
+    	    					taskButton.getStyleClass().add("cal-button");
+    	    				taskButton.setText(tasks);
+    	    				taskButton.setGraphic(priority);
+    	    				taskButton.setAlignment(Pos.CENTER_LEFT);
+    	    				taskButton.setPrefHeight(10);
+    	    				taskButton.setPrefWidth(CELL_WIDTH);
+    	    				cellGrid.add(taskButton, 0, numTasks);
     	    			} 
 	    				catch (FileNotFoundException e) {
     	    				System.out.println("Unable to find priority graphic for button!");

@@ -8,13 +8,28 @@
     -fx-background-insets: 1;
 }
 
-.cal-button:hover {
+.overdue-cal-button {
+	-fx-border-radius: 1;
+	-fx-border-color: #708090;
+	-fx-padding: 1;
+    -fx-border-insets: 1;
+    -fx-background-insets: 1;
+    -fx-text-fill: red;
+}
+
+.cal-button:hover, .overdue-cal-button:hover {
 	-fx-text-fill: #000;
     -fx-background-color: #F0F8FF;
 }
 
 .cal-button:pressed {
 	-fx-base: light-blue;
+}
+
+.cal-button:focused, .overdue-cal-button:focused {
+	-fx-background-color: #434343;
+    -fx-text-fill: white;
+    -fx-font-family: "Arial Bold";
 }
 
 .month-btn {
@@ -34,17 +49,27 @@
     -fx-background-color: #C3C3C3;
 }
 
+.button {
+	-fx-font-family: "Arial";
+	-fx-font-size: 12;
+}
+
 .list-cell {
 	-fx-min-height: 30;
+	-fx-padding: 10;
+	-fx-font-family: 'Arial';
+    -fx-font-size: 14;
 }
 
 .list-view .list-cell:hover {
     -fx-background-color: #636363;
+    -fx-text-fill: white;
 }
 
 .list-view .list-cell:selected {
     -fx-background-color: #434343;
     -fx-text-fill: white;
+    -fx-font-family: "Arial Bold";
 }
 
 .list-view .list-cell {
