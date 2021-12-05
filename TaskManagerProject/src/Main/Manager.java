@@ -264,6 +264,9 @@ public class Manager extends Application {
 		border.setTop(topSection);
 	}
 	
+	/**
+	 * Method to update the overview when something is modified
+	 */
 	private void refreshOverview() {
 		Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
 				border.getCenter().getBoundsInLocal().getMaxY());
