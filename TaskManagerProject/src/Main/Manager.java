@@ -225,11 +225,10 @@ public class Manager extends Application {
 
 			@Override
 			public void handle(ActionEvent event) {
-
+				
+				SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
 				if (!sFilterUpdated) {
 					// somehow need to filter the tasks that we want by the parent space
-					SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
-					
 					Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
 							border.getCenter().getBoundsInLocal().getMaxY());
 					border.setCenter(newOverview);
@@ -393,7 +392,6 @@ public class Manager extends Application {
     	if (type == 1) {
     		i = 1;
     		tGrid.add(new Label("Choose task to edit"), 0, 0);
-    		//tGrid.add(tFilter, 1, 0);
     	}
     	// positioning
     	tGrid.setHgap(10);
@@ -481,7 +479,7 @@ public class Manager extends Application {
             switch(type) {
             case 0:	// Add task
             	try {
-            	tManager.addTask(name, d, aSpace, description, taskProgress, taskPriority);
+            	taskManager.addTask(name, d, aSpace, description, taskProgress, taskPriority);
             	}
             	catch (Exception e) {
             		systemAlert(e);
@@ -495,18 +493,13 @@ public class Manager extends Application {
                 nTask.setPriority(taskPriority);
                 
             	taskManager.EditTask(TaskManager.getTaskList(SpaceManager.getSpaceList().get(0)).get(TaskManager.getSelectedTaskIndex()), nTask);
-            	try {
-            		// do something
-            	}
-            	catch (Exception e) {
-            		//systemAlert(e);
-            	}
+            	
             	break;
             	
             }
             
             // update space filter list
-            int CurrentIndex = TaskManager.getSelectedTaskIndex();
+            int CurrentIndex = SpaceManager.getSelectedSpaceIndex();
             sFilter.getItems().clear();
             sFilter.getItems().addAll(SpaceManager.getSpaceList());
             sFilterUpdated = true;
@@ -717,5 +710,4 @@ public class Manager extends Application {
 
 		}
 	}
-
 }
