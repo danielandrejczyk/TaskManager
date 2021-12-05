@@ -62,7 +62,7 @@ public class Overview {
     	GridPane.setMargin(homePane, new Insets(20));
     	homePane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
     	
-    	ObservableList<Task> tasks = FXCollections.observableArrayList(TaskManager.getTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex())));
+    	ObservableList<Task> tasks = FXCollections.observableArrayList(TaskManager.getSortedTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex())));
     	
     	ListView<Task> listView = new ListView<Task>(tasks);
     	listView.setPrefWidth(centerWidth - 450 - 20);

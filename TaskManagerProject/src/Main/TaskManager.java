@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Comparator;
 
 
 /**
@@ -152,6 +153,37 @@ public class TaskManager {
 		}
 		
 		return filteredList;
+	}
+	
+	/**
+	 * Method to return a sorted array list of tasks with given
+	 * parent space
+	 * @param aParent
+	 * @return sortedList and array list
+	 */
+	public static ArrayList<Task> getSortedTaskList(Space selectedSpace) {
+		
+		// implement all tasks that have a particular parent
+		ArrayList<Task> sortedList = new ArrayList<Task>();
+		
+		taskList.sort(Comparator.comparing(Task::getDate).reversed()
+                .thenComparing(Task::getPriority).reversed());
+		
+		// filter by space
+		for (Task t : taskList) {
+			Space tempPSpace = t.getParentSpace();
+			while (tempPSpace != null) {
+				if (tempPSpace.toString().equals(selectedSpace.toString())) {
+					sortedList.add(t);
+					tempPSpace = null;
+				}
+				else {
+					tempPSpace = tempPSpace.getParentSpace();
+				}
+			}
+		}
+		
+		return sortedList;
 	}
 	
 	/**
