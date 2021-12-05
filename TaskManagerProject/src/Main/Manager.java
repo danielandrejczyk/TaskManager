@@ -47,7 +47,7 @@ public class Manager extends Application {
 	private TaskManager taskManager;
 	private SpaceManager spaceManager;
 	private int currentView;
-	private static boolean sFilterUpdated;
+	private static boolean spaceDropdownUpdated; // variable to prevent updates to space filter from disrupting overview
 	private final double WIDTH = 1000;
 	private final double HEIGHT = 800;
 	// The base layout javafx component.
@@ -55,7 +55,7 @@ public class Manager extends Application {
 
 	public static void main(String[] args) {
 		
-		sFilterUpdated = false;
+		spaceDropdownUpdated = false;
 		launch(args);
 		
 	}
@@ -185,7 +185,7 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				spaceDialog(0, spaceFilter);
-				sFilterUpdated = false;
+				spaceDropdownUpdated = false;
 			}
 		});
 
@@ -195,7 +195,7 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				spaceDialog(1, spaceFilter);
-				sFilterUpdated = false;
+				spaceDropdownUpdated = false;
 			}
 		});
 
@@ -205,7 +205,7 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				spaceDialog(2, spaceFilter);
-				sFilterUpdated = false;
+				spaceDropdownUpdated = false;
 			}
 		});
 
@@ -218,7 +218,7 @@ public class Manager extends Application {
 			public void handle(ActionEvent event) {
 				taskDialog(0, spaceList, spaceFilter, spaceManager,
 						taskManager, taskList);
-				sFilterUpdated = false;
+				spaceDropdownUpdated = false;
 			}
 		});
 
@@ -229,7 +229,7 @@ public class Manager extends Application {
 			public void handle(ActionEvent event) {
 				taskDialog(1, spaceList, spaceFilter, spaceManager,
 						taskManager, taskList);
-				sFilterUpdated = false;
+				spaceDropdownUpdated = false;
 			}
 		});
 
@@ -240,7 +240,7 @@ public class Manager extends Application {
 			public void handle(ActionEvent event) {
 				taskDialog(2, spaceList, spaceFilter, spaceManager,
 						taskManager, taskList);
-				sFilterUpdated = false;
+				spaceDropdownUpdated = false;
 			}
 		});
 
@@ -250,11 +250,9 @@ public class Manager extends Application {
 			@Override
 			public void handle(ActionEvent event) {
 				
-				SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
-				if (!sFilterUpdated) {
-					Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
-							border.getCenter().getBoundsInLocal().getMaxY());
-					border.setCenter(newOverview);
+				SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex()); // sets the index upon the dropdown changing
+				if (!spaceDropdownUpdated) { // if dropdown is being modified to set the index, do not refreshOverview because it is called twice and breaks the program
+					refreshOverview();
 				}
 			}
 		});
@@ -264,6 +262,12 @@ public class Manager extends Application {
 		
 		// Return HBox
 		border.setTop(topSection);
+	}
+	
+	private void refreshOverview() {
+		Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
+				border.getCenter().getBoundsInLocal().getMaxY());
+		border.setCenter(newOverview);
 	}
 	
 	/**
@@ -352,7 +356,7 @@ public class Manager extends Application {
     		SpaceManager sManager, TaskManager tManager, ArrayList<Task> tList) {
     	
     	// create dialog and naming
-    	sFilterUpdated = false;
+    	spaceDropdownUpdated = false;
     	Dialog<Results> tDialog = new Dialog<>();
     	GridPane tGrid = new GridPane();
     	ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
@@ -372,7 +376,6 @@ public class Manager extends Application {
     		break;
     	case 1: // Edit Task
     		tDialog.setTitle("Edit Task");
-    		//tDialog.setHeaderText("Choose a task and edit its properties: ");
     		break;
     	case 2: // Delete Task + custom alert execution
     		Alert deleteTD = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this task?", ButtonType.YES, ButtonType.CANCEL);
@@ -386,11 +389,7 @@ public class Manager extends Application {
             	} catch (Exception e) {
             		systemAlert(e);
             	}
-            	// LOOK INTO THIS!
-                sFilter.getItems().clear();
-                sFilterUpdated = true;
-                sFilter.getItems().addAll(SpaceManager.getSpaceList());
-                sFilter.getSelectionModel().selectFirst();
+            	refreshOverview();
             }
             return; 
     	default:
@@ -538,7 +537,7 @@ public class Manager extends Application {
             
             // update space filter list
             int CurrentIndex = SpaceManager.getSelectedSpaceIndex();
-            sFilterUpdated = false;
+            refreshOverview();
             sFilter.getSelectionModel().select(CurrentIndex);
             
         });
@@ -565,7 +564,7 @@ public class Manager extends Application {
 	private void spaceDialog(int type, ComboBox<Space> sFilter) {
 
 		// create dialog and naming
-		sFilterUpdated = false;
+		spaceDropdownUpdated = false;
 		Dialog<Pair<String, Integer>> sDialog = new Dialog<>();
 		GridPane sGrid = new GridPane();
 		ButtonType confirmBtnType = new ButtonType("Confirm", ButtonData.OK_DONE);
@@ -595,10 +594,12 @@ public class Manager extends Application {
 				} catch (Exception e) {
 					systemAlert(e);
 				}
+				
+				spaceDropdownUpdated = true;
 				sFilter.getItems().clear();
 				sFilter.getItems().addAll(SpaceManager.getSpaceList());
-				sFilterUpdated = true;
 				sFilter.getSelectionModel().selectFirst();
+				refreshOverview();
 			}
 			return; 
 		default:
@@ -676,10 +677,11 @@ public class Manager extends Application {
 			}
 
 			// update space filter list
+			spaceDropdownUpdated = true;
 			sFilter.getItems().clear();
 			sFilter.getItems().addAll(SpaceManager.getSpaceList());
-			sFilterUpdated = true;
 			sFilter.getSelectionModel().selectLast();
+			refreshOverview();
 		});
 
 		// reset text and null values in textfield
