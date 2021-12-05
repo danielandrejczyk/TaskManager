@@ -49,6 +49,10 @@ public class Manager extends Application {
 	private SpaceManager spaceManager;
 	private int currentView;
 	private static boolean sFilterUpdated;
+	private final double WIDTH = 1000;
+	private final double HEIGHT = 600;
+	// The base layout javafx component.
+	private BorderPane border;
 
 	public static void main(String[] args) {
 		
@@ -93,28 +97,63 @@ public class Manager extends Application {
 		primaryStage.centerOnScreen();
 
 		// Create a border pane to lay out all the items
-		BorderPane border = new BorderPane();
-		border.setPrefSize(1000, 600);
-		//
-		// Top panel
-		//
+		border = new BorderPane();
+		// Set window size constants. Window remains a fixed size by design.
+		border.setPrefSize(WIDTH, HEIGHT);
+		
+		// Set up the default overview (home overview)
+		Pane newOverview = Overview.toggleOverview(1, border.getWidth(), border.getHeight());
+		border.setCenter(newOverview);
+		
+		// Set sections to borderpane
+		border.setTop(createTopSection());
+		border.setLeft(createLeftSection());
 
+		primaryStage.setHeight(700);
+		primaryStage.setWidth(1000);
+		Scene scene = new Scene(border);
+		scene.getStylesheets().add("/tmStyle.css");
+		primaryStage.setScene(scene);
+		
+		
+		// Load stored data
+		taskManager.loadTasks();		
+		spaceManager.loadSpaces();
+		
+		// Show the scene
+		primaryStage.show();
+
+
+	}
+	
+	/**
+	 * @author Daniel
+	 * 
+	 * Sets up the top section of the application and returns the corresponding HBox component.
+	 * @return	An HBox component containing all the top section buttons and menus.
+	 */
+	//
+	// Top panel
+	//
+	public HBox createTopSection()
+	{
+		// Top section will be a horizontal box component
 		HBox topSection = new HBox();
 		topSection.setBackground(new Background(new BackgroundFill(Color.LIGHTSTEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 		topSection.setPadding(new Insets(15, 12, 15, 12));
 		topSection.setSpacing(10);
 		topSection.setAlignment(Pos.CENTER);
-
+	
 		// Space manipulation buttons
 		Button addSpace = new Button("Add Space");
 		addSpace.setPrefSize(100, 40);
-
+	
 		Button editSpace = new Button("Edit Space");
 		editSpace.setPrefSize(100, 40);
-
+	
 		Button deleteSpace = new Button("Delete Space");
 		deleteSpace.setPrefSize(100, 40);
-
+	
 		// Space selection drop-down
 		ComboBox<Space> spaceFilter = new ComboBox<Space>();
 		ComboBox<Task> taskFilter = new ComboBox<Task>();
@@ -128,29 +167,17 @@ public class Manager extends Application {
 		taskFilter.getSelectionModel().selectFirst();
 		taskFilter.setPrefHeight(40);
 		taskFilter.setPrefWidth(200);
-
+	
 		// Task manipulation buttons
 		Button addTask = new Button("Add Task");
 		addTask.setPrefSize(100, 40);
-
+	
 		Button editTask = new Button("Edit Task");
 		editTask.setPrefSize(100, 40);
-
+	
 		Button deleteTask = new Button("Delete Task");
 		deleteTask.setPrefSize(100, 40);
-
-		topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
-
-		//
-		// Left panel
-		//
-
-		VBox leftSection = new VBox();
-		leftSection.setPadding(new Insets(15,15,15,15));
-		leftSection.setSpacing(10);
-		leftSection.setBackground(new Background(new BackgroundFill(Color.STEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-		leftSection.setAlignment(Pos.TOP_CENTER);
-
+		
 		/*
 		 * Top Button Action Events
 		 */
@@ -229,12 +256,40 @@ public class Manager extends Application {
 				SpaceManager.setSelectedSpaceIndex(spaceFilter.getSelectionModel().getSelectedIndex());
 				if (!sFilterUpdated) {
 					// somehow need to filter the tasks that we want by the parent space
-					Pane newOverview = Overview.toggleOverview(currentView, border.getCenter().getBoundsInLocal().getMaxX(), 
-							border.getCenter().getBoundsInLocal().getMaxY());
+					Pane newOverview = Overview.toggleOverview(currentView, 800, 
+							600);
 					border.setCenter(newOverview);
 				}
 			}
 		});
+	
+		// Add all of the above components to the HBox
+		topSection.getChildren().addAll(addSpace, editSpace, deleteSpace, spaceFilter, addTask, editTask, deleteTask);
+		
+		// Return HBox
+		return topSection;
+	}
+	
+	/**
+	 * @author Daniel
+	 * 
+	 * Sets up the left section of the application and returns the corresponding VBox component.
+	 * @return	An VBox component containing all the left section buttons.
+	 */
+	//
+	// Top panel
+	//
+	public VBox createLeftSection()
+	{
+		//
+		// Left panel
+		//
+
+		VBox leftSection = new VBox();
+		leftSection.setPadding(new Insets(15,15,15,15));
+		leftSection.setSpacing(10);
+		leftSection.setBackground(new Background(new BackgroundFill(Color.STEELBLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+		leftSection.setAlignment(Pos.TOP_CENTER);
 
 		// Overview toggle buttons
 		Button homeToggle = new Button("Home");
@@ -245,7 +300,12 @@ public class Manager extends Application {
 		dailyToggle.setPrefSize(80, 40);
 		weeklyToggle.setPrefSize(80, 40);
 		monthlyToggle.setPrefSize(80, 40);
-
+		
+		// Label placed above overview toggle buttons labeled "View"
+		Text toggleLabel = new Text("View");
+		toggleLabel.setFill(Color.WHITE);
+		toggleLabel.setFont(new Font("Arial Bold", 16));
+		
 		// Connect overview toggle buttons to their
 		// MouseClick event handlers
 		homeToggle.setOnMouseClicked(e -> {
@@ -273,36 +333,10 @@ public class Manager extends Application {
 			currentView = 4;
 		});
 
-
-		Text toggleLabel = new Text("View");
-		toggleLabel.setFill(Color.WHITE);
-		toggleLabel.setFont(new Font("Arial Bold", 16));
-		//toggleLabel.setTextAlignment(TextAlignment.CENTER);
-
+		// Add all the buttons to the VBox
 		leftSection.getChildren().addAll(toggleLabel, homeToggle, dailyToggle, weeklyToggle, monthlyToggle);
-
-		// Set up the default overview (home overview)
-		Pane newOverview = Overview.toggleOverview(1, border.getWidth(), border.getHeight());
-		border.setCenter(newOverview);
 		
-		// Set sections to borderpane
-		border.setTop(topSection);
-		border.setLeft(leftSection);
-
-		primaryStage.setHeight(700);
-		primaryStage.setWidth(1000);
-		Scene scene = new Scene(border);
-		scene.getStylesheets().add("/tmStyle.css");
-		primaryStage.setScene(scene);
-		
-		
-		// Load stored data
-		taskManager.loadTasks();		
-		spaceManager.loadSpaces();
-		
-		// Show the scene
-		primaryStage.show();
-
+		return leftSection;
 
 	}
 	
