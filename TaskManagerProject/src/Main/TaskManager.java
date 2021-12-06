@@ -229,5 +229,13 @@ public class TaskManager {
 		selectedTaskIndex = newIndex;
 	}
 	
+	/**
+	 * Method that deletes old, completed tasks
+	 */
+	public static void deleteOldTasks() {
+		taskList.removeIf((t -> (t.getCurrent() == Status.progress.DONE) &
+				(ChronoUnit.DAYS.between(t.getDate(), LocalDate.now()) > 28)));
+	}
+	
 
 }
