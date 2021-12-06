@@ -1,5 +1,6 @@
 package Main;
 
+import java.io.FileInputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -116,8 +117,11 @@ public class Manager extends Application {
 		
 		// Set icon.
         try {
-        	primaryStage.getIcons().add(new Image("taskIcon.png"));
+        	String userDirectory = System.getProperty("user.dir");
+        	FileInputStream input = new FileInputStream(userDirectory + "/images/taskLogo.png");
+        	primaryStage.getIcons().add(new Image(input));
         } catch (Exception e) {
+        	e.printStackTrace();
         	System.err.println("Error: Unable to load icon. Proceeding with program...");
         }
 		

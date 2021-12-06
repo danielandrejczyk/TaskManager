@@ -51,16 +51,18 @@ public class Overview {
      */
     private static GridPane toggleHome(double centerWidth, double centerHeight)
     {
+    	// This GridPane is returned to be assigned to the borderpane
     	GridPane homePane = new GridPane();
     	
     	homePane.setPadding(new Insets(20));
     	GridPane.setMargin(homePane, new Insets(20));
     	homePane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
     	
+    	// Remove tasks that have expired (older than 4 weeks)
     	TaskManager.deleteOldTasks();
     	ObservableList<Task> tasks = FXCollections.observableArrayList(TaskManager.getSortedTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex())));
     	
-    	
+    	// Lists tasks on right-hand side
     	ListView<Task> listView = new ListView<Task>(tasks);
     	listView.setPrefWidth(centerWidth - 450 - 20);
     	listView.setPrefHeight(500);
@@ -75,6 +77,7 @@ public class Overview {
     	// current day
     	String now = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH).format(new java.util.Date());
     	
+    	// Label for today's date
     	Label dateLabel = new Label(now);
     	dateLabel.setFont(new Font("Arial Bold", 24));
     	dateLabel.setPrefWidth(350);
@@ -88,6 +91,7 @@ public class Overview {
     	taskInformation.setPrefWidth(350); 
     	GridPane.setMargin(taskInformation, new Insets(10));
     	
+    	// If the right-side list is empty
     	Text noTaskSelected;
     	if (listView.getItems().isEmpty()) {
     		noTaskSelected = new Text("No tasks added yet. Add a task by clicking the \"Add Task\" button in the menu bar.");
@@ -159,11 +163,13 @@ public class Overview {
 			}
 		});
     	
+		// Add all components
     	homePane.add(dateLabel, 0, 0);
     	homePane.add(taskLabel, 1, 0);
     	homePane.add(taskInformation, 0, 1);
     	homePane.add(listView, 1, 1);
     	
+    	// Returns pane to be placed in borderpane center of the application
     	return homePane;
     	
     }
@@ -182,6 +188,8 @@ public class Overview {
     {
     	
     	AnchorPane dailyPane = new AnchorPane();
+    	
+    	LocalDate today = LocalDate.now();
     	
     	VBox taskCol1 = new VBox();
     	taskCol1.setSpacing(10.0);
@@ -208,64 +216,67 @@ public class Overview {
     	gc.fillText(dateHeader, 20, 40);
     	
     	gc.strokeRect(10, 10, 230, 40);
-    	
-    	//Space myTasks = SpaceManager.getSpaceList().get(0);
-    	
+    	    	
     	TaskManager.deleteOldTasks();
     	ObservableList<Task> tasks = FXCollections.observableArrayList(TaskManager.getTaskList(SpaceManager.getSpaceList().get(SpaceManager.getSelectedSpaceIndex())));
     	
+    	int taskCount = 0; // Daily overview maxes out at 10 tasks
     	// Cycle through each task and create a box for each one
     	for(Task task: tasks) 
     	{
-    		// If task is due today...
-    		Button taskButton = new Button(task.toString());
-    		
-    		// select task
-			taskButton.setOnMouseClicked(e -> {
-				int setIndex = TaskManager.getTaskIndexByName(task.toString());
-				if (setIndex != -1)
-					TaskManager.setSelectedTaskIndex(setIndex);
-			});
-			
-    		FileInputStream input;
-			try {
-				String userDirectory = System.getProperty("user.dir");
-				System.out.println(userDirectory);
-				switch(task.getPriority())
-				{
-					case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png"); break;
-					case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png"); break;
-					case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
-					default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
-				}
-				ImageView priority = new ImageView(new Image(input));
-				
-				LocalDate today = LocalDate.now();
-				
-				// button styling
-				if (task.getDate().compareTo(today) < 0) {
-					taskButton.getStyleClass().add("overdue-cal-button");
-					taskButton.setText(task.toString() + " - OVERDUE");
-				}
-				else {
-					taskButton.getStyleClass().add("cal-button");
-					taskButton.setText(task.toString());
-				}
-				taskButton.setGraphic(priority);
-				taskButton.setAlignment(Pos.CENTER_LEFT);
-				taskButton.setPrefHeight(50);
-				taskButton.setPrefWidth(250);
-				
-				// show task info
-				Rectangle rect = new Rectangle(0, 0, 100, 100);
-				Tooltip taskInfo = new Tooltip("Parent Space: " + task.getParentName() + "\nPriority: " + task.getPriority() + "\nStatus: " + task.getCurrent());
-				Tooltip.install(rect, taskInfo);
-				taskButton.setTooltip(taskInfo);
-				taskInfo.setShowDelay(null);
-			} catch (FileNotFoundException e) {
-				System.out.println("Unable to find priority graphic for button!");
-			}
-    		taskCol1.getChildren().add(taskButton);
+    		if(task.getDate().compareTo(today) == 0 && taskCount < 10)
+    		{
+    			// If task is due today...
+    			Button taskButton = new Button(task.toString());
+
+    			// select task
+    			taskButton.setOnMouseClicked(e -> {
+    				int setIndex = TaskManager.getTaskIndexByName(task.toString());
+    				if (setIndex != -1)
+    					TaskManager.setSelectedTaskIndex(setIndex);
+    			});
+
+    			FileInputStream input;
+    			try {
+    				String userDirectory = System.getProperty("user.dir");
+    				System.out.println(userDirectory);
+    				switch(task.getPriority())
+    				{
+    				case HIGH:	input = new FileInputStream(userDirectory + "/images/HighPriority.png"); break;
+    				case MEDIUM:input = new FileInputStream(userDirectory + "/images/MediumPriority.png"); break;
+    				case LOW:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
+    				default:	input = new FileInputStream(userDirectory + "/images/LowPriority.png"); break;
+    				}
+    				ImageView priority = new ImageView(new Image(input));
+
+
+
+    				// button styling
+    				if (task.getDate().compareTo(today) < 0) {
+    					taskButton.getStyleClass().add("overdue-cal-button");
+    					taskButton.setText(task.toString() + " - OVERDUE");
+    				}
+    				else {
+    					taskButton.getStyleClass().add("cal-button");
+    					taskButton.setText(task.toString());
+    				}
+    				taskButton.setGraphic(priority);
+    				taskButton.setAlignment(Pos.CENTER_LEFT);
+    				taskButton.setPrefHeight(50);
+    				taskButton.setPrefWidth(250);
+
+    				// show task info
+    				Rectangle rect = new Rectangle(0, 0, 100, 100);
+    				Tooltip taskInfo = new Tooltip("Parent Space: " + task.getParentName() + "\nPriority: " + task.getPriority() + "\nStatus: " + task.getCurrent());
+    				Tooltip.install(rect, taskInfo);
+    				taskButton.setTooltip(taskInfo);
+    				taskInfo.setShowDelay(null);
+    			} catch (FileNotFoundException e) {
+    				System.out.println("Unable to find priority graphic for button!");
+    			}
+    			taskCol1.getChildren().add(taskButton);
+    			taskCount++;
+    		}
     		
     	}
     	
@@ -544,6 +555,7 @@ public class Overview {
     					
     					FileInputStream input;
     	    			try {
+    	    				// Loads priority indicators to place as ImageView component for button
     	    				String userDirectory = System.getProperty("user.dir");
     	    				switch(t.getPriority())
     	    				{
